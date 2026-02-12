@@ -72,9 +72,16 @@
     </section>
 
     <section vertical>
-      <div class="text" v-for="i in 3" :key="i" style="height: 100vh">
-        <h1>Section {{ i }}, scroll {{ sections[4]?.coveredProgress }}</h1>
-      </div>
+      <section marker>
+        <div class="text" v-for="i in 3" :key="i" style="height: 100vh">
+          <h1>Section {{ i }}, scroll {{ sections[4]?.markers[0]?.visibleProgress }}</h1>
+        </div>
+      </section>
+      <section marker>
+        <div class="text" v-for="i in 3" :key="i" style="height: 100vh">
+          <h1>Section {{ i }}, scroll {{ sections[4]?.markers[1]?.visibleProgress }}</h1>
+        </div>
+      </section>
     </section>
   </LenisScroll>
 </template>

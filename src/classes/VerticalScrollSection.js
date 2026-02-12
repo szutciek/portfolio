@@ -9,4 +9,12 @@ export default class VerticalScrollSection extends ScrollSection {
   computeDimensions() {
     this.scrollableSize = this.element.offsetHeight
   }
+
+  findMarkers() {
+    const markers = [...this.element.querySelectorAll('section[marker]')]
+    markers.forEach((marker) => {
+      const markerSection = new VerticalScrollSection(marker)
+      this.markers.push(markerSection)
+    })
+  }
 }

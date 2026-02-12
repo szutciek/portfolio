@@ -8,15 +8,7 @@ export default class ScrollSection {
 
   constructor(element) {
     this.element = element
-    // this.findMarkers()
-  }
-
-  findMarkers() {
-    const markers = [...this.element.querySelectorAll('section[marker]')]
-    markers.forEach((marker) => {
-      const markerSection = new ScrollSection(marker)
-      this.markers.push(markerSection)
-    })
+    this.findMarkers()
   }
 
   computeDimensions() {
@@ -30,10 +22,25 @@ export default class ScrollSection {
   setGlobalScrollRange(start, end) {
     this.globalStart = start
     this.globalEnd = end
+    this.markers.forEach((m) => {
+      const sM = m.element.offsetTop
+      const eM = sM + m.element.offsetHeight
+      m.setGlobalScrollRange(sM, eM)
+    })
   }
 
   getGlobalScrollRange() {
     return { start: this.globalStart, end: this.globalEnd }
+  }
+
+  getSectionData(scroll) {
+    return {
+      coveredProgress: this.getClampedCoveredScrollProgress(scroll),
+      visibleProgress: this.getVisibleScrollProgress(scroll),
+      markers: this.markers.map((m) => {
+        return m.getSectionData(scroll)
+      }),
+    }
   }
 
   getCoveredScrollProgress(globalScrollPosition) {

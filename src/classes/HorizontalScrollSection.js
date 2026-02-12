@@ -15,6 +15,14 @@ export default class HorizontalScrollSection extends ScrollSection {
     this.scrollableSize = elementWidth - viewportWidth + viewportHeight
   }
 
+  findMarkers() {
+    const markers = [...this.element.querySelectorAll('section[marker]')]
+    markers.forEach((marker) => {
+      const markerSection = new HorizontalScrollSection(marker)
+      this.markers.push(markerSection)
+    })
+  }
+
   translateScrollX(percentage) {
     const newOffset = percentage * this.scrollableSize
     const rightEdgeRelative = this.stickyWrapper.offsetWidth - window.innerWidth - newOffset

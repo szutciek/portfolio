@@ -78,10 +78,7 @@ onMounted(() => {
     }
 
     sections.forEach((section, i) => {
-      sectionData.value[i] = {
-        coveredProgress: section.getClampedCoveredScrollProgress(scroll),
-        visibleProgress: section.getVisibleScrollProgress(scroll),
-      }
+      sectionData.value[i] = section.getSectionData(scroll)
     })
   }
 
