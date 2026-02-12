@@ -76,9 +76,6 @@ export default class ScrollSection {
     const start = this.globalStart - viewportHeight
     const end = this.globalEnd
     const progress = (globalScrollPosition - start) / (end - start)
-    if (this.isHorizontal) {
-      console.log(this.globalStart, this.globalEnd, globalScrollPosition)
-    }
     return Math.min(1, Math.max(0, progress))
   }
 
