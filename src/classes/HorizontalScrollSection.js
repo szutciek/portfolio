@@ -1,6 +1,8 @@
 import ScrollSection from '@/classes/ScrollSection.js'
 
 export default class HorizontalScrollSection extends ScrollSection {
+  isHorizontal = true
+
   constructor(element) {
     super(element)
     this.moveToHorizontal()
@@ -13,14 +15,6 @@ export default class HorizontalScrollSection extends ScrollSection {
     const viewportWidth = window.innerWidth
     const viewportHeight = window.innerHeight
     this.scrollableSize = elementWidth - viewportWidth + viewportHeight
-  }
-
-  findMarkers() {
-    const markers = [...this.element.querySelectorAll('section[marker]')]
-    markers.forEach((marker) => {
-      const markerSection = new HorizontalScrollSection(marker)
-      this.markers.push(markerSection)
-    })
   }
 
   translateScrollX(percentage) {

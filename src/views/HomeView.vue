@@ -56,19 +56,26 @@
       <div class="split">
         <section marker>
           <VideoScrollSync :progress="sections[2]?.visibleProgress">
-            <video src="/public/videos/Skydive.webm" muted playsinline></video>
+            <video src="/videos/Skydive.webm" muted playsinline></video>
           </VideoScrollSync>
         </section>
         <ParallaxPicture :progress="sections[2]?.visibleProgress">
-          <img src="/public/images/car.png" alt="" velocity="1" />
+          <img src="/images/car.png" alt="" velocity="1" />
         </ParallaxPicture>
       </div>
     </section>
 
     <section horizontal>
-      <div class="text" v-for="i in 2" :key="i" style="height: 100vh; width: 100vw">
-        <h1>Section {{ i }}, scroll {{ sections[3]?.visibleProgress }}</h1>
-      </div>
+      <section marker>
+        <div class="text" style="height: 100vh; width: 100vw">
+          <h1>Section 1, scroll {{ sections[3]?.markers[0]?.visibleProgress }}</h1>
+        </div>
+      </section>
+      <section marker>
+        <div class="text" style="height: 100vh; width: 100vw">
+          <h1>Section 2, scroll {{ sections[3]?.markers[1]?.visibleProgress }}</h1>
+        </div>
+      </section>
     </section>
 
     <section vertical>

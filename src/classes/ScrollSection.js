@@ -15,6 +15,14 @@ export default class ScrollSection {
     console.warn('Compute dimensions not defined in subclass of ScrollSection')
   }
 
+  findMarkers() {
+    const markers = [...this.element.querySelectorAll('section[marker]')]
+    markers.forEach((marker) => {
+      const markerSection = new ScrollSection(marker)
+      this.markers.push(markerSection)
+    })
+  }
+
   translateScrollX() {
     return
   }
@@ -23,9 +31,16 @@ export default class ScrollSection {
     this.globalStart = start
     this.globalEnd = end
     this.markers.forEach((m) => {
-      const sM = m.element.offsetTop
-      const eM = sM + m.element.offsetHeight
-      m.setGlobalScrollRange(sM, eM)
+      if (this.isVertical) {
+        const sM = this.globalStart + m.element.offsetTop
+        const eM = sM + m.element.offsetHeight
+        m.setGlobalScrollRange(sM, eM)
+      }
+      if (this.isHorizontal) {
+        const sM = this.globalStart + m.element.offsetLeft
+        const eM = sM + m.element.offsetWidth
+        m.setGlobalScrollRange(sM, eM)
+      }
     })
   }
 
@@ -58,12 +73,12 @@ export default class ScrollSection {
 
   getVisibleScrollProgress(globalScrollPosition) {
     const viewportHeight = window.innerHeight
-
     const start = this.globalStart - viewportHeight
     const end = this.globalEnd
-
     const progress = (globalScrollPosition - start) / (end - start)
-
+    if (this.isHorizontal) {
+      console.log(this.globalStart, this.globalEnd, globalScrollPosition)
+    }
     return Math.min(1, Math.max(0, progress))
   }
 

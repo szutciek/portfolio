@@ -1,20 +1,19 @@
 import ScrollSection from '@/classes/ScrollSection.js'
 
 export default class VerticalScrollSection extends ScrollSection {
+  isVertical = true
+
   constructor(element) {
     super(element)
     this.computeDimensions()
+    this.modifyTrack()
   }
 
   computeDimensions() {
     this.scrollableSize = this.element.offsetHeight
   }
 
-  findMarkers() {
-    const markers = [...this.element.querySelectorAll('section[marker]')]
-    markers.forEach((marker) => {
-      const markerSection = new VerticalScrollSection(marker)
-      this.markers.push(markerSection)
-    })
+  modifyTrack() {
+    this.element.style.position = 'relative'
   }
 }
