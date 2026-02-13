@@ -104,7 +104,7 @@ div.text {
 </style>
 
 <script setup>
-import LenisScroll from '@/components/LenisScroll.vue'
-import ParallaxPicture from '@/components/ParallaxPicture.vue'
-import VideoScrollSync from '@/components/VideoScrollSync.vue'
+import LenisScroll from '@/components/scroll/LenisScroll.vue'
+import ParallaxPicture from '@/components/scroll/ParallaxPicture.vue'
+import VideoScrollSync from '@/components/scroll/VideoScrollSync.vue'
 </script>
