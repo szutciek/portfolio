@@ -2,8 +2,17 @@
   <LenisScroll v-slot="{ global, sections }" sections>
     <NavigationBar @open="navOpen = true" />
     <NavigationSocials />
-    <NavigationPanel :isOpen="navOpen" @close="navOpen = false" />
-    <div class="container"></div>
+    <NavigationPanel @close="navOpen = false" :isOpen="navOpen" :scroll="global" />
+    <div class="container">
+      <!-- INTRODUCTION -->
+      <section vertical>
+        <LandingSection />
+      </section>
+      <!-- ABOUT -->
+      <section horizontal></section>
+      <!-- PROJECTS -->
+      <!--   ....   -->
+    </div>
   </LenisScroll>
 </template>
 

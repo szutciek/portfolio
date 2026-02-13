@@ -11,15 +11,19 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    3DScene: typeof import('./src/components/3d/3DScene.vue')['default']
     copy: typeof import('./src/components/SpinTextLocal copy.vue')['default']
     Fonts: typeof import('./src/components/Fonts.vue')['default']
+    LandingSection: typeof import('./src/components/LandingSection.vue')['default']
     LenisScroll: typeof import('./src/components/scroll/LenisScroll.vue')['default']
-    NavigationBar: typeof import('./src/components/NavigationBar.vue')['default']
-    NavigationContact: typeof import('./src/components/NavigationContact.vue')['default']
-    NavigationPanel: typeof import('./src/components/NavigationPanel.vue')['default']
+    ModelRender: typeof import('./src/components/3d/ModelRender.vue')['default']
+    NavigationBar: typeof import('./src/components/navigation/NavigationBar.vue')['default']
+    NavigationContact: typeof import('./src/components/navigation/NavigationContact.vue')['default']
+    NavigationPanel: typeof import('./src/components/navigation/NavigationPanel.vue')['default']
     NavigationSection: typeof import('./src/components/NavigationSection.vue')['default']
-    NavigationSocials: typeof import('./src/components/NavigationSocials.vue')['default']
+    NavigationSocials: typeof import('./src/components/navigation/NavigationSocials.vue')['default']
     ParallaxPicture: typeof import('./src/components/scroll/ParallaxPicture.vue')['default']
+    RenderedScene: typeof import('./src/components/3d/RenderedScene.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SpinText: typeof import('./src/components/SpinText.vue')['default']

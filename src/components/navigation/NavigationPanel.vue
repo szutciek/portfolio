@@ -18,7 +18,10 @@
         <SpinTextExternal text="Gaming" target="https://gaming.kanapka.eu" />
       </ul>
       <NavigationContact />
-      <h4 class="authAreaGrid">Maciej Szuter 2026 &copy;</h4>
+      <h4 class="authAreaGrid">
+        &copy; Maciej Szuter 2026 · {{ Math.round((1 - scroll.progress) * 100) }}% of portfolio
+        awaiting
+      </h4>
     </div>
   </div>
 </template>
@@ -148,5 +151,6 @@
 <script setup>
 const props = defineProps({
   isOpen: Boolean,
+  scroll: Object,
 })
 </script>
