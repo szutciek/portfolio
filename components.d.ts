@@ -23,13 +23,16 @@ declare module 'vue' {
     NavigationSection: typeof import('./src/components/NavigationSection.vue')['default']
     NavigationSocials: typeof import('./src/components/navigation/NavigationSocials.vue')['default']
     ParallaxPicture: typeof import('./src/components/scroll/ParallaxPicture.vue')['default']
+    PathModelRender: typeof import('./src/components/3d/PathModelRender.vue')['default']
     RenderedScene: typeof import('./src/components/3d/RenderedScene.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SimpleModelRender: typeof import('./src/components/3d/SimpleModelRender.vue')['default']
     SpinText: typeof import('./src/components/SpinText.vue')['default']
     SpinTextExternal: typeof import('./src/components/SpinTextExternal.vue')['default']
     SpinTextInternal: typeof import('./src/components/SpinTextInternal.vue')['default']
     SpinTextLocal: typeof import('./src/components/SpinTextLocal.vue')['default']
+    TransformModelRender: typeof import('./src/components/3d/TransformModelRender.vue')['default']
     VideoScrollSync: typeof import('./src/components/scroll/VideoScrollSync.vue')['default']
   }
 }

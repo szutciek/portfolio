@@ -6,7 +6,7 @@
     <div class="container">
       <!-- INTRODUCTION -->
       <section vertical>
-        <LandingSection />
+        <LandingSection :scroll="sections[0]?.coveredProgress" />
       </section>
       <!-- ABOUT -->
       <section horizontal></section>

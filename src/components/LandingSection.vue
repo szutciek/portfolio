@@ -1,10 +1,19 @@
 <template>
   <div class="header">
     <div class="render">
-      <ModelRender
+      <TransformModelRender
         modelUrl="/models/monitor_v1_scaled.glb"
-        :cameraPosition="camera"
-        :limitControls="controls"
+        :cameraPosition="[1.5, 0, 0.5]"
+        :limitControls="true"
+        :scrollProgress="props.scroll"
+        :scrollTransform="{
+          positionStart: [0, 0, 0],
+          positionEnd: [0, 1, 0],
+          rotationStart: [0, 0, 0],
+          rotationEnd: [0, 2 * Math.PI, 0],
+          scaleStart: [1, 1, 1],
+          scaleEnd: [1, 1, 1],
+        }"
       />
     </div>
     <div class="text">
@@ -16,14 +25,16 @@
 </template>
 
 <script setup>
-const camera = [1.5, 0, 0.5]
-const controls = true
+const props = defineProps({
+  scroll: Number,
+})
 </script>
 
 <style scoped>
 .header {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  height: 100vh;
 }
 .header .text {
   display: flex;
@@ -31,7 +42,6 @@ const controls = true
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 100vh;
   color: #fff;
 }
 </style>
