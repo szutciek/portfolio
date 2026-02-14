@@ -34,6 +34,7 @@ html,
 ::-webkit-scrollbar-thumb:hover {
   background: var(--main-color-l);
 }
+
 .mW1200 {
   max-width: 1200px;
   margin: 0 auto;
@@ -46,6 +47,19 @@ html,
 .split {
   display: grid;
   grid-template-columns: 1fr 1fr;
+}
+
+h1 {
+  font-size: 60px;
+  color: #fff;
+}
+h2 {
+  font-size: 24px;
+  color: #ddd;
+}
+p {
+  font-size: 16px;
+  color: #aaa;
 }
 </style>
 

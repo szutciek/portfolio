@@ -14,13 +14,29 @@ const props = defineProps({
     required: true,
   },
 
-  // Name of the mesh that should receive the dynamic texture
+  // Scroll progress from 0 → 1
+  scrollProgress: {
+    type: Number,
+    default: null,
+  },
+
+  // Define start/end transforms for scroll animation
+  scrollTransform: {
+    type: Object,
+    default: () => ({
+      positionStart: [0, 0, 0],
+      positionEnd: [0, 0, 0],
+      rotationStart: [0, 0, 0],
+      rotationEnd: [0, 0, 0],
+      scaleStart: [1, 1, 1],
+      scaleEnd: [1, 1, 1],
+    }),
+  },
+
   screenMeshName: {
     type: String,
     default: null,
   },
-
-  // Image or website render (must be an image)
   screenTextureUrl: {
     type: String,
     default: null,
@@ -28,7 +44,7 @@ const props = defineProps({
 
   backgroundColor: {
     type: String,
-    default: '#131313',
+    default: null,
   },
   cameraPosition: {
     type: Array,
@@ -39,7 +55,6 @@ const props = defineProps({
     default: 1,
   },
 
-  // New cinematic interaction mode
   limitControls: {
     type: Boolean,
     default: false,
@@ -50,15 +65,46 @@ const container = ref(null)
 let renderer, scene, camera, controls, frameId, model
 let textureLoader = new THREE.TextureLoader()
 
-// Mouse tracking for subtle pan
 let mouseX = 0
-let mouseY = 0
 let targetRotationY = 0
-let currentRotationY = 0
+let baseRotation = new THREE.Euler()
+let panOffsetY = 0
+
+function lerp(start, end, t) {
+  return start + (end - start) * t
+}
+
+function applyScrollTransform(progress) {
+  if (!model || progress === null || progress === undefined) return
+
+  const t = THREE.MathUtils.clamp(progress, 0, 1)
+  const cfg = props.scrollTransform
+
+  model.position.set(
+    lerp(cfg.positionStart[0], cfg.positionEnd[0], t),
+    lerp(cfg.positionStart[1], cfg.positionEnd[1], t),
+    lerp(cfg.positionStart[2], cfg.positionEnd[2], t),
+  )
+
+  baseRotation.set(
+    lerp(cfg.rotationStart[0], cfg.rotationEnd[0], t),
+    lerp(cfg.rotationStart[1], cfg.rotationEnd[1], t),
+    lerp(cfg.rotationStart[2], cfg.rotationEnd[2], t),
+  )
+
+  model.scale.set(
+    lerp(cfg.scaleStart[0], cfg.scaleEnd[0], t),
+    lerp(cfg.scaleStart[1], cfg.scaleEnd[1], t),
+    lerp(cfg.scaleStart[2], cfg.scaleEnd[2], t),
+  )
+}
 
 function initScene() {
   scene = new THREE.Scene()
-  scene.background = new THREE.Color(props.backgroundColor)
+
+  if (props.backgroundColor !== null) {
+    scene.background = new THREE.Color(props.backgroundColor)
+  }
 
   camera = new THREE.PerspectiveCamera(
     60,
@@ -68,14 +114,13 @@ function initScene() {
   )
   camera.position.set(...props.cameraPosition)
 
-  renderer = new THREE.WebGLRenderer({ antialias: true })
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
   renderer.outputColorSpace = THREE.SRGBColorSpace
   renderer.setSize(container.value.clientWidth, container.value.clientHeight)
   renderer.setPixelRatio(window.devicePixelRatio)
 
   container.value.appendChild(renderer.domElement)
 
-  // Lights
   const ambient = new THREE.AmbientLight(0xffffff, props.lightIntensity * 0.6)
   scene.add(ambient)
 
@@ -83,12 +128,11 @@ function initScene() {
   directional.position.set(5, 10, 7)
   scene.add(directional)
 
-  // Orbit controls only when NOT in cinematic mode
   if (!props.limitControls) {
     controls = new OrbitControls(camera, renderer.domElement)
     controls.enableDamping = true
   } else {
-    container.value.addEventListener('mousemove', onMouseMove)
+    window.addEventListener('mousemove', onMouseMove)
   }
 
   loadModel()
@@ -98,13 +142,8 @@ function initScene() {
 
 function onMouseMove(event) {
   const rect = container.value.getBoundingClientRect()
-
-  // normalize between -1 and 1
   mouseX = ((event.clientX - rect.left) / rect.width) * 2 - 1
-  mouseY = ((event.clientY - rect.top) / rect.height) * 2 - 1
-
-  // limit rotation to ~10 degrees
-  targetRotationY = mouseX * 0.17
+  targetRotationY = mouseX * 0.05
 }
 
 function applyScreenTexture() {
@@ -116,6 +155,10 @@ function applyScreenTexture() {
   textureLoader.load(props.screenTextureUrl, (texture) => {
     texture.colorSpace = THREE.SRGBColorSpace
     texture.anisotropy = renderer.capabilities.getMaxAnisotropy()
+
+    texture.center.set(0.5, 0.5) // rotate around center
+    texture.rotation = -Math.PI / 2 // rotate -90°
+    texture.flipY = false // important for glTF
 
     const material = new THREE.MeshStandardMaterial({
       map: texture,
@@ -137,7 +180,6 @@ function loadModel() {
     model = gltf.scene
     scene.add(model)
 
-    // Auto center + fit camera
     const box = new THREE.Box3().setFromObject(model)
     const size = box.getSize(new THREE.Vector3()).length()
     const center = box.getCenter(new THREE.Vector3())
@@ -156,6 +198,7 @@ function loadModel() {
     }
 
     applyScreenTexture()
+    applyScrollTransform(props.scrollProgress)
   })
 }
 
@@ -164,10 +207,12 @@ function animate() {
 
   if (controls) controls.update()
 
-  // cinematic mouse pan
-  if (props.limitControls && model) {
-    currentRotationY += (targetRotationY - currentRotationY) * 0.05
-    model.rotation.y = currentRotationY
+  if (model) {
+    if (props.limitControls) {
+      panOffsetY += (targetRotationY - panOffsetY) * 0.05
+    }
+
+    model.rotation.set(baseRotation.x, baseRotation.y + panOffsetY, baseRotation.z)
   }
 
   renderer.render(scene, camera)
@@ -189,7 +234,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', onResize)
 
   if (props.limitControls && container.value) {
-    container.value.removeEventListener('mousemove', onMouseMove)
+    window.removeEventListener('mousemove', onMouseMove)
   }
 
   if (renderer) {
@@ -200,11 +245,9 @@ onBeforeUnmount(() => {
   if (controls) controls.dispose()
 })
 
-// Reload model if URL changes
 watch(() => props.modelUrl, loadModel)
-
-// Update screen texture dynamically
 watch(() => props.screenTextureUrl, applyScreenTexture)
+watch(() => props.scrollProgress, applyScrollTransform)
 </script>
 
 <style scoped>

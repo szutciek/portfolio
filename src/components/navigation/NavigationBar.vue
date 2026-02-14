@@ -44,6 +44,7 @@ nav p {
   padding: 3px 0;
   font-size: 36px;
   font-weight: 700;
+  color: #fff;
   background-color: var(--main-color-l);
   pointer-events: none;
 }

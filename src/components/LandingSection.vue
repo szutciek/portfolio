@@ -1,38 +1,50 @@
 <template>
   <div class="header">
-    <div class="render">
-      <TransformModelRender
-        modelUrl="/models/setup.glb"
-        :cameraPosition="[1.5, 0, 0.5]"
-        :limitControls="true"
-        :scrollProgress="props.scroll"
-        :scrollTransform="{
-          positionStart: [0, 0, 0],
-          positionEnd: [0, 1, 0],
-          rotationStart: [0, 0, 0],
-          rotationEnd: [0, 2 * Math.PI, 0],
-          scaleStart: [1, 1, 1],
-          scaleEnd: [1, 1, 1],
-        }"
-        screenMeshName="Screen"
-        :screenTextureUrl="textureUrl"
-      />
+    <div class="renderAnchor">
+      <div class="renderRail" ref="monitor">
+        <SimpleModelRender
+          class="render"
+          modelUrl="/models/setup.glb"
+          :cameraPosition="[2, 0, 0.5]"
+          :limitControls="true"
+          :scrollProgress="props.scroll"
+          :scrollTransform="{
+            positionStart: [0, 0, 0],
+            positionEnd: [0, 0, 0],
+            rotationStart: [0, 0, 0],
+            rotationEnd: [0, 2 * Math.PI, 0],
+            scaleStart: [1, 1, 1],
+            scaleEnd: [1, 1, 1],
+          }"
+          screenMeshName="Screen"
+          :screenTextureUrl="textureUrl"
+        />
+      </div>
     </div>
     <div class="description">
-      <h1>Maciej Szuter</h1>
-      <div class="infoGrid">
-        <div class="infoItem">
-          <img src="/images/tue.png" alt="TU/e Logo" />
-          <div>
-            <p>Second Year Bachelor</p>
-            <h2>Computer Science & Engineering</h2>
-          </div>
+      <div class="box">
+        <div class="main">
+          <h1>MACIEJ SZUTER</h1>
+          <AdjacentIcon>
+            <!-- prettier-ignore -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 48c-79.5 0-144 61.39-144 137 0 87 96 224.87 131.25 272.49a15.77 15.77 0 0025.5 0C304 409.89 400 272.07 400 185c0-75.61-64.5-137-144-137z" fill="none" stroke="#aaa" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><circle cx="256" cy="192" r="48" fill="none" stroke="#aaa" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/></svg>
+            <p>Eindhoven, The Netherlands</p>
+          </AdjacentIcon>
         </div>
-        <div class="infoItem">
-          <img src="/images/kanapka.png" alt="Kanapka Logo" />
-          <div>
-            <p>6+ Years of Experience</p>
-            <h2>Full Stack Web & Game Developer</h2>
+        <div class="infoGrid">
+          <div class="infoItem">
+            <img src="/images/tue.png" alt="TU/e Logo" />
+            <div>
+              <p>Second Year Bachelor</p>
+              <h2>Computer Science & Engineering</h2>
+            </div>
+          </div>
+          <div class="infoItem">
+            <img src="/images/kanapka.png" alt="Kanapka Logo" />
+            <div>
+              <p>6+ Years of Experience</p>
+              <h2>Full Stack Web & Game Developer</h2>
+            </div>
           </div>
         </div>
       </div>
@@ -43,40 +55,79 @@
 <script setup>
 const props = defineProps({
   scroll: Number,
+  nextPageScroll: Number,
 })
 
-// const textureUrl = ref('https://assets.kanapka.eu/images/ceo.png')
-const textureUrl = ref('/images/temp.png')
+const monitor = ref(null)
+
+const textureUrl = ref('/images/pic.png')
+
+const spinningMonitor = (scroll) => {
+  if (scroll > 0.5) {
+    textureUrl.value = `/images/aboutme.png`
+  } else {
+    textureUrl.value = `/images/pic.png`
+  }
+}
+
+const scrollingToNext = (scroll) => {
+  if (scroll > 0) {
+    monitor.value.style.position = 'fixed'
+  } else {
+    monitor.value.style.position = 'absolute'
+  }
+  monitor.value.style.transform = `translateX(-${scroll * 100}vw)`
+}
+
+watch(() => props.scroll, spinningMonitor)
+watch(() => props.nextPageScroll, scrollingToNext)
 </script>
 
 <style scoped>
 .header {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 80px;
   height: 100vh;
 }
+.renderAnchor {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.header .renderRail {
+  position: absolute;
+  width: 100%;
+  height: 200vh;
+}
+.header .render {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+}
+
 .header .description {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 80px 40px 70px 0;
+  height: 100vh;
   width: 100%;
+  padding: 80px 40px 70px 0;
   color: #fff;
+  background-color: var(--bg-color-l);
 }
 
-h1 {
-  font-size: 60px;
-  color: #fff;
-  margin-bottom: 80px;
+.header .box {
+  border-left: 1px solid var(--bg-color-l);
+  padding-left: 40px;
 }
-h2 {
-  font-size: 24px;
-  color: #ddd;
+
+.main {
+  margin-bottom: 100px;
 }
-p {
-  font-size: 16px;
-  color: #aaa;
+.main img {
+  aspect-ratio: 1;
+  border-radius: 4px;
 }
 
 .infoGrid {
@@ -90,7 +141,11 @@ p {
   gap: 20px;
 
   border-left: 1px solid var(--bg-color-l);
-  padding-left: 20px;
+  padding-left: 40px;
+}
+.infoItem:first-of-type {
+  border-left: none;
+  padding-left: 0;
 }
 .infoItem img {
   height: 40px;

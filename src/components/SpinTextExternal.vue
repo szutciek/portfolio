@@ -34,6 +34,7 @@ const props = defineProps({
   justify-content: flex-start;
   align-items: center;
   gap: 30px;
+  font-size: 36px;
   font-weight: 300;
   transition: 0.4s;
 }
