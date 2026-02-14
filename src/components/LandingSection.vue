@@ -1,7 +1,7 @@
 <template>
   <div class="header">
     <div class="render">
-      <TransformModelRender
+      <!-- <TransformModelRender
         modelUrl="/models/monitor_v1_scaled.glb"
         :cameraPosition="[1.5, 0, 0.5]"
         :limitControls="true"
@@ -14,6 +14,22 @@
           scaleStart: [1, 1, 1],
           scaleEnd: [1, 1, 1],
         }"
+      /> -->
+      <TransformModelRender
+        modelUrl="/models/setup.glb"
+        :cameraPosition="[1.5, 0, 0.5]"
+        :limitControls="true"
+        :scrollProgress="props.scroll"
+        :scrollTransform="{
+          positionStart: [0, 0, 0],
+          positionEnd: [0, 1, 0],
+          rotationStart: [0, 0, 0],
+          rotationEnd: [0, 2 * Math.PI, 0],
+          scaleStart: [1, 1, 1],
+          scaleEnd: [1, 1, 1],
+        }"
+        screenMeshName="Screen"
+        :screenTextureUrl="textureUrl"
       />
     </div>
     <div class="text">
@@ -28,6 +44,8 @@
 const props = defineProps({
   scroll: Number,
 })
+
+const textureUrl = ref('https://assets.kanapka.eu/images/ceo.png')
 </script>
 
 <style scoped>

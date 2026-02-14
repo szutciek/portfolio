@@ -37,7 +37,6 @@ const props = defineProps({
     type: String,
     default: null,
   },
-
   screenTextureUrl: {
     type: String,
     default: null,
@@ -155,6 +154,10 @@ function applyScreenTexture() {
   textureLoader.load(props.screenTextureUrl, (texture) => {
     texture.colorSpace = THREE.SRGBColorSpace
     texture.anisotropy = renderer.capabilities.getMaxAnisotropy()
+
+    texture.center.set(0.5, 0.5) // rotate around center
+    texture.rotation = -Math.PI / 2 // rotate -90°
+    texture.flipY = false // important for glTF
 
     const material = new THREE.MeshStandardMaterial({
       map: texture,

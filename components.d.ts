@@ -12,7 +12,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     3DScene: typeof import('./src/components/3d/3DScene.vue')['default']
-    copy: typeof import('./src/components/SpinTextLocal copy.vue')['default']
+    copy: typeof import('./src/components/3d/TransformModelRender copy.vue')['default']
     Fonts: typeof import('./src/components/Fonts.vue')['default']
     LandingSection: typeof import('./src/components/LandingSection.vue')['default']
     LenisScroll: typeof import('./src/components/scroll/LenisScroll.vue')['default']
@@ -33,6 +33,7 @@ declare module 'vue' {
     SpinTextInternal: typeof import('./src/components/SpinTextInternal.vue')['default']
     SpinTextLocal: typeof import('./src/components/SpinTextLocal.vue')['default']
     TransformModelRender: typeof import('./src/components/3d/TransformModelRender.vue')['default']
+    TransformOverlayModelRender: typeof import('./src/components/3d/TransformOverlayModelRender.vue')['default']
     VideoScrollSync: typeof import('./src/components/scroll/VideoScrollSync.vue')['default']
   }
 }
