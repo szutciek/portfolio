@@ -142,7 +142,7 @@ function initScene() {
 function onMouseMove(event) {
   const rect = container.value.getBoundingClientRect()
   mouseX = ((event.clientX - rect.left) / rect.width) * 2 - 1
-  targetRotationY = mouseX * 0.17
+  targetRotationY = mouseX * 0.05
 }
 
 function applyScreenTexture() {

@@ -12,6 +12,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     3DScene: typeof import('./src/components/3d/3DScene.vue')['default']
+    BriefInfo: typeof import('./src/components/BriefInfo.vue')['default']
     copy: typeof import('./src/components/3d/TransformModelRender copy.vue')['default']
     Fonts: typeof import('./src/components/Fonts.vue')['default']
     LandingSection: typeof import('./src/components/LandingSection.vue')['default']
