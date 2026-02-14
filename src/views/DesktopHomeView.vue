@@ -1,8 +1,5 @@
 <template>
   <LenisScroll v-slot="{ global, sections }" sections>
-    <NavigationBar @open="navOpen = true" />
-    <NavigationSocials />
-    <NavigationPanel @close="navOpen = false" :isOpen="navOpen" :scroll="global" />
     <div class="container">
       <!-- INTRODUCTION -->
       <section vertical>
@@ -24,10 +21,6 @@
 <style scoped>
 .container {
   padding: 0 80px;
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 </style>
-
-<script setup>
-const navOpen = ref(false)
-</script>

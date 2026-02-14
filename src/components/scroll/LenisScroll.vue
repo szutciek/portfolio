@@ -39,6 +39,11 @@ let rafId
 
 onMounted(() => {
   const validateSections = () => {
+    if (!content.value) {
+      console.warn(`@components/LenisScroll.vue: Content element not found.`)
+      return
+    }
+
     const sectionElements = [...content.value.querySelectorAll('section')]
 
     sectionElements.forEach((section) => {
@@ -126,11 +131,15 @@ onMounted(() => {
   resizeObserver.observe(content.value)
 })
 
-onBeforeUnmount(() => {
-  cancelAnimationFrame(rafId)
-  lenis?.destroy()
-  resizeObserver.unobserve(content.value)
-})
+// onBeforeUnmount(() => {
+//   cancelAnimationFrame(rafId)
+//   if (lenis) {
+//     lenis.destroy()
+//   }
+//   if (resizeObserver) {
+//     resizeObserver.unobserve(content.value)
+//   }
+// })
 </script>
 
 <style scoped>

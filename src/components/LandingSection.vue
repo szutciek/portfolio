@@ -21,7 +21,7 @@
         />
       </div>
     </div>
-    <div class="description">
+    <div class="description _half">
       <div class="box">
         <div class="main">
           <h1>MACIEJ SZUTER</h1>
@@ -87,7 +87,7 @@ watch(() => props.nextPageScroll, scrollingToNext)
 .header {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  height: 100vh;
+  height: 100dvh;
 }
 .renderAnchor {
   position: relative;
@@ -97,20 +97,20 @@ watch(() => props.nextPageScroll, scrollingToNext)
 .header .renderRail {
   position: absolute;
   width: 100%;
-  height: 200vh;
+  height: 200dvh;
 }
 .header .render {
   position: sticky;
   top: 0;
   width: 100%;
-  height: 100vh;
+  height: 100dvh;
 }
 
 .header .description {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  height: 100vh;
+  height: 100dvh;
   width: 100%;
   padding: 80px 40px 70px 0;
   color: #fff;
@@ -136,8 +136,9 @@ watch(() => props.nextPageScroll, scrollingToNext)
 }
 
 .infoItem {
-  display: grid;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   gap: 20px;
 
   border-left: 1px solid var(--bg-color-l);
@@ -151,6 +152,18 @@ watch(() => props.nextPageScroll, scrollingToNext)
   height: 40px;
   min-width: 40px;
   max-width: 80px;
+  width: min-content;
   object-fit: contain;
+}
+
+@media (max-width: 1200px) {
+  .infoGrid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .infoItem {
+    border-left: none;
+    padding-left: 0;
+  }
 }
 </style>

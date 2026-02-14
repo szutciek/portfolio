@@ -1,5 +1,7 @@
 <template>
-  <router-view />
+  <component :is="isMobile ? MobileLayout : DesktopLayout">
+    <router-view />
+  </component>
 </template>
 
 <style>
@@ -48,21 +50,14 @@ html,
   display: grid;
   grid-template-columns: 1fr 1fr;
 }
-
-h1 {
-  font-size: 60px;
-  color: #fff;
-}
-h2 {
-  font-size: 24px;
-  color: #ddd;
-}
-p {
-  font-size: 16px;
-  color: #aaa;
-}
 </style>
 
 <script setup>
-import Fonts from '@/components/Fonts.vue'
+import '@/components/Fonts.vue'
+
+import { useBreakpoint } from '@/composables/useBreakpoint'
+import DesktopLayout from '@/layouts/DesktopLayout.vue'
+import MobileLayout from '@/layouts/MobileLayout.vue'
+
+const { isMobile } = useBreakpoint()
 </script>

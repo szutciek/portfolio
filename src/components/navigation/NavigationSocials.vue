@@ -17,7 +17,7 @@
   left: 0;
   top: 0;
   width: 80px;
-  height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;

@@ -18,10 +18,7 @@
         <SpinTextExternal text="Gaming" target="https://gaming.kanapka.eu" />
       </ul>
       <NavigationContact />
-      <h4 class="authAreaGrid">
-        &copy; Maciej Szuter 2026 · {{ Math.round((1 - scroll.progress) * 100) }}% of portfolio
-        awaiting
-      </h4>
+      <h4 class="authAreaGrid">&copy; Maciej Szuter 2026</h4>
     </div>
   </div>
 </template>
@@ -30,7 +27,7 @@
 .slideNav {
   position: fixed;
   top: 0;
-  height: 100vh;
+  height: 100dvh;
   width: calc(100vw - 80px);
   border-left: 1px solid #1f1f1f;
   background-color: var(--bg-color-d);
@@ -151,6 +148,5 @@
 <script setup>
 const props = defineProps({
   isOpen: Boolean,
-  scroll: Object,
 })
 </script>
