@@ -66,9 +66,15 @@ let renderer, scene, camera, controls, frameId, model
 let textureLoader = new THREE.TextureLoader()
 
 let mouseX = 0
-let targetRotationY = 0
-let baseRotation = new THREE.Euler()
+let mouseY = 0
+
+let targetPanX = 0
+let targetPanY = 0
+
+let panOffsetX = 0
 let panOffsetY = 0
+
+let baseRotation = new THREE.Euler()
 
 function lerp(start, end, t) {
   return start + (end - start) * t
@@ -142,8 +148,12 @@ function initScene() {
 
 function onMouseMove(event) {
   const rect = container.value.getBoundingClientRect()
-  mouseX = ((event.clientX - rect.left) / rect.width) * 2 - 1
-  targetRotationY = mouseX * 0.05
+
+  const normalizedX = ((event.clientX - rect.left) / rect.width) * 2 - 1
+  const normalizedY = ((event.clientY - rect.top) / rect.height) * 2 - 1
+
+  targetPanY = normalizedX * 0.05
+  targetPanX = -normalizedY * 0.05
 }
 
 function applyScreenTexture() {
@@ -209,10 +219,11 @@ function animate() {
 
   if (model) {
     if (props.limitControls) {
-      panOffsetY += (targetRotationY - panOffsetY) * 0.05
+      panOffsetX += (targetPanX - panOffsetX) * 0.08
+      panOffsetY += (targetPanY - panOffsetY) * 0.08
     }
 
-    model.rotation.set(baseRotation.x, baseRotation.y + panOffsetY, baseRotation.z)
+    model.rotation.set(baseRotation.x, baseRotation.y + panOffsetY, baseRotation.z + panOffsetX)
   }
 
   renderer.render(scene, camera)

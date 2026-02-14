@@ -11,32 +11,21 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    3DScene: typeof import('./src/components/3d/3DScene.vue')['default']
     AboutSection: typeof import('./src/components/AboutSection.vue')['default']
     AdjacentIcon: typeof import('./src/components/AdjacentIcon.vue')['default']
-    BriefInfo: typeof import('./src/components/BriefInfo.vue')['default']
-    copy: typeof import('./src/components/LandingSection copy.vue')['default']
     Fonts: typeof import('./src/components/Fonts.vue')['default']
     LandingSection: typeof import('./src/components/LandingSection.vue')['default']
     LenisScroll: typeof import('./src/components/scroll/LenisScroll.vue')['default']
-    ModelRender: typeof import('./src/components/3d/ModelRender.vue')['default']
     NavigationBar: typeof import('./src/components/navigation/NavigationBar.vue')['default']
     NavigationContact: typeof import('./src/components/navigation/NavigationContact.vue')['default']
     NavigationPanel: typeof import('./src/components/navigation/NavigationPanel.vue')['default']
-    NavigationSection: typeof import('./src/components/NavigationSection.vue')['default']
     NavigationSocials: typeof import('./src/components/navigation/NavigationSocials.vue')['default']
     ParallaxPicture: typeof import('./src/components/scroll/ParallaxPicture.vue')['default']
-    PathModelRender: typeof import('./src/components/3d/PathModelRender.vue')['default']
-    RenderedScene: typeof import('./src/components/3d/RenderedScene.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SimpleModelRender: typeof import('./src/components/3d/SimpleModelRender.vue')['default']
-    SpinText: typeof import('./src/components/SpinText.vue')['default']
     SpinTextExternal: typeof import('./src/components/SpinTextExternal.vue')['default']
     SpinTextInternal: typeof import('./src/components/SpinTextInternal.vue')['default']
-    SpinTextLocal: typeof import('./src/components/SpinTextLocal.vue')['default']
-    TransformModelRender: typeof import('./src/components/3d/TransformModelRender.vue')['default']
-    TransformOverlayModelRender: typeof import('./src/components/3d/TransformOverlayModelRender.vue')['default']
     VideoScrollSync: typeof import('./src/components/scroll/VideoScrollSync.vue')['default']
   }
 }
