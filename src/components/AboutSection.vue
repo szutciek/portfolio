@@ -7,8 +7,14 @@
           <video src="/videos/flightShort.webm" muted playsinline></video>
         </VideoScrollSync>
       </HorizontalSticky>
-      <div class="part warsaw"></div>
-      <div class="part eindhoven"></div>
+      <div class="part warsaw">
+        <h2>🇵🇱 &nbsp; Warsaw</h2>
+        <p>Place of birth</p>
+      </div>
+      <div class="part eindhoven">
+        <h2>🇳🇱 &nbsp; Eindhoven</h2>
+        <p>Place of residence</p>
+      </div>
     </section>
   </div>
 </template>
@@ -35,8 +41,24 @@ const props = defineProps({
   justify-content: center;
 }
 .location {
+  position: relative;
   width: calc(var(--full-width) * 2);
+  height: 100vh;
   margin-left: calc(var(--full-width) / 2);
+}
+.location .part {
+  position: absolute;
+  min-width: 400px;
+  bottom: 80px;
+  background-color: var(--bg-color-d);
+  border: 1px solid var(--bg-color-l);
+  padding: 40px;
+}
+.location .warsaw {
+  left: 80px;
+}
+.location .eindhoven {
+  left: calc(var(--full-width) + 80px);
 }
 .videoFlight {
   width: calc(var(--full-width));
