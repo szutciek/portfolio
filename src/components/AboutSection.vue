@@ -1,17 +1,14 @@
 <template>
   <div class="horizontal">
-    <section marker>
-      <div class="transition">
-        <div></div>
-        <div class="start">
-          <h2>Some information about me</h2>
-        </div>
-      </div>
+    <section marker class="transitionPhantom"></section>
+    <section marker class="location">
+      <VideoScrollSync class="_videoFlight" :progress="scroll?.markers[1]?.coveredProgress">
+        <video ref="video" src="/videos/flight.webm" muted playsinline></video>
+      </VideoScrollSync>
+      <div class="part warsaw"></div>
+      <div class="part eindhoven"></div>
     </section>
-    <div class="content">
-      <h2>The rest of the information</h2>
-      <p>(WIP)</p>
-    </div>
+    <section marker class="location"></section>
   </div>
 </template>
 
@@ -19,6 +16,14 @@
 const props = defineProps({
   scroll: Object,
 })
+
+const video = ref(null)
+
+const onScroll = (p) => {
+  video.value.style.transform = `translateX(${p * 200}%)`
+}
+
+watch(() => props.scroll?.markers[1]?.coveredProgress, onScroll)
 </script>
 
 <style scoped>
@@ -26,25 +31,23 @@ const props = defineProps({
   display: flex;
   height: 100vh;
 }
-.transition {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  width: calc(100vw - 160px);
-  height: 100%;
+.transitionPhantom {
+  position: absolute;
+  width: var(--full-width);
 }
-.start,
-.full {
+.start {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
-.content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100vw;
-  height: 100%;
+.location {
+  position: relative;
+  width: calc(var(--full-width) * 2);
+  margin-left: calc(var(--full-width) / 2);
+}
+._videoFlight {
+  width: calc(var(--full-width));
+  height: 100vh;
 }
 </style>

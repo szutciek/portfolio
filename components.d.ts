@@ -14,6 +14,7 @@ declare module 'vue' {
     AboutSection: typeof import('./src/components/AboutSection.vue')['default']
     AdjacentIcon: typeof import('./src/components/AdjacentIcon.vue')['default']
     Fonts: typeof import('./src/components/Fonts.vue')['default']
+    HorizontalSticky: typeof import('./src/components/scroll/HorizontalSticky.vue')['default']
     LandingSection: typeof import('./src/components/LandingSection.vue')['default']
     LenisScroll: typeof import('./src/components/scroll/LenisScroll.vue')['default']
     NavigationBar: typeof import('./src/components/navigation/NavigationBar.vue')['default']

@@ -23,6 +23,9 @@ html,
   --bg-color-d: #131313;
   --main-color-l: #ec7837;
   --main-color-d: #9e4a1b;
+
+  --nav-space: 160px;
+  --full-width: calc(100vw - var(--nav-space));
 }
 ::-webkit-scrollbar {
   width: 6px;

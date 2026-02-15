@@ -58,7 +58,7 @@
       <div class="split">
         <section marker>
           <VideoScrollSync :progress="sections[2]?.visibleProgress">
-            <video src="/videos/Skydive.webm" muted playsinline></video>
+            <video src="/videos/skydive.webm" muted playsinline></video>
           </VideoScrollSync>
         </section>
         <ParallaxPicture :progress="sections[2]?.visibleProgress">

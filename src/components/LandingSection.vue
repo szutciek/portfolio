@@ -98,19 +98,20 @@ watch(() => props.nextPageScroll, scrollingToNext)
   position: absolute;
   width: 100%;
   height: 200dvh;
+  z-index: 17;
 }
 .header .render {
   position: sticky;
   top: 0;
   width: 100%;
-  height: 100dvh;
+  height: 100vh;
 }
 
 .header .description {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  height: 100dvh;
+  height: 100vh;
   width: 100%;
   padding: 80px 40px 70px 0;
   color: #fff;

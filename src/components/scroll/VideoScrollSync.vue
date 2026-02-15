@@ -1,5 +1,5 @@
 <template>
-  <div ref="container" class="_videoScrollSync">
+  <div ref="container" :class="[`_videoScrollSync`, `${objectFit}`]">
     <slot />
   </div>
 </template>
@@ -17,6 +17,10 @@ const props = defineProps({
     type: Number,
     required: true,
     default: 0.5,
+  },
+  objectFit: {
+    type: String,
+    default: 'cover',
   },
 })
 
@@ -65,8 +69,13 @@ watch(() => props.progress, scrub)
   align-items: center;
 }
 ._videoScrollSync video {
-  max-width: 100%;
-  max-height: 100%;
+  width: 100%;
+  height: 100%;
+}
+._videoScrollSync.cover video {
+  object-fit: cover;
+}
+._videoScrollSync.contain video {
   object-fit: contain;
 }
 </style>

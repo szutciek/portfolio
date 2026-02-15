@@ -20,7 +20,7 @@
 
 <style scoped>
 .container {
-  padding: 0 80px;
+  margin: 0 80px;
   min-height: 100dvh;
 }
 </style>
