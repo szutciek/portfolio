@@ -41,6 +41,13 @@ export default class HorizontalScrollSection extends ScrollSection {
     this.stickyWrapper.style.flexWrap = 'nowrap'
     this.stickyWrapper.style.alignItems = 'stretch'
 
+    const padL = window.getComputedStyle(this.element, null).getPropertyValue('padding-left')
+    const padR = window.getComputedStyle(this.element, null).getPropertyValue('padding-right')
+    const padNum = parseFloat(padL) + parseFloat(padR)
+    const padUnit = padL.replace(parseFloat(padL), '')
+
+    this.stickyWrapper.style.paddingRight = `${padNum}${padUnit}`
+
     while (this.element.firstChild) {
       this.stickyWrapper.appendChild(this.element.firstChild)
     }

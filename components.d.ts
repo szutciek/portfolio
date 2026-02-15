@@ -13,6 +13,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AboutSection: typeof import('./src/components/AboutSection.vue')['default']
     AdjacentIcon: typeof import('./src/components/AdjacentIcon.vue')['default']
+    copy: typeof import('./src/components/AboutSection copy.vue')['default']
     Fonts: typeof import('./src/components/Fonts.vue')['default']
     HorizontalSticky: typeof import('./src/components/scroll/HorizontalSticky.vue')['default']
     LandingSection: typeof import('./src/components/LandingSection.vue')['default']
@@ -22,11 +23,13 @@ declare module 'vue' {
     NavigationPanel: typeof import('./src/components/navigation/NavigationPanel.vue')['default']
     NavigationSocials: typeof import('./src/components/navigation/NavigationSocials.vue')['default']
     ParallaxPicture: typeof import('./src/components/scroll/ParallaxPicture.vue')['default']
+    ProjectSection: typeof import('./src/components/ProjectSection.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SimpleModelRender: typeof import('./src/components/3d/SimpleModelRender.vue')['default']
     SpinTextExternal: typeof import('./src/components/SpinTextExternal.vue')['default']
     SpinTextInternal: typeof import('./src/components/SpinTextInternal.vue')['default']
     VideoScrollSync: typeof import('./src/components/scroll/VideoScrollSync.vue')['default']
+    WebcamGameSection: typeof import('./src/components/WebcamGameSection.vue')['default']
   }
 }

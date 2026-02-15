@@ -2,13 +2,14 @@
   <div class="horizontal">
     <section marker class="transitionPhantom"></section>
     <section marker class="location">
-      <VideoScrollSync class="_videoFlight" :progress="scroll?.markers[1]?.coveredProgress">
-        <video ref="video" src="/videos/flight.webm" muted playsinline></video>
-      </VideoScrollSync>
+      <HorizontalSticky :stick="scroll?.markers[1]?.coveredProgress">
+        <VideoScrollSync class="videoFlight" :progress="scroll?.markers[1]?.visibleProgress">
+          <video src="/videos/flight.webm" muted playsinline></video>
+        </VideoScrollSync>
+      </HorizontalSticky>
       <div class="part warsaw"></div>
       <div class="part eindhoven"></div>
     </section>
-    <section marker class="location"></section>
   </div>
 </template>
 
@@ -16,14 +17,6 @@
 const props = defineProps({
   scroll: Object,
 })
-
-const video = ref(null)
-
-const onScroll = (p) => {
-  video.value.style.transform = `translateX(${p * 200}%)`
-}
-
-watch(() => props.scroll?.markers[1]?.coveredProgress, onScroll)
 </script>
 
 <style scoped>
@@ -42,11 +35,10 @@ watch(() => props.scroll?.markers[1]?.coveredProgress, onScroll)
   justify-content: center;
 }
 .location {
-  position: relative;
   width: calc(var(--full-width) * 2);
   margin-left: calc(var(--full-width) / 2);
 }
-._videoFlight {
+.videoFlight {
   width: calc(var(--full-width));
   height: 100vh;
 }
