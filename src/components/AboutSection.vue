@@ -3,8 +3,8 @@
     <section marker class="transitionPhantom"></section>
     <section marker class="location">
       <HorizontalSticky :stick="scroll?.markers[1]?.coveredProgress">
-        <VideoScrollSync class="videoFlight" :progress="scroll?.markers[1]?.visibleProgress">
-          <video src="/videos/flight.webm" muted playsinline></video>
+        <VideoScrollSync class="videoFlight" :progress="scroll?.markers[1]?.coveredProgress * 2">
+          <video src="/videos/flightShort.webm" muted playsinline></video>
         </VideoScrollSync>
       </HorizontalSticky>
       <div class="part warsaw"></div>
