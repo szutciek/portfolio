@@ -1,20 +1,16 @@
 <template>
   <LenisScroll v-slot="{ global, sections }" sections>
-    <div class="container">
+    <div class="_desktopHome container">
       <!-- INTRODUCTION -->
-      <section vertical>
-        <LandingSection
-          :scroll="sections[0]?.coveredProgress"
-          :nextPageScroll="sections[1]?.markers[0]?.coveredProgress"
-        />
-      </section>
+      <LandingSection
+        :scroll="sections[0]?.coveredProgress"
+        :nextPageScroll="sections[1]?.markers[0]?.coveredProgress"
+      />
       <!-- ABOUT -->
-      <section horizontal>
-        <AboutSection :scroll="sections[1]" />
-      </section>
+      <AboutSection :scroll1="sections[1]" :scroll2="sections[2]" />
       <!-- PROJECTS -->
       <section vertical>
-        <WebcamGameSection :scroll="sections[2]" />
+        <WebcamGameSection :scroll="sections[3]" />
       </section>
       <!--   ....   -->
     </div>
@@ -32,10 +28,11 @@
 .container {
   min-height: 100dvh;
 }
-section[vertical] {
-  padding: 0 80px;
-}
-section[horizontal] {
+</style>
+
+<style>
+._desktopHome section[vertical],
+._desktopHome section[horizontal] {
   padding: 0 80px;
 }
 </style>

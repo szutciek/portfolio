@@ -1,6 +1,7 @@
 <template>
   <div class="project">
-    <h1>Webcam Game</h1>
+    <h1>Work in Progress</h1>
+    <p>This new portfolio is currently under development.</p>
   </div>
 </template>
 
@@ -13,5 +14,6 @@ const props = defineProps({
 <style scoped>
 .project {
   min-height: 100vh;
+  padding: 80px;
 }
 </style>
