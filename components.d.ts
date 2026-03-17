@@ -13,8 +13,11 @@ declare module 'vue' {
   export interface GlobalComponents {
     AboutSection: typeof import('./src/components/AboutSection.vue')['default']
     AdjacentIcon: typeof import('./src/components/AdjacentIcon.vue')['default']
+    Cursor: typeof import('./src/components/cursor/Cursor.vue')['default']
     CurvedPath: typeof import('./src/components/CurvedPath.vue')['default']
+    Demo: typeof import('./src/components/cursor/Demo.vue')['default']
     EducationSection: typeof import('./src/components/EducationSection.vue')['default']
+    Follower: typeof import('./src/components/cursor/Follower.vue')['default']
     Fonts: typeof import('./src/components/Fonts.vue')['default']
     HorizontalSticky: typeof import('./src/components/scroll/HorizontalSticky.vue')['default']
     InterestsSection: typeof import('./src/components/InterestsSection.vue')['default']

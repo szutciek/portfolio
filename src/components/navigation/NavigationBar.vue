@@ -6,7 +6,7 @@
         <li class="scrollToProjectsBtn">Projects</li>
         <li class="scrollToProjectsBtn">About</li>
       </ul>
-      <button @click="$emit('open')">
+      <button @click="$emit('open')" data-cursor-target>
         <svg
           width="20"
           height="13"
