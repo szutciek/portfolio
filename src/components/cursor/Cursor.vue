@@ -56,14 +56,14 @@
  * PROPS
  * -----
  * size            {Number}  Default circle radius in px.          Default: 32
- * strokeColor     {String}  Stroke color.                         Default: '#fffa'
+ * strokeColor     {String}  Stroke color.                         Default: '#fff'
  * strokeWidth     {Number}  Stroke width in px.                   Default: 1.5
  * underlineHeight {Number}  Underline thickness in px.            Default: 2
  * mode            {String}  'wireframe' | 'underline'             Default: 'wireframe'
- * stiffness       {Number}  Spring stiffness 0–1.                 Default: 0.22
+ * stiffness       {Number}  Spring stiffness 0–1.                 Default: 0.2
  * attractRadius   {Number}  Px from element edge to start pull.   Default: 160
- * snapRadius      {Number}  Px from element edge — snap at boundary. Default: 0
- * snapStiffness   {Number}  Spring stiffness inside snap zone.    Default: 0.18
+ * snapRadius      {Number}  Px from element edge — snap at boundary. Default: 80
+ * snapStiffness   {Number}  Spring stiffness inside snap zone.    Default: 0.2
  * virtualClick    {Boolean} Swallow real clicks, re-fire on snap. Default: false
  */
 
@@ -75,10 +75,10 @@ const SNAP_CLASS = 'cursor-snapped'
 const props = defineProps({
   size: { type: Number, default: 32 },
   strokeColor: { type: String, default: '#fff' },
-  strokeWidth: { type: Number, default: 1 },
+  strokeWidth: { type: Number, default: 1.5 },
   underlineHeight: { type: Number, default: 2 },
   mode: { type: String, default: 'wireframe' },
-  stiffness: { type: Number, default: 0.6 },
+  stiffness: { type: Number, default: 0.2 },
   attractRadius: { type: Number, default: 160 },
   snapRadius: { type: Number, default: 80 },
   snapStiffness: { type: Number, default: 0.2 },
@@ -124,6 +124,10 @@ const nudge = ref({ x: 0, y: 0 })
 const nudgeT = { x: 0, y: 0 }
 let nudgeEl = null
 
+// Previous nudge target — decays independently back to zero after handoff
+const prevNudge = ref({ x: 0, y: 0 })
+let prevNudgeEl = null
+
 // Underline spring
 const ul = ref({ phase1: 0, halfW: 0, cx: 0, y: 0 })
 const ulT = { phase1: 0, halfW: 0, cx: 0, y: 0 }
@@ -155,8 +159,8 @@ const deformTransform = computed(() => {
   const mag = Math.hypot(dx, dy)
   if (mag < 0.001) return ''
 
-  const stretch = 1 + mag * 0.4
-  const squash = 1 - mag * 0.2
+  const stretch = 1 + mag * 0.15
+  const squash = 1 - mag * 0.08
   const angle = Math.atan2(dy, dx) * (180 / Math.PI)
   const cx = s.x,
     cy = s.y
@@ -235,6 +239,31 @@ function setRealCursor(style) {
   document.documentElement.style.setProperty('cursor', style, 'important')
 }
 
+// ─── Hover emulation ──────────────────────────────────────────────────────────
+// Dispatches pointer/mouse enter-leave on the snapped element so CSS :hover
+// and JS mouseenter listeners fire as if the real cursor were over it.
+
+let hoveredEl = null
+
+function emitEnter(el) {
+  if (!el || hoveredEl === el) return
+  if (hoveredEl) emitLeave(hoveredEl)
+  hoveredEl = el
+  el.dispatchEvent(
+    new PointerEvent('pointerenter', { bubbles: false, cancelable: false, pointerType: 'mouse' }),
+  )
+  el.dispatchEvent(new MouseEvent('mouseover', { bubbles: true, cancelable: true }))
+}
+
+function emitLeave(el) {
+  if (!el) return
+  if (hoveredEl === el) hoveredEl = null
+  el.dispatchEvent(
+    new PointerEvent('pointerleave', { bubbles: false, cancelable: false, pointerType: 'mouse' }),
+  )
+  el.dispatchEvent(new MouseEvent('mouseout', { bubbles: true, cancelable: true }))
+}
+
 // ─── Attraction logic ─────────────────────────────────────────────────────────
 
 function distToRect(mx, my, rect, offset) {
@@ -289,6 +318,7 @@ function computeTarget() {
         isSnapped.value = true
         snappedEl.value = bestEntry.el
         snappedMode.value = renderMode.value
+        emitEnter(bestEntry.el)
       }
 
       setRealCursor('pointer')
@@ -302,9 +332,19 @@ function computeTarget() {
       const toCurX = mouse.x - elCx
       const toCurY = mouse.y - elCy
       const toDist = Math.hypot(toCurX, toCurY) || 1
-      nudgeT.x = (toCurX / toDist) * Math.min(toDist, 6)
-      nudgeT.y = (toCurY / toDist) * Math.min(toDist, 6)
-      nudgeEl = bestEntry.el
+      nudgeT.x = (toCurX / toDist) * Math.min(toDist, 14)
+      nudgeT.y = (toCurY / toDist) * Math.min(toDist, 14)
+      if (nudgeEl !== bestEntry.el) {
+        // Target changed — hand old element off to prevNudge for decay
+        if (nudgeEl && nudgeEl !== bestEntry.el) {
+          prevNudgeEl = nudgeEl
+          prevNudge.value.x = nudge.value.x
+          prevNudge.value.y = nudge.value.y
+        }
+        nudge.value.x = 0
+        nudge.value.y = 0
+        nudgeEl = bestEntry.el
+      }
 
       target.x = bestShape.x
       target.y = bestShape.y
@@ -319,6 +359,7 @@ function computeTarget() {
 
       if (isSnapped.value) {
         prevSnappedEl?.classList.remove(SNAP_CLASS)
+        emitLeave(prevSnappedEl)
         prevSnappedEl = null
         isSnapped.value = false
         snappedEl.value = null
@@ -326,8 +367,6 @@ function computeTarget() {
       }
 
       const w = attractWeight(bestDist)
-
-      // Pull toward closest point on element bounding box
       const rect = bestEntry.el.getBoundingClientRect()
       const off = bestEntry.offset
       const closestX = Math.max(rect.left - off, Math.min(mouse.x, rect.right + off))
@@ -350,9 +389,18 @@ function computeTarget() {
       const toC3X = mouse.x - elCx3
       const toC3Y = mouse.y - elCy3
       const toD3 = Math.hypot(toC3X, toC3Y) || 1
-      nudgeT.x = (toC3X / toD3) * Math.min(toD3, 3 * w)
-      nudgeT.y = (toC3Y / toD3) * Math.min(toD3, 3 * w)
-      nudgeEl = bestEntry.el
+      nudgeT.x = (toC3X / toD3) * Math.min(toD3, 8 * w)
+      nudgeT.y = (toC3Y / toD3) * Math.min(toD3, 8 * w)
+      if (nudgeEl !== bestEntry.el) {
+        if (nudgeEl && nudgeEl !== bestEntry.el) {
+          prevNudgeEl = nudgeEl
+          prevNudge.value.x = nudge.value.x
+          prevNudge.value.y = nudge.value.y
+        }
+        nudge.value.x = 0
+        nudge.value.y = 0
+        nudgeEl = bestEntry.el
+      }
 
       // Stay circle
       target.w = defaultW
@@ -380,6 +428,7 @@ function computeTarget() {
 
     if (isSnapped.value) {
       prevSnappedEl?.classList.remove(SNAP_CLASS)
+      emitLeave(prevSnappedEl)
       prevSnappedEl = null
       isSnapped.value = false
       snappedEl.value = null
@@ -442,6 +491,22 @@ function tick() {
 
   nudge.value.x += (nudgeT.x - nudge.value.x) * NUDGE_K
   nudge.value.y += (nudgeT.y - nudge.value.y) * NUDGE_K
+
+  // Decay previous nudge target slowly back to zero
+  if (prevNudgeEl) {
+    prevNudge.value.x += (0 - prevNudge.value.x) * (NUDGE_K * 0.5)
+    prevNudge.value.y += (0 - prevNudge.value.y) * (NUDGE_K * 0.5)
+    const px = prevNudge.value.x
+    const py = prevNudge.value.y
+    if (Math.abs(px) > 0.01 || Math.abs(py) > 0.01) {
+      prevNudgeEl.style.transform = `translate(${px.toFixed(2)}px, ${py.toFixed(2)}px)`
+      prevNudgeEl.style.willChange = 'transform'
+    } else {
+      prevNudgeEl.style.transform = ''
+      prevNudgeEl.style.willChange = ''
+      prevNudgeEl = null // fully settled, stop tracking
+    }
+  }
 
   const currentNudgeEl = nudgeEl ?? prevSnappedEl
   if (currentNudgeEl) {
@@ -535,9 +600,14 @@ onUnmounted(() => {
   cancelAnimationFrame(rafId)
   observer?.disconnect()
   prevSnappedEl?.classList.remove(SNAP_CLASS)
+  emitLeave(prevSnappedEl)
   if (nudgeEl) {
     nudgeEl.style.transform = ''
     nudgeEl.style.willChange = ''
+  }
+  if (prevNudgeEl) {
+    prevNudgeEl.style.transform = ''
+    prevNudgeEl.style.willChange = ''
   }
   if (prevSnappedEl) {
     prevSnappedEl.style.transform = ''
