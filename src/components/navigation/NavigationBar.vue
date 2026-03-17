@@ -3,10 +3,32 @@
     <p>KS</p>
     <div>
       <ul>
-        <li class="scrollToProjectsBtn">Projects</li>
-        <li class="scrollToProjectsBtn">About</li>
+        <li
+          class="scrollToProjectsBtn"
+          data-cursor-morph
+          data-cursor-shape="pill"
+          data-cursor-padding="14"
+          data-cursor-bg="rgba(255, 255, 255, 0.12)"
+        >
+          Projects
+        </li>
+        <li
+          class="scrollToProjectsBtn"
+          data-cursor-morph
+          data-cursor-shape="pill"
+          data-cursor-padding="14"
+          data-cursor-bg="rgba(255, 255, 255, 0.12)"
+        >
+          About
+        </li>
       </ul>
-      <button @click="$emit('open')">
+      <button
+        @click="$emit('open')"
+        data-cursor-morph
+        data-cursor-shape="rect"
+        data-cursor-padding="10"
+        data-cursor-bg="rgba(236, 120, 55, 0.22)"
+      >
         <svg
           width="20"
           height="13"

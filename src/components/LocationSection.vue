@@ -8,11 +8,11 @@
     <div class="part warsaw">
       <h2>🇵🇱 &nbsp; Warsaw</h2>
       <p>I was born in Warsaw, Poland and lived here the majority of my life.</p>
-      <CurvedPath
+      <!-- <CurvedPath
         :dx="500"
         :dy="0"
         :options="{ curvature: 0.5, stroke: 'var(--bg-color-l)', strokeWidth: 3 }"
-      />
+      /> -->
     </div>
     <div class="part eindhoven">
       <h2>🇳🇱 &nbsp; Eindhoven</h2>
