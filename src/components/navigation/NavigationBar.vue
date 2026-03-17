@@ -3,8 +3,12 @@
     <p>KS</p>
     <div>
       <ul>
-        <li class="scrollToProjectsBtn">Projects</li>
-        <li class="scrollToProjectsBtn">About</li>
+        <li class="scrollToProjectsBtn" data-cursor-target data-cursor-offset="4" v-if="!isOpen">
+          Projects
+        </li>
+        <li class="scrollToProjectsBtn" data-cursor-target data-cursor-offset="4" v-if="!isOpen">
+          About
+        </li>
       </ul>
       <button @click="$emit('open')" data-cursor-target v-if="!isOpen">
         <svg

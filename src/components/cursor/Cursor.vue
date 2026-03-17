@@ -1,38 +1,22 @@
 <template>
   <teleport to="body">
-    <!--
-      Fill layer — z-index: -1 so it sits behind all page content.
-      Only renders the filled shape; no stroke.
-    -->
-    <svg
-      class="cursor-morph cursor-morph--fill"
-      :width="svgSize"
-      :height="svgSize"
-      :style="fillSvgStyle"
-      aria-hidden="true"
-    >
-      <path v-show="renderMode !== 'underline'" :d="currentPath" :fill="activeFill" stroke="none" />
-    </svg>
-
-    <!--
-      Stroke layer — z-index: 99999, always on top.
-      Only renders the outline + underline; no fill.
-    -->
     <svg
       ref="svgEl"
-      class="cursor-morph cursor-morph--stroke"
+      class="cursor-morph"
       :width="svgSize"
       :height="svgSize"
-      :style="strokeSvgStyle"
+      :style="svgStyle"
       aria-hidden="true"
     >
-      <path
-        v-show="renderMode !== 'underline'"
-        :d="currentPath"
-        fill="none"
-        :stroke="activeStroke"
-        :stroke-width="strokeWidth"
-      />
+      <g :transform="deformTransform">
+        <path
+          v-show="renderMode !== 'underline'"
+          :d="currentPath"
+          fill="none"
+          :stroke="strokeColor"
+          :stroke-width="strokeWidth"
+        />
+      </g>
 
       <line
         v-show="ul.phase1 > 0.01"
@@ -40,7 +24,7 @@
         :y1="ul.y"
         :x2="ul.cx + ul.halfW"
         :y2="ul.y"
-        :stroke="activeStroke"
+        :stroke="strokeColor"
         :stroke-width="Math.max(1, underlineHeight - (underlineHeight - 1) * ul.phase1)"
         stroke-linecap="round"
       />
@@ -54,40 +38,31 @@
  *
  * A magnetic morphing cursor that blends from a circle into the exact
  * rounded-rect shape of any element marked with data-cursor-target.
+ * Always wireframe — no fill anywhere.
  *
  * DIRECTIVE / ATTRIBUTE USAGE
  * ----------------------------
  * Add  data-cursor-target  to any element you want the cursor to morph into.
  * Optionally add  data-cursor-offset="8"  (px, positive = expand outward,
  * negative = shrink inward).
- * Optionally add  data-cursor-mode="fill|wireframe|underline"  to override
- * the render mode for that specific element.
- * Optionally add  data-cursor-color="#fff"  to fill the cursor with a specific
- * color when snapped to that element. Without it, the cursor becomes wireframe
- * (stroke only, no fill) when snapped.
- *
- * Behaviour summary:
- *   Free roaming          → filled with props.color
- *   Snapped, no color     → wireframe (fill: none, stroke only)
- *   Snapped + color attr  → filled with data-cursor-color value
+ * Optionally add  data-cursor-mode="wireframe|underline"  to override the
+ * render mode for that specific element.
  *
  * Examples:
- *   <button data-cursor-target>Wireframe on snap</button>
- *   <button data-cursor-target data-cursor-color="#ffffff">White fill on snap</button>
- *   <div    data-cursor-target data-cursor-color="rgba(255,80,80,0.4)">Red fill</div>
+ *   <button data-cursor-target data-cursor-offset="6">Click me</button>
+ *   <div    data-cursor-target data-cursor-offset="-4">Card</div>
  *   <a      data-cursor-target data-cursor-mode="underline">Link</a>
  *
  * PROPS
  * -----
- * size            {Number}  Default circle radius in px.          Default: 20
- * color           {String}  Fill color while free-roaming.        Default: '#fffa'
- * strokeColor     {String}  Stroke color (always visible).        Default: '#fffa'
+ * size            {Number}  Default circle radius in px.          Default: 32
+ * strokeColor     {String}  Stroke color.                         Default: '#fffa'
  * strokeWidth     {Number}  Stroke width in px.                   Default: 1.5
- * mode            {String}  'fill' | 'wireframe' | 'underline'    Default: 'fill'
  * underlineHeight {Number}  Underline thickness in px.            Default: 2
+ * mode            {String}  'wireframe' | 'underline'             Default: 'wireframe'
  * stiffness       {Number}  Spring stiffness 0–1.                 Default: 0.22
- * attractRadius   {Number}  Px from element edge to start pull.   Default: 80
- * snapRadius      {Number}  Px from element edge — snap triggers at boundary. Default: 0
+ * attractRadius   {Number}  Px from element edge to start pull.   Default: 160
+ * snapRadius      {Number}  Px from element edge — snap at boundary. Default: 0
  * snapStiffness   {Number}  Spring stiffness inside snap zone.    Default: 0.18
  * virtualClick    {Boolean} Swallow real clicks, re-fire on snap. Default: false
  */
@@ -99,15 +74,14 @@ const SNAP_CLASS = 'cursor-snapped'
 
 const props = defineProps({
   size: { type: Number, default: 32 },
-  color: { type: String, default: '#fffa' },
-  strokeColor: { type: String, default: '#fffa' },
-  strokeWidth: { type: Number, default: 2 },
-  mode: { type: String, default: 'fill' },
+  strokeColor: { type: String, default: '#fff' },
+  strokeWidth: { type: Number, default: 1 },
   underlineHeight: { type: Number, default: 2 },
-  stiffness: { type: Number, default: 0.22 },
+  mode: { type: String, default: 'wireframe' },
+  stiffness: { type: Number, default: 0.6 },
   attractRadius: { type: Number, default: 160 },
   snapRadius: { type: Number, default: 80 },
-  snapStiffness: { type: Number, default: 0.18 },
+  snapStiffness: { type: Number, default: 0.2 },
   virtualClick: { type: Boolean, default: false },
 })
 
@@ -118,21 +92,6 @@ const svgSize = 2000
 
 const renderMode = ref(props.mode)
 const mouse = { x: -999, y: -999 }
-
-// null  → no element-level color (wireframe when snapped)
-// string → the data-cursor-color value of the snapped element
-const snapColor = ref(null)
-
-// ── Fill / stroke logic ───────────────────────────────────────────────────────
-// Free roaming : always filled with props.color
-// Snapped, no data-cursor-color : wireframe (fill none)
-// Snapped + data-cursor-color  : filled with that color
-const activeFill = computed(() => {
-  if (!isSnapped.value) return props.color
-  return snapColor.value ?? 'none'
-})
-
-const activeStroke = computed(() => props.strokeColor)
 
 // Shape spring
 const spring = ref({
@@ -156,7 +115,16 @@ const target = {
   rbl: 0,
 }
 
-// Underline spring state
+// Deformation spring — pull vector for circle squash/stretch in attract zone
+const deform = ref({ dx: 0, dy: 0 })
+const deformT = { dx: 0, dy: 0 }
+
+// Element nudge spring — translates the target element slightly toward cursor
+const nudge = ref({ x: 0, y: 0 })
+const nudgeT = { x: 0, y: 0 }
+let nudgeEl = null
+
+// Underline spring
 const ul = ref({ phase1: 0, halfW: 0, cx: 0, y: 0 })
 const ulT = { phase1: 0, halfW: 0, cx: 0, y: 0 }
 let ulActive = false
@@ -166,18 +134,41 @@ let rafId = null
 let targets = []
 
 // ─── SVG positioning ──────────────────────────────────────────────────────────
-// Two layers share identical position/size. Only z-index differs.
 
-const baseSvgStyle = {
+const svgStyle = computed(() => ({
   position: 'fixed',
   top: '0px',
   left: '0px',
   pointerEvents: 'none',
   overflow: 'visible',
-}
+  zIndex: '99999',
+}))
 
-const fillSvgStyle = computed(() => ({ ...baseSvgStyle, zIndex: '-1' }))
-const strokeSvgStyle = computed(() => ({ ...baseSvgStyle, zIndex: '99999' }))
+// ─── Deformation transform ────────────────────────────────────────────────────
+// Stretches the circle along the pull direction, squashes it perpendicular.
+// rotate → scale → unrotate, centered on the spring position.
+
+const deformTransform = computed(() => {
+  const s = spring.value
+  const dx = deform.value.dx
+  const dy = deform.value.dy
+  const mag = Math.hypot(dx, dy)
+  if (mag < 0.001) return ''
+
+  const stretch = 1 + mag * 0.4
+  const squash = 1 - mag * 0.2
+  const angle = Math.atan2(dy, dx) * (180 / Math.PI)
+  const cx = s.x,
+    cy = s.y
+
+  return [
+    `translate(${cx} ${cy})`,
+    `rotate(${angle})`,
+    `scale(${stretch} ${squash})`,
+    `rotate(${-angle})`,
+    `translate(${-cx} ${-cy})`,
+  ].join(' ')
+})
 
 // ─── Rounded-rect path builder ────────────────────────────────────────────────
 
@@ -219,7 +210,6 @@ function scanTargets() {
     el,
     offset: parseFloat(el.dataset.cursorOffset ?? '0'),
     cursorMode: el.dataset.cursorMode ?? null,
-    cursorColor: el.dataset.cursorColor ?? null, // null = wireframe when snapped
   }))
 }
 
@@ -286,9 +276,8 @@ function computeTarget() {
     inSnapZone = bestDist <= props.snapRadius
     activeElement = bestEntry
 
-    const activeMode = bestEntry.cursorMode ?? props.mode
-    renderMode.value = activeMode
-    ulActive = activeMode === 'underline'
+    renderMode.value = bestEntry.cursorMode ?? props.mode
+    ulActive = renderMode.value === 'underline'
 
     if (inSnapZone) {
       if (!isSnapped.value || snappedEl.value !== bestEntry.el) {
@@ -299,12 +288,23 @@ function computeTarget() {
         prevSnappedEl = bestEntry.el
         isSnapped.value = true
         snappedEl.value = bestEntry.el
-        snappedMode.value = activeMode
-        // Set color: element's data-cursor-color, or null → wireframe
-        snapColor.value = bestEntry.cursorColor
+        snappedMode.value = renderMode.value
       }
 
       setRealCursor('pointer')
+      deformT.dx = 0
+      deformT.dy = 0
+
+      // Nudge element toward cursor — max 6px
+      const rect2 = bestEntry.el.getBoundingClientRect()
+      const elCx = rect2.left + rect2.width / 2
+      const elCy = rect2.top + rect2.height / 2
+      const toCurX = mouse.x - elCx
+      const toCurY = mouse.y - elCy
+      const toDist = Math.hypot(toCurX, toCurY) || 1
+      nudgeT.x = (toCurX / toDist) * Math.min(toDist, 6)
+      nudgeT.y = (toCurY / toDist) * Math.min(toDist, 6)
+      nudgeEl = bestEntry.el
 
       target.x = bestShape.x
       target.y = bestShape.y
@@ -323,14 +323,11 @@ function computeTarget() {
         isSnapped.value = false
         snappedEl.value = null
         snappedMode.value = null
-        snapColor.value = null
       }
 
       const w = attractWeight(bestDist)
 
-      // Closest point on the element's expanded bounding box to the cursor.
-      // The circle is pulled toward this point, not the center, so it feels
-      // like it's being drawn to the nearest edge rather than flying across.
+      // Pull toward closest point on element bounding box
       const rect = bestEntry.el.getBoundingClientRect()
       const off = bestEntry.offset
       const closestX = Math.max(rect.left - off, Math.min(mouse.x, rect.right + off))
@@ -339,7 +336,25 @@ function computeTarget() {
       target.x = mouse.x + (closestX - mouse.x) * w
       target.y = mouse.y + (closestY - mouse.y) * w
 
-      // Shape: stay as circle — no morphing until snap zone
+      // Deform circle toward closest point
+      const pullX = closestX - mouse.x
+      const pullY = closestY - mouse.y
+      const pullDist = Math.hypot(pullX, pullY) || 1
+      deformT.dx = (pullX / pullDist) * w
+      deformT.dy = (pullY / pullDist) * w
+
+      // Nudge element toward cursor — max 3px scaled by weight
+      const rect3 = bestEntry.el.getBoundingClientRect()
+      const elCx3 = rect3.left + rect3.width / 2
+      const elCy3 = rect3.top + rect3.height / 2
+      const toC3X = mouse.x - elCx3
+      const toC3Y = mouse.y - elCy3
+      const toD3 = Math.hypot(toC3X, toC3Y) || 1
+      nudgeT.x = (toC3X / toD3) * Math.min(toD3, 3 * w)
+      nudgeT.y = (toC3Y / toD3) * Math.min(toD3, 3 * w)
+      nudgeEl = bestEntry.el
+
+      // Stay circle
       target.w = defaultW
       target.h = defaultW
       target.rtl = defaultR
@@ -358,7 +373,7 @@ function computeTarget() {
       ulT.halfW = 0
     }
   } else {
-    inSnapZone = false // use normal stiffness for the morph-back to circle
+    inSnapZone = false
     activeElement = null
     ulActive = false
     renderMode.value = props.mode
@@ -369,11 +384,13 @@ function computeTarget() {
       isSnapped.value = false
       snappedEl.value = null
       snappedMode.value = null
-      snapColor.value = null
     }
 
     setRealCursor('none')
-
+    deformT.dx = 0
+    deformT.dy = 0
+    nudgeT.x = 0
+    nudgeT.y = 0
     ulT.phase1 = 0
     ulT.halfW = 0
 
@@ -396,6 +413,8 @@ function springStep(key) {
 }
 
 const UL_K = 0.14
+const DEFORM_K = 0.18
+const NUDGE_K = 0.12
 
 function ulSpringStep(key) {
   ul.value[key] += (ulT[key] - ul.value[key]) * UL_K
@@ -417,6 +436,25 @@ function tick() {
   ulSpringStep('halfW')
   ulSpringStep('cx')
   ulSpringStep('y')
+
+  deform.value.dx += (deformT.dx - deform.value.dx) * DEFORM_K
+  deform.value.dy += (deformT.dy - deform.value.dy) * DEFORM_K
+
+  nudge.value.x += (nudgeT.x - nudge.value.x) * NUDGE_K
+  nudge.value.y += (nudgeT.y - nudge.value.y) * NUDGE_K
+
+  const currentNudgeEl = nudgeEl ?? prevSnappedEl
+  if (currentNudgeEl) {
+    const nx = nudge.value.x
+    const ny = nudge.value.y
+    if (Math.abs(nx) > 0.01 || Math.abs(ny) > 0.01) {
+      currentNudgeEl.style.transform = `translate(${nx.toFixed(2)}px, ${ny.toFixed(2)}px)`
+      currentNudgeEl.style.willChange = 'transform'
+    } else {
+      currentNudgeEl.style.transform = ''
+      currentNudgeEl.style.willChange = ''
+    }
+  }
 
   const s = spring.value
   currentPath.value = roundedRectPath(
@@ -487,12 +525,7 @@ onMounted(() => {
     childList: true,
     subtree: true,
     attributes: true,
-    attributeFilter: [
-      'data-cursor-target',
-      'data-cursor-offset',
-      'data-cursor-mode',
-      'data-cursor-color',
-    ],
+    attributeFilter: ['data-cursor-target', 'data-cursor-offset', 'data-cursor-mode'],
   })
 })
 
@@ -502,6 +535,14 @@ onUnmounted(() => {
   cancelAnimationFrame(rafId)
   observer?.disconnect()
   prevSnappedEl?.classList.remove(SNAP_CLASS)
+  if (nudgeEl) {
+    nudgeEl.style.transform = ''
+    nudgeEl.style.willChange = ''
+  }
+  if (prevSnappedEl) {
+    prevSnappedEl.style.transform = ''
+    prevSnappedEl.style.willChange = ''
+  }
 })
 </script>
 
