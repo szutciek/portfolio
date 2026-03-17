@@ -213,6 +213,14 @@ function getTargetShape(el, offset) {
   }
 }
 
+// ─── Real cursor style ────────────────────────────────────────────────────────
+// When snapped, show the real pointer so the user knows the element is
+// clickable. Restored to 'none' (hidden) when leaving the snap zone.
+
+function setRealCursor(style) {
+  document.documentElement.style.setProperty('cursor', style, 'important')
+}
+
 // ─── Attraction logic ─────────────────────────────────────────────────────────
 
 function distToRect(mx, my, rect, offset) {
@@ -270,6 +278,8 @@ function computeTarget() {
         snappedMode.value = activeMode
       }
 
+      setRealCursor('pointer')
+
       target.x = bestShape.x
       target.y = bestShape.y
       target.w = bestShape.w
@@ -279,6 +289,8 @@ function computeTarget() {
       target.rbr = bestShape.rbr
       target.rbl = bestShape.rbl
     } else {
+      setRealCursor('none')
+
       if (isSnapped.value) {
         prevSnappedEl?.classList.remove(SNAP_CLASS)
         prevSnappedEl = null
