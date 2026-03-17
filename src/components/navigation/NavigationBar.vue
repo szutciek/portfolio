@@ -10,7 +10,13 @@
           About
         </li>
       </ul>
-      <button @click="$emit('open')" data-cursor-target v-if="!isOpen">
+      <button
+        @click="$emit('open')"
+        data-cursor-target
+        data-cursor-offset="4"
+        data-cursor-snap-color="var(--main-color-l)"
+        v-if="!isOpen"
+      >
         <svg
           width="20"
           height="13"

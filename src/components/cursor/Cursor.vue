@@ -13,7 +13,7 @@
           v-show="renderMode !== 'underline'"
           :d="currentPath"
           fill="none"
-          :stroke="strokeColor"
+          :stroke="activeStrokeColor"
           :stroke-width="strokeWidth"
         />
       </g>
@@ -24,7 +24,7 @@
         :y1="ul.y"
         :x2="ul.cx + ul.halfW"
         :y2="ul.y"
-        :stroke="strokeColor"
+        :stroke="activeStrokeColor"
         :stroke-width="Math.max(1, underlineHeight - (underlineHeight - 1) * ul.phase1)"
         stroke-linecap="round"
       />
@@ -47,24 +47,26 @@
  * negative = shrink inward).
  * Optionally add  data-cursor-mode="wireframe|underline"  to override the
  * render mode for that specific element.
+ * Optionally add  data-cursor-snap-color="#f00"  to use a different stroke
+ * color when the cursor is snapped to that element. Falls back to strokeColor.
  *
  * Examples:
  *   <button data-cursor-target data-cursor-offset="6">Click me</button>
- *   <div    data-cursor-target data-cursor-offset="-4">Card</div>
- *   <a      data-cursor-target data-cursor-mode="underline">Link</a>
+ *   <button data-cursor-target data-cursor-snap-color="#000">Dark snap</button>
+ *   <a      data-cursor-target data-cursor-mode="underline" data-cursor-snap-color="red">Link</a>
  *
  * PROPS
  * -----
- * size            {Number}  Default circle radius in px.          Default: 32
- * strokeColor     {String}  Stroke color.                         Default: '#fff'
- * strokeWidth     {Number}  Stroke width in px.                   Default: 1.5
- * underlineHeight {Number}  Underline thickness in px.            Default: 2
- * mode            {String}  'wireframe' | 'underline'             Default: 'wireframe'
- * stiffness       {Number}  Spring stiffness 0–1.                 Default: 0.2
- * attractRadius   {Number}  Px from element edge to start pull.   Default: 160
+ * size            {Number}  Default circle radius in px.             Default: 32
+ * strokeColor     {String}  Stroke color (free-roaming + snap fallback). Default: '#fff'
+ * strokeWidth     {Number}  Stroke width in px.                      Default: 1.5
+ * underlineHeight {Number}  Underline thickness in px.               Default: 2
+ * mode            {String}  'wireframe' | 'underline'                Default: 'wireframe'
+ * stiffness       {Number}  Spring stiffness 0–1.                    Default: 0.2
+ * attractRadius   {Number}  Px from element edge to start pull.      Default: 160
  * snapRadius      {Number}  Px from element edge — snap at boundary. Default: 80
- * snapStiffness   {Number}  Spring stiffness inside snap zone.    Default: 0.2
- * virtualClick    {Boolean} Swallow real clicks, re-fire on snap. Default: false
+ * snapStiffness   {Number}  Spring stiffness inside snap zone.       Default: 0.2
+ * virtualClick    {Boolean} Swallow real clicks, re-fire on snap.    Default: false
  */
 
 import { ref, computed, onMounted, onUnmounted } from 'vue'
@@ -74,7 +76,7 @@ const SNAP_CLASS = 'cursor-snapped'
 
 const props = defineProps({
   size: { type: Number, default: 32 },
-  strokeColor: { type: String, default: '#fff' },
+  strokeColor: { type: String, default: 'var(--main-color-l)' },
   strokeWidth: { type: Number, default: 1.5 },
   underlineHeight: { type: Number, default: 2 },
   mode: { type: String, default: 'wireframe' },
@@ -92,6 +94,14 @@ const svgSize = 2000
 
 const renderMode = ref(props.mode)
 const mouse = { x: -999, y: -999 }
+
+// Stroke color override set when snapping to an element with data-cursor-snap-color.
+// null = fall back to props.strokeColor.
+const snapStrokeColor = ref(null)
+
+const activeStrokeColor = computed(() =>
+  isSnapped.value && snapStrokeColor.value ? snapStrokeColor.value : props.strokeColor,
+)
 
 // Shape spring
 const spring = ref({
@@ -149,8 +159,6 @@ const svgStyle = computed(() => ({
 }))
 
 // ─── Deformation transform ────────────────────────────────────────────────────
-// Stretches the circle along the pull direction, squashes it perpendicular.
-// rotate → scale → unrotate, centered on the spring position.
 
 const deformTransform = computed(() => {
   const s = spring.value
@@ -214,6 +222,7 @@ function scanTargets() {
     el,
     offset: parseFloat(el.dataset.cursorOffset ?? '0'),
     cursorMode: el.dataset.cursorMode ?? null,
+    snapStrokeColor: el.dataset.cursorSnapColor ?? null, // null = use props.strokeColor
   }))
 }
 
@@ -240,8 +249,6 @@ function setRealCursor(style) {
 }
 
 // ─── Hover emulation ──────────────────────────────────────────────────────────
-// Dispatches pointer/mouse enter-leave on the snapped element so CSS :hover
-// and JS mouseenter listeners fire as if the real cursor were over it.
 
 let hoveredEl = null
 
@@ -318,6 +325,7 @@ function computeTarget() {
         isSnapped.value = true
         snappedEl.value = bestEntry.el
         snappedMode.value = renderMode.value
+        snapStrokeColor.value = bestEntry.snapStrokeColor
         emitEnter(bestEntry.el)
       }
 
@@ -325,7 +333,6 @@ function computeTarget() {
       deformT.dx = 0
       deformT.dy = 0
 
-      // Nudge element toward cursor — max 6px
       const rect2 = bestEntry.el.getBoundingClientRect()
       const elCx = rect2.left + rect2.width / 2
       const elCy = rect2.top + rect2.height / 2
@@ -335,7 +342,6 @@ function computeTarget() {
       nudgeT.x = (toCurX / toDist) * Math.min(toDist, 14)
       nudgeT.y = (toCurY / toDist) * Math.min(toDist, 14)
       if (nudgeEl !== bestEntry.el) {
-        // Target changed — hand old element off to prevNudge for decay
         if (nudgeEl && nudgeEl !== bestEntry.el) {
           prevNudgeEl = nudgeEl
           prevNudge.value.x = nudge.value.x
@@ -364,9 +370,11 @@ function computeTarget() {
         isSnapped.value = false
         snappedEl.value = null
         snappedMode.value = null
+        snapStrokeColor.value = null
       }
 
       const w = attractWeight(bestDist)
+
       const rect = bestEntry.el.getBoundingClientRect()
       const off = bestEntry.offset
       const closestX = Math.max(rect.left - off, Math.min(mouse.x, rect.right + off))
@@ -375,14 +383,12 @@ function computeTarget() {
       target.x = mouse.x + (closestX - mouse.x) * w
       target.y = mouse.y + (closestY - mouse.y) * w
 
-      // Deform circle toward closest point
       const pullX = closestX - mouse.x
       const pullY = closestY - mouse.y
       const pullDist = Math.hypot(pullX, pullY) || 1
       deformT.dx = (pullX / pullDist) * w
       deformT.dy = (pullY / pullDist) * w
 
-      // Nudge element toward cursor — max 3px scaled by weight
       const rect3 = bestEntry.el.getBoundingClientRect()
       const elCx3 = rect3.left + rect3.width / 2
       const elCy3 = rect3.top + rect3.height / 2
@@ -402,7 +408,6 @@ function computeTarget() {
         nudgeEl = bestEntry.el
       }
 
-      // Stay circle
       target.w = defaultW
       target.h = defaultW
       target.rtl = defaultR
@@ -433,6 +438,7 @@ function computeTarget() {
       isSnapped.value = false
       snappedEl.value = null
       snappedMode.value = null
+      snapStrokeColor.value = null
     }
 
     setRealCursor('none')
@@ -492,7 +498,6 @@ function tick() {
   nudge.value.x += (nudgeT.x - nudge.value.x) * NUDGE_K
   nudge.value.y += (nudgeT.y - nudge.value.y) * NUDGE_K
 
-  // Decay previous nudge target slowly back to zero
   if (prevNudgeEl) {
     prevNudge.value.x += (0 - prevNudge.value.x) * (NUDGE_K * 0.5)
     prevNudge.value.y += (0 - prevNudge.value.y) * (NUDGE_K * 0.5)
@@ -504,7 +509,7 @@ function tick() {
     } else {
       prevNudgeEl.style.transform = ''
       prevNudgeEl.style.willChange = ''
-      prevNudgeEl = null // fully settled, stop tracking
+      prevNudgeEl = null
     }
   }
 
@@ -590,7 +595,12 @@ onMounted(() => {
     childList: true,
     subtree: true,
     attributes: true,
-    attributeFilter: ['data-cursor-target', 'data-cursor-offset', 'data-cursor-mode'],
+    attributeFilter: [
+      'data-cursor-target',
+      'data-cursor-offset',
+      'data-cursor-mode',
+      'data-cursor-snap-color',
+    ],
   })
 })
 
