@@ -93,8 +93,8 @@ nav li:hover {
 }
 
 nav li:hover::after {
-  animation-name: liUnderline;
-  animation-duration: 1s;
+  /* animation-name: liUnderline;
+  animation-duration: 1s; */
 }
 
 nav button {

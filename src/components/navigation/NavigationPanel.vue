@@ -60,7 +60,7 @@
           target="https://gaming.kanapka.eu"
         />
       </ul>
-      <NavigationContact />
+      <!-- <NavigationContact /> -->
       <h4 class="authAreaGrid">&copy; Maciej Szuter 2026</h4>
     </div>
   </div>

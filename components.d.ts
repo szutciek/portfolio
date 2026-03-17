@@ -34,6 +34,7 @@ declare module 'vue' {
     SimpleModelRender: typeof import('./src/components/3d/SimpleModelRender.vue')['default']
     SpinTextExternal: typeof import('./src/components/SpinTextExternal.vue')['default']
     SpinTextInternal: typeof import('./src/components/SpinTextInternal.vue')['default']
+    Text: typeof import('./src/components/cursor/Text.vue')['default']
     VideoScrollSync: typeof import('./src/components/scroll/VideoScrollSync.vue')['default']
     WebcamGameSection: typeof import('./src/components/WebcamGameSection.vue')['default']
   }

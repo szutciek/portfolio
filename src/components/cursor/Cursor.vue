@@ -143,6 +143,8 @@ const ul = ref({ phase1: 0, halfW: 0, cx: 0, y: 0 })
 const ulT = { phase1: 0, halfW: 0, cx: 0, y: 0 }
 let ulActive = false
 
+// When snapped to a glyph element, holds the SVG path string to render directly.
+const activeGlyphPath = ref(null)
 const currentPath = ref('')
 let rafId = null
 let targets = []
@@ -222,23 +224,51 @@ function scanTargets() {
     el,
     offset: parseFloat(el.dataset.cursorOffset ?? '0'),
     cursorMode: el.dataset.cursorMode ?? null,
-    snapStrokeColor: el.dataset.cursorSnapColor ?? null, // null = use props.strokeColor
+    snapStrokeColor: el.dataset.cursorSnapColor ?? null,
+    // If true, this element's glyph path is written to data-cursor-glyph-path
+    // each frame by CursorText — we read it directly instead of building a rect.
+    isGlyph: el.dataset.cursorGlyph === 'true',
   }))
 }
 
 function getTargetShape(el, offset) {
+  // ── Glyph path mode ────────────────────────────────────────────────────────
+  // CursorText writes the current viewport-space SVG path string to
+  // data-cursor-glyph-path on every animation frame. We read it here so the
+  // shape is always in sync with the rendered letter position.
+  if (el.dataset.cursorGlyph === 'true') {
+    const rect = el.getBoundingClientRect()
+    return {
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
+      w: rect.width,
+      h: rect.height,
+      rtl: 0,
+      rtr: 0,
+      rbr: 0,
+      rbl: 0,
+      glyphPath: el.dataset.cursorGlyphPath ?? null,
+    }
+  }
+
+  // ── Normal rect mode ───────────────────────────────────────────────────────
   const rect = el.getBoundingClientRect()
   const cs = getComputedStyle(el)
   const parseR = (v) => parseFloat(v) || 0
+  const r = (v) => {
+    const base = parseR(v)
+    return base === 0 ? 0 : base + offset
+  }
   return {
     x: rect.left + rect.width / 2,
     y: rect.top + rect.height / 2,
     w: rect.width + offset * 2,
     h: rect.height + offset * 2,
-    rtl: parseR(cs.borderTopLeftRadius) + offset,
-    rtr: parseR(cs.borderTopRightRadius) + offset,
-    rbr: parseR(cs.borderBottomRightRadius) + offset,
-    rbl: parseR(cs.borderBottomLeftRadius) + offset,
+    rtl: r(cs.borderTopLeftRadius),
+    rtr: r(cs.borderTopRightRadius),
+    rbr: r(cs.borderBottomRightRadius),
+    rbl: r(cs.borderBottomLeftRadius),
+    glyphPath: null,
   }
 }
 
@@ -316,6 +346,8 @@ function computeTarget() {
     ulActive = renderMode.value === 'underline'
 
     if (inSnapZone) {
+      setRealCursor('pointer')
+
       if (!isSnapped.value || snappedEl.value !== bestEntry.el) {
         if (prevSnappedEl && prevSnappedEl !== bestEntry.el) {
           prevSnappedEl.classList.remove(SNAP_CLASS)
@@ -326,10 +358,10 @@ function computeTarget() {
         snappedEl.value = bestEntry.el
         snappedMode.value = renderMode.value
         snapStrokeColor.value = bestEntry.snapStrokeColor
+        activeGlyphPath.value = bestShape.glyphPath // null for normal targets
         emitEnter(bestEntry.el)
       }
 
-      setRealCursor('pointer')
       deformT.dx = 0
       deformT.dy = 0
 
@@ -371,6 +403,7 @@ function computeTarget() {
         snappedEl.value = null
         snappedMode.value = null
         snapStrokeColor.value = null
+        activeGlyphPath.value = null
       }
 
       const w = attractWeight(bestDist)
@@ -439,9 +472,9 @@ function computeTarget() {
       snappedEl.value = null
       snappedMode.value = null
       snapStrokeColor.value = null
+      activeGlyphPath.value = null
     }
 
-    setRealCursor('none')
     deformT.dx = 0
     deformT.dy = 0
     nudgeT.x = 0
@@ -527,16 +560,24 @@ function tick() {
   }
 
   const s = spring.value
-  currentPath.value = roundedRectPath(
-    s.x,
-    s.y,
-    s.w,
-    s.h,
-    Math.max(0, s.rtl),
-    Math.max(0, s.rtr),
-    Math.max(0, s.rbr),
-    Math.max(0, s.rbl),
-  )
+
+  // If snapped to a glyph, read the fresh path CursorText wrote this frame.
+  // Otherwise build the rounded-rect path from spring values as normal.
+  if (isSnapped.value && snappedEl.value?.dataset.cursorGlyph === 'true') {
+    const p = snappedEl.value.dataset.cursorGlyphPath
+    if (p) currentPath.value = p
+  } else {
+    currentPath.value = roundedRectPath(
+      s.x,
+      s.y,
+      s.w,
+      s.h,
+      Math.max(0, s.rtl),
+      Math.max(0, s.rtr),
+      Math.max(0, s.rbr),
+      Math.max(0, s.rbl),
+    )
+  }
 
   rafId = requestAnimationFrame(tick)
 }
@@ -589,6 +630,11 @@ onMounted(() => {
   window.addEventListener('mousemove', onMouseMove)
   window.addEventListener('click', onCaptureClick, { capture: true })
   rafId = requestAnimationFrame(tick)
+
+  // See if cursor should be shown or not
+  if (props.virtualClick) {
+    setRealCursor('none')
+  }
 
   observer = new MutationObserver(scanTargets)
   observer.observe(document.body, {
