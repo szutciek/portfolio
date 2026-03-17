@@ -6,7 +6,7 @@
         <li class="scrollToProjectsBtn">Projects</li>
         <li class="scrollToProjectsBtn">About</li>
       </ul>
-      <button @click="$emit('open')" data-cursor-target>
+      <button @click="$emit('open')" data-cursor-target v-if="!isOpen">
         <svg
           width="20"
           height="13"
@@ -115,3 +115,9 @@ nav button {
   }
 }
 </style>
+
+<script setup>
+const props = defineProps({
+  isOpen: Boolean,
+})
+</script>

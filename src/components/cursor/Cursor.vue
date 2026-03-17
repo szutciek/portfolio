@@ -8,9 +8,9 @@
       :style="svgStyle"
       aria-hidden="true"
     >
-      <!-- fill / wireframe mode -->
+      <!-- fill / wireframe — hidden while underline is fully active -->
       <path
-        v-if="renderMode !== 'underline'"
+        v-show="renderMode !== 'underline'"
         :d="currentPath"
         :fill="renderMode === 'fill' ? color : 'none'"
         :stroke="strokeColor"
@@ -18,19 +18,23 @@
       />
 
       <!--
-        underline mode — a single horizontal line spanning the shape's width,
-        sitting at the bottom of the bounding box. The line inherits the same
-        spring position so it follows smoothly like everything else.
-        underlineHeight controls its thickness (default 2px).
+        Underline — two-phase entrance, reversed on exit.
+
+        phase1  0→1  squash:    stroke-width morphs from underlineHeight → 1px
+                                as the cursor shape collapses into a thin line
+        halfW   0→N  slide-out: line expands from center once phase1 > 0.5
+
+        On exit both spring back to 0 simultaneously (retract + thicken).
+        v-show keeps the element mounted so spring values can decay smoothly.
       -->
       <line
-        v-if="renderMode === 'underline'"
-        :x1="spring.x - spring.w / 2"
-        :y1="spring.y + spring.h / 2"
-        :x2="spring.x + spring.w / 2"
-        :y2="spring.y + spring.h / 2"
+        v-show="ul.phase1 > 0.01"
+        :x1="ul.cx - ul.halfW"
+        :y1="ul.y"
+        :x2="ul.cx + ul.halfW"
+        :y2="ul.y"
         :stroke="strokeColor"
-        :stroke-width="underlineHeight"
+        :stroke-width="Math.max(1, underlineHeight - (underlineHeight - 1) * ul.phase1)"
         stroke-linecap="round"
       />
     </svg>
@@ -69,41 +73,37 @@
  * attractRadius   {Number}  Px from element edge to start pull.   Default: 80
  * snapRadius      {Number}  Px from element edge — smooth snap.   Default: 100
  * snapStiffness   {Number}  Spring stiffness inside snap zone.    Default: 0.18
+ * virtualClick    {Boolean} Swallow real clicks, re-fire on snap. Default: false
  */
 
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { isSnapped, snappedEl, snappedMode } from '@/composables/useCursorSnap.js'
 
-// Class added to the element that is currently snapped to.
-// Consumers can target [data-cursor-target].cursor-snapped in CSS.
 const SNAP_CLASS = 'cursor-snapped'
 
 const props = defineProps({
   size: { type: Number, default: 20 },
-  color: { type: String, default: 'rgba(99, 99, 255, 0.25)' },
-  strokeColor: { type: String, default: 'rgba(99, 99, 255, 0.85)' },
+  color: { type: String, default: '#fffa' },
+  strokeColor: { type: String, default: '#fffa' },
   strokeWidth: { type: Number, default: 1.5 },
-  mode: { type: String, default: 'fill' }, // 'fill' | 'wireframe' | 'underline'
+  mode: { type: String, default: 'fill' },
   underlineHeight: { type: Number, default: 2 },
   stiffness: { type: Number, default: 0.22 },
   attractRadius: { type: Number, default: 80 },
-  snapRadius: { type: Number, default: 100 }, // smooth-snap zone starts here
-  snapStiffness: { type: Number, default: 0.18 }, // spring k inside snap zone
+  snapRadius: { type: Number, default: 80 },
+  snapStiffness: { type: Number, default: 0.18 },
+  virtualClick: { type: Boolean, default: false },
 })
 
 // ─── State ────────────────────────────────────────────────────────────────────
 
 const svgEl = ref(null)
-const svgSize = 2000 // fixed large canvas, positioned via transform
+const svgSize = 2000
 
-// Active render mode — may be overridden per-element via data-cursor-mode
 const renderMode = ref(props.mode)
-
-// Mouse position (raw, updated immediately)
 const mouse = { x: -999, y: -999 }
 
-// Spring state — position of cursor center + shape params
-// Exposed as a reactive ref so the underline <line> can bind directly.
+// Shape spring
 const spring = ref({
   x: -999,
   y: -999,
@@ -114,8 +114,6 @@ const spring = ref({
   rbr: 0,
   rbl: 0,
 })
-
-// Targets driven by attraction logic each frame
 const target = {
   x: -999,
   y: -999,
@@ -127,11 +125,23 @@ const target = {
   rbl: 0,
 }
 
-// The SVG <path> d attribute — updated each RAF
-const currentPath = ref('')
+// ── Underline spring state ────────────────────────────────────────────────────
+// Completely independent from the shape spring.
+//
+//   phase1   0→1   squash — stroke-width goes from underlineHeight → 1px
+//   halfW    0→N   slide-out — half the target width, gates on phase1 > 0.5
+//   cx / y         position springs toward the element's bottom-center
+//
+// Enter: phase1 → 1, then halfW → targetHalfW (gated)
+// Exit:  phase1 → 0, halfW → 0 simultaneously
+const ul = ref({ phase1: 0, halfW: 0, cx: 0, y: 0 })
+const ulT = { phase1: 0, halfW: 0, cx: 0, y: 0 }
 
+let ulActive = false
+
+const currentPath = ref('')
 let rafId = null
-let targets = [] // registered DOM elements + cached data
+let targets = []
 
 // ─── SVG positioning ──────────────────────────────────────────────────────────
 
@@ -145,45 +155,32 @@ const svgStyle = computed(() => ({
 }))
 
 // ─── Rounded-rect path builder ────────────────────────────────────────────────
-// Describes a rounded rect as 8 cubic-bezier arcs (one per corner quadrant).
-// cx/cy = center, w/h = full size, rtl/rtr/rbr/rbl = corner radii.
-// All 4 radii are independent — handles arbitrary border-radius per corner.
 
-const K = 0.5522848 // cubic bezier approximation constant for quarter-circle
+const K = 0.5522848
 
 function roundedRectPath(cx, cy, w, h, rtl, rtr, rbr, rbl) {
   const hw = w / 2,
     hh = h / 2
-
-  // clamp radii so they never exceed half the side
   rtl = Math.min(rtl, hw, hh)
   rtr = Math.min(rtr, hw, hh)
   rbr = Math.min(rbr, hw, hh)
   rbl = Math.min(rbl, hw, hh)
-
   const x0 = cx - hw,
-    y0 = cy - hh // top-left corner of bounding box
+    y0 = cy - hh
   const x1 = cx + hw,
-    y1 = cy + hh // bottom-right
-
-  // control point distances for each corner
+    y1 = cy + hh
   const ktl = rtl * K,
     ktr = rtr * K,
     kbr = rbr * K,
     kbl = rbl * K
-
   return [
     `M ${x0 + rtl} ${y0}`,
-    // top edge → top-right corner
     `L ${x1 - rtr} ${y0}`,
     `C ${x1 - rtr + ktr} ${y0} ${x1} ${y0 + rtr - ktr} ${x1} ${y0 + rtr}`,
-    // right edge → bottom-right corner
     `L ${x1} ${y1 - rbr}`,
     `C ${x1} ${y1 - rbr + kbr} ${x1 - rbr + kbr} ${y1} ${x1 - rbr} ${y1}`,
-    // bottom edge → bottom-left corner
     `L ${x0 + rbl} ${y1}`,
     `C ${x0 + rbl - kbl} ${y1} ${x0} ${y1 - rbl + kbl} ${x0} ${y1 - rbl}`,
-    // left edge → top-left corner
     `L ${x0} ${y0 + rtl}`,
     `C ${x0} ${y0 + rtl - ktl} ${x0 + rtl - ktl} ${y0} ${x0 + rtl} ${y0}`,
     'Z',
@@ -196,16 +193,14 @@ function scanTargets() {
   targets = Array.from(document.querySelectorAll('[data-cursor-target]')).map((el) => ({
     el,
     offset: parseFloat(el.dataset.cursorOffset ?? '0'),
-    cursorMode: el.dataset.cursorMode ?? null, // per-element mode override
+    cursorMode: el.dataset.cursorMode ?? null,
   }))
 }
 
 function getTargetShape(el, offset) {
   const rect = el.getBoundingClientRect()
   const cs = getComputedStyle(el)
-
   const parseR = (v) => parseFloat(v) || 0
-
   return {
     x: rect.left + rect.width / 2,
     y: rect.top + rect.height / 2,
@@ -226,7 +221,6 @@ function distToRect(mx, my, rect, offset) {
   return Math.hypot(mx - ex, my - ey)
 }
 
-// easeInQuad ramp: weak far away, strong up close
 function attractWeight(dist) {
   const t =
     1 -
@@ -234,10 +228,9 @@ function attractWeight(dist) {
   return t * t
 }
 
-// Active snap target so springStep can pick the right stiffness
 let inSnapZone = false
-let activeElement = null // the element currently being tracked
-let prevSnappedEl = null // track previous so we can remove the class
+let activeElement = null
+let prevSnappedEl = null
 
 function computeTarget() {
   const defaultW = props.size * 2
@@ -250,7 +243,6 @@ function computeTarget() {
   for (const entry of targets) {
     const rect = entry.el.getBoundingClientRect()
     const dist = distToRect(mouse.x, mouse.y, rect, entry.offset)
-
     if (dist < props.attractRadius && dist < bestDist) {
       bestDist = dist
       bestShape = getTargetShape(entry.el, entry.offset)
@@ -262,23 +254,20 @@ function computeTarget() {
     inSnapZone = bestDist <= props.snapRadius
     activeElement = bestEntry
 
-    // Switch render mode to the element's override (if any), else global prop
-    renderMode.value = bestEntry.cursorMode ?? props.mode
+    const activeMode = bestEntry.cursorMode ?? props.mode
+    renderMode.value = activeMode
+    ulActive = activeMode === 'underline'
 
     if (inSnapZone) {
-      // ── Update shared snap state ──────────────────────────────────────────
       if (!isSnapped.value || snappedEl.value !== bestEntry.el) {
-        // Remove class from previous element (if different)
         if (prevSnappedEl && prevSnappedEl !== bestEntry.el) {
           prevSnappedEl.classList.remove(SNAP_CLASS)
         }
-        // Add class to the newly snapped element
         bestEntry.el.classList.add(SNAP_CLASS)
         prevSnappedEl = bestEntry.el
-
         isSnapped.value = true
         snappedEl.value = bestEntry.el
-        snappedMode.value = renderMode.value
+        snappedMode.value = activeMode
       }
 
       target.x = bestShape.x
@@ -290,7 +279,6 @@ function computeTarget() {
       target.rbr = bestShape.rbr
       target.rbl = bestShape.rbl
     } else {
-      // Outside snap zone but still in attract radius — clear snap state
       if (isSnapped.value) {
         prevSnappedEl?.classList.remove(SNAP_CLASS)
         prevSnappedEl = null
@@ -300,10 +288,8 @@ function computeTarget() {
       }
 
       const w = attractWeight(bestDist)
-
       target.x = mouse.x + (bestShape.x - mouse.x) * w
       target.y = mouse.y + (bestShape.y - mouse.y) * w
-
       target.w = defaultW + (bestShape.w - defaultW) * w
       target.h = defaultW + (bestShape.h - defaultW) * w
       target.rtl = defaultR + (bestShape.rtl - defaultR) * w
@@ -311,12 +297,28 @@ function computeTarget() {
       target.rbr = defaultR + (bestShape.rbr - defaultR) * w
       target.rbl = defaultR + (bestShape.rbl - defaultR) * w
     }
+
+    // ── Underline targets ───────────────────────────────────────────────────
+    if (ulActive) {
+      ulT.phase1 = 1
+      ulT.cx = bestShape.x
+      ulT.y = bestShape.y + bestShape.h / 2 // bottom edge
+
+      // Gate: halfW only starts expanding once squash is well underway.
+      // This is the key to the squash-THEN-expand sequence — no timers needed,
+      // just a threshold on the spring value itself.
+      ulT.halfW = ul.value.phase1 > 0.5 ? bestShape.w / 2 : 0
+    } else {
+      ulT.phase1 = 0
+      ulT.halfW = 0
+      // cx/y frozen — retract happens in-place, not flying back to origin
+    }
   } else {
     inSnapZone = false
     activeElement = null
+    ulActive = false
     renderMode.value = props.mode
 
-    // Clear snap state when no element is in range
     if (isSnapped.value) {
       prevSnappedEl?.classList.remove(SNAP_CLASS)
       prevSnappedEl = null
@@ -324,6 +326,9 @@ function computeTarget() {
       snappedEl.value = null
       snappedMode.value = null
     }
+
+    ulT.phase1 = 0
+    ulT.halfW = 0
 
     target.x = mouse.x
     target.y = mouse.y
@@ -343,6 +348,14 @@ function springStep(key) {
   spring.value[key] += (target[key] - spring.value[key]) * k
 }
 
+// Underline springs use a fixed stiffness — slightly snappier than the shape
+// spring so the squash phase feels crisp.
+const UL_K = 0.14
+
+function ulSpringStep(key) {
+  ul.value[key] += (ulT[key] - ul.value[key]) * UL_K
+}
+
 function tick() {
   computeTarget()
 
@@ -354,6 +367,11 @@ function tick() {
   springStep('rtr')
   springStep('rbr')
   springStep('rbl')
+
+  ulSpringStep('phase1')
+  ulSpringStep('halfW')
+  ulSpringStep('cx')
+  ulSpringStep('y')
 
   const s = spring.value
   currentPath.value = roundedRectPath(
@@ -370,6 +388,29 @@ function tick() {
   rafId = requestAnimationFrame(tick)
 }
 
+// ─── Virtual click interception ───────────────────────────────────────────────
+
+const SYNTHETIC_MARKER = '__cursorMorphSynthetic'
+
+function onCaptureClick(e) {
+  if (!props.virtualClick) return
+  if (e[SYNTHETIC_MARKER]) return
+  if (isSnapped.value && snappedEl.value) {
+    e.preventDefault()
+    e.stopPropagation()
+    const synthetic = new MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+      ctrlKey: e.ctrlKey,
+      metaKey: e.metaKey,
+      shiftKey: e.shiftKey,
+      altKey: e.altKey,
+    })
+    synthetic[SYNTHETIC_MARKER] = true
+    snappedEl.value.dispatchEvent(synthetic)
+  }
+}
+
 // ─── Event listeners ──────────────────────────────────────────────────────────
 
 function onMouseMove(e) {
@@ -381,15 +422,20 @@ function onMouseMove(e) {
     spring.value.w = props.size * 2
     spring.value.h = props.size * 2
     spring.value.rtl = spring.value.rtr = spring.value.rbr = spring.value.rbl = props.size
+    // Seed underline position so it doesn't fly in from 0,0 on first snap
+    ul.value.cx = mouse.x
+    ulT.cx = mouse.x
+    ul.value.y = mouse.y
+    ulT.y = mouse.y
   }
 }
 
-// Re-scan whenever DOM changes (layout shifts, route changes, etc.)
 let observer = null
 
 onMounted(() => {
   scanTargets()
   window.addEventListener('mousemove', onMouseMove)
+  window.addEventListener('click', onCaptureClick, { capture: true })
   rafId = requestAnimationFrame(tick)
 
   observer = new MutationObserver(scanTargets)
@@ -403,9 +449,9 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('mousemove', onMouseMove)
+  window.removeEventListener('click', onCaptureClick, { capture: true })
   cancelAnimationFrame(rafId)
   observer?.disconnect()
-  // Clean up any lingering snap class
   prevSnappedEl?.classList.remove(SNAP_CLASS)
 })
 </script>

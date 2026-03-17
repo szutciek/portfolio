@@ -5,17 +5,60 @@
     <div class="navArea">
       <ul class="navAreaGrid">
         <li class="marker">Navigation</li>
-        <SpinTextInternal @click="$emit('close')" text="Introduction" target="#introduction" />
-        <SpinTextInternal @click="$emit('close')" text="About" target="#about" />
-        <SpinTextInternal @click="$emit('close')" text="Projects" target="#projects" />
+        <SpinTextInternal
+          data-cursor-target
+          data-cursor-mode="underline"
+          @click="$emit('close')"
+          text="Introduction"
+          target="#introduction"
+        />
+        <SpinTextInternal
+          data-cursor-target
+          data-cursor-mode="underline"
+          @click="$emit('close')"
+          text="About"
+          target="#about"
+        />
+        <SpinTextInternal
+          data-cursor-target
+          data-cursor-mode="underline"
+          @click="$emit('close')"
+          text="Projects"
+          target="#projects"
+        />
       </ul>
       <ul class="liveAreaGrid">
         <li class="marker">Live Projects</li>
-        <SpinTextExternal text="Turtle Game" target="https://zolwie.kanapka.eu" />
-        <SpinTextExternal text="Webcam Game" target="https://webcamgame.kanapka.eu" />
-        <SpinTextExternal text="IBpedia" target="https://ibpedia.kanapka.eu" />
-        <SpinTextExternal text="Sztorify" target="https://sztorify.kanapka.eu" />
-        <SpinTextExternal text="Gaming" target="https://gaming.kanapka.eu" />
+        <SpinTextExternal
+          data-cursor-target
+          data-cursor-mode="underline"
+          text="Turtle Game"
+          target="https://zolwie.kanapka.eu"
+        />
+        <SpinTextExternal
+          data-cursor-target
+          data-cursor-mode="underline"
+          text="Webcam Game"
+          target="https://webcamgame.kanapka.eu"
+        />
+        <SpinTextExternal
+          data-cursor-target
+          data-cursor-mode="underline"
+          text="IBpedia"
+          target="https://ibpedia.kanapka.eu"
+        />
+        <SpinTextExternal
+          data-cursor-target
+          data-cursor-mode="underline"
+          text="Sztorify"
+          target="https://sztorify.kanapka.eu"
+        />
+        <SpinTextExternal
+          data-cursor-target
+          data-cursor-mode="underline"
+          text="Gaming"
+          target="https://gaming.kanapka.eu"
+        />
       </ul>
       <NavigationContact />
       <h4 class="authAreaGrid">&copy; Maciej Szuter 2026</h4>

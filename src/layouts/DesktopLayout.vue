@@ -1,10 +1,10 @@
 <template>
   <main class="desktop">
-    <NavigationBar @open="navOpen = true" />
+    <NavigationBar @open="navOpen = true" :isOpen="navOpen" />
     <NavigationSocials />
     <NavigationPanel @close="navOpen = false" :isOpen="navOpen" />
     <slot />
-    <Cursor />
+    <Cursor :virtualClick="true" />
   </main>
 </template>
 
