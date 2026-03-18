@@ -24,13 +24,10 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Setup SSH key
+      - name: Clear server directory
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+          ssh -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "rm -rf /var/www/portfolio/dist"
 
-      - name: Deploy via rsync
+      - name: Deploy via SCP
         run: |
-          rsync -avz --delete -e "ssh -p ${{ secrets.SERVER_PORT }}" dist/ ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/var/www/portfolio/
+          scp -P ${{ secrets.SERVER_PORT }} -r dist/ ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/var/www/portfolio/dist
