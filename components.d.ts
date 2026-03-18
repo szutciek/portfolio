@@ -13,6 +13,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AboutSection: typeof import('./src/components/AboutSection.vue')['default']
     AdjacentIcon: typeof import('./src/components/AdjacentIcon.vue')['default']
+    Background: typeof import('./src/components/cursor/Background.vue')['default']
     CheckoutSection: typeof import('./src/components/CheckoutSection.vue')['default']
     copy: typeof import('./src/components/WebcamGameSection copy.vue')['default']
     Cursor: typeof import('./src/components/cursor/Cursor.vue')['default']
