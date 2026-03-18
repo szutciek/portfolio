@@ -25,8 +25,8 @@ let velocity = 1
 
 onMounted(() => {
   content = container.value.querySelector('.content')
-  offset = parseFloat(content.getAttribute('offset')) || 0
-  velocity = parseFloat(content.getAttribute('velocity')) || 1
+  offset = parseFloat(container.value.getAttribute('offset')) || 0
+  velocity = parseFloat(container.value.getAttribute('velocity')) || 1
 })
 
 const move = (p) => {

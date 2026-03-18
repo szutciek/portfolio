@@ -5,12 +5,8 @@
         <div class="text" style="height: 100vh">
           <h1>Welcome to the Home View</h1>
         </div>
-        <ParallaxContent :progress="sections[0]?.visibleProgress">
-          <img
-            src="https://gaming.kanapka.eu/profiles/2F-agressive-turtle.png"
-            alt=""
-            velocity="0.5"
-          />
+        <ParallaxContent :progress="sections[0]?.visibleProgress" velocity="0.5">
+          <img src="https://gaming.kanapka.eu/profiles/2F-agressive-turtle.png" alt="" />
         </ParallaxContent>
       </div>
     </section>
@@ -18,37 +14,19 @@
     <section vertical>
       <div class="split" style="height: 20vh">
         <div class="split" style="height: 20vh">
-          <ParallaxContent :progress="sections[1]?.visibleProgress">
-            <img
-              src="https://gaming.kanapka.eu/profiles/2F-agressive-turtle.png"
-              alt=""
-              offset="-100"
-              velocity="2"
-            />
+          <ParallaxContent :progress="sections[1]?.visibleProgress" offset="-100" velocity="2">
+            <img src="https://gaming.kanapka.eu/profiles/2F-agressive-turtle.png" alt="" />
           </ParallaxContent>
-          <ParallaxContent :progress="sections[1]?.visibleProgress">
-            <img
-              src="https://gaming.kanapka.eu/profiles/2F-agressive-turtle.png"
-              alt=""
-              velocity="1"
-            />
+          <ParallaxContent :progress="sections[1]?.visibleProgress" velocity="1">
+            <img src="https://gaming.kanapka.eu/profiles/2F-agressive-turtle.png" alt="" />
           </ParallaxContent>
         </div>
         <div class="split" style="height: 20vh">
-          <ParallaxContent :progress="sections[1]?.visibleProgress">
-            <img
-              src="https://gaming.kanapka.eu/profiles/2F-agressive-turtle.png"
-              alt=""
-              offset="-100"
-              velocity="2"
-            />
+          <ParallaxContent :progress="sections[1]?.visibleProgress" offset="-100" velocity="2">
+            <img src="https://gaming.kanapka.eu/profiles/2F-agressive-turtle.png" alt="" />
           </ParallaxContent>
-          <ParallaxContent :progress="sections[1]?.visibleProgress">
-            <img
-              src="https://gaming.kanapka.eu/profiles/2F-agressive-turtle.png"
-              alt=""
-              velocity="1"
-            />
+          <ParallaxContent :progress="sections[1]?.visibleProgress" velocity="1">
+            <img src="https://gaming.kanapka.eu/profiles/2F-agressive-turtle.png" alt="" />
           </ParallaxContent>
         </div>
       </div>

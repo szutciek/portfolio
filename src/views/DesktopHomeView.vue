@@ -15,6 +15,9 @@
       <section vertical>
         <KanapkaSSOSection :scroll="sections[4]" />
       </section>
+      <section vertical>
+        <CheckoutSection :scroll="sections[5]" />
+      </section>
       <!--   ....   -->
       <div class="padding">
         <p>The end for now</p>

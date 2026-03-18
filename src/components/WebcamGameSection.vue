@@ -21,20 +21,20 @@
     <div class="screenShots">
       <div></div>
       <section marker>
-        <ParallaxContent :progress="scroll?.markers[0]?.visibleProgress">
-          <img src="/images/wcgame/soccer.png" alt="" velocity="1" />
+        <ParallaxContent :progress="scroll?.markers[0]?.visibleProgress" velocity="1">
+          <img src="/images/wcgame/soccer.png" alt="" />
           <p>A game of football</p>
         </ParallaxContent>
       </section>
       <section marker>
-        <ParallaxContent :progress="scroll?.markers[1]?.visibleProgress">
-          <img src="/images/wcgame/amongus.png" alt="" velocity="2" />
+        <ParallaxContent :progress="scroll?.markers[1]?.visibleProgress" velocity="2">
+          <img src="/images/wcgame/amongus.png" alt="" />
           <p>A game of suspicious</p>
         </ParallaxContent>
       </section>
       <section marker>
-        <ParallaxContent :progress="scroll?.markers[2]?.visibleProgress">
-          <img src="/images/wcgame/sso.png" alt="" velocity="1" />
+        <ParallaxContent :progress="scroll?.markers[2]?.visibleProgress" velocity="1">
+          <img src="/images/wcgame/sso.png" alt="" />
           <p>Kanapka SSO Integration</p>
         </ParallaxContent>
       </section>
