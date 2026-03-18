@@ -36,7 +36,7 @@
             <div
               class="infoItem"
               data-cursor-target
-              data-cursor-offset="8"
+              data-cursor-offset="12"
               @click="
                 openUrl(
                   `https://www.tue.nl/en/education/bachelor-college/bachelor-computer-science-and-engineering`,
@@ -57,7 +57,7 @@
             <div
               class="infoItem"
               data-cursor-target
-              data-cursor-offset="8"
+              data-cursor-offset="12"
               @click="openUrl(`https://github.com/szutciek`)"
             >
               <img src="/images/kanapka.png" alt="Kanapka Logo" />

@@ -18,6 +18,9 @@
       <section vertical>
         <CheckoutSection :scroll="sections[5]" />
       </section>
+      <section vertical>
+        <RoomganizerSection :scroll="sections[6]" />
+      </section>
       <!--   ....   -->
       <div class="padding">
         <p>The end for now</p>
