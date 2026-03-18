@@ -29,6 +29,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 6269
           script: |
+            source /etc/profile.d/volta.sh
             cd /var/www/portfolio
             git pull origin main
             npm ci
