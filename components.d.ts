@@ -42,5 +42,6 @@ declare module 'vue' {
     TransparentButton: typeof import('./src/components/TransparentButton.vue')['default']
     VideoScrollSync: typeof import('./src/components/scroll/VideoScrollSync.vue')['default']
     WebcamGameSection: typeof import('./src/components/WebcamGameSection.vue')['default']
+    ZolwieSection: typeof import('./src/components/ZolwieSection.vue')['default']
   }
 }
