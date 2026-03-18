@@ -21,6 +21,9 @@
       <section vertical>
         <RoomganizerSection :scroll="sections[6]" />
       </section>
+      <section vertical>
+        <ZolwieSection :scroll="sections[7]" />
+      </section>
       <!--   ....   -->
       <div class="padding">
         <p>The end for now</p>

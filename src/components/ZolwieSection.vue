@@ -1,16 +1,16 @@
 <template>
   <div class="project">
     <div class="text">
-      <h1>Roomganizer</h1>
-      <p>REVOLUTIONARY FACILITY MANAGEMENT SYSTEM</p>
+      <h1>Turtle Game</h1>
+      <p>ONLINE MULTIPLAYER VERSION OF POPULAR BOARD GAME</p>
       <div class="actions">
-        <OpaqueButton @click="openUrl(`https://roomganizer.kanapka.eu/`)">
+        <OpaqueButton @click="openUrl(`https://zolwie.kanapka.eu/start`)">
           <AdjacentIcon>
-            <p>Try it out</p>
+            <p>Host a game</p>
             <p>&nearr;</p>
           </AdjacentIcon>
         </OpaqueButton>
-        <TransparentButton @click="openUrl(`https://github.com/szutciek/roomganizer`)">
+        <TransparentButton @click="openUrl(`https://github.com/szutciek/zolwie`)">
           <AdjacentIcon>
             <p>See source code</p>
             <p>&nearr;</p>
@@ -22,28 +22,17 @@
       <div></div>
       <section marker>
         <ParallaxContent :progress="scroll?.markers[0]?.visibleProgress" velocity="1">
-          <img src="/images/roomganizer/map.png" alt="" />
-          <p>3D map layout of facility displaying availability</p>
+          <img src="/images/zolwie/game.png" alt="" />
+          <p>A game of chasing turtles</p>
         </ParallaxContent>
       </section>
       <section marker>
         <ParallaxContent :progress="scroll?.markers[1]?.visibleProgress" velocity="2">
-          <img src="/images/roomganizer/scheduler.png" alt="" />
-          <p>Customizable event scheduler</p>
-        </ParallaxContent>
-      </section>
-      <section marker>
-        <ParallaxContent :progress="scroll?.markers[2]?.visibleProgress" velocity="1">
-          <img src="/images/roomganizer/timeline.png" alt="" />
-          <p>Clean timeline of upcoming events</p>
-        </ParallaxContent>
-      </section>
-      <section marker>
-        <ParallaxContent :progress="scroll?.markers[3]?.visibleProgress" velocity="0.5">
-          <VideoScrollSync :progress="scroll?.markers[3]?.visibleProgress">
-            <video src="/videos/roomganizer/window.mp4" muted playsinline></video>
-          </VideoScrollSync>
-          <p>Dynamically adjusting window</p>
+          <img src="/images/zolwie/menu.png" alt="" />
+          <p>
+            Customize turtles,<br />
+            level and cards
+          </p>
         </ParallaxContent>
       </section>
       <div></div>
@@ -85,8 +74,7 @@ const openUrl = (url) => {
   display: grid;
   grid-template-rows: 40vh;
 }
-.screenShots img,
-.screenShots video {
+.screenShots img {
   max-height: calc(40vh - 2rem);
 }
 </style>
