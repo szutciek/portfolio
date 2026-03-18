@@ -1,16 +1,16 @@
 <template>
   <div class="project">
     <div class="text">
-      <h1>Webcam Game</h1>
-      <p>SEEING YOUR ENEMY, REDEFINED</p>
+      <h1>Kanapka SSO</h1>
+      <p>FLEXIBLE OAUTH2 SINGLE SIGN ON</p>
       <div class="actions">
-        <OpaqueButton @click="openUrl(`https://webcamgame.kanapka.eu`)">
+        <OpaqueButton @click="openUrl(`https://sso.kanapka.eu/en/register`)">
           <AdjacentIcon>
-            <p>Try it out</p>
+            <p>Create account</p>
             <p>&nearr;</p>
           </AdjacentIcon>
         </OpaqueButton>
-        <TransparentButton @click="openUrl(`https://github.com/szutciek/webcam-game`)">
+        <TransparentButton @click="openUrl(`https://github.com/szutciek/sso`)">
           <AdjacentIcon>
             <p>See source code</p>
             <p>&nearr;</p>
@@ -22,23 +22,34 @@
       <div></div>
       <section marker>
         <ParallaxContent :progress="scroll?.markers[0]?.visibleProgress">
-          <img src="/images/wcgame/soccer.png" alt="" velocity="1" />
-          <p>A game of football</p>
+          <img src="/images/sso/trust.png" alt="" velocity="1" />
+          <p>First use of app</p>
         </ParallaxContent>
       </section>
       <section marker>
         <ParallaxContent :progress="scroll?.markers[1]?.visibleProgress">
-          <img src="/images/wcgame/amongus.png" alt="" velocity="2" />
-          <p>A game of suspicious</p>
+          <img src="/images/sso/2FA.png" alt="" velocity="2" />
+          <p>2FA via email w/ inbox detection</p>
         </ParallaxContent>
       </section>
       <section marker>
         <ParallaxContent :progress="scroll?.markers[2]?.visibleProgress">
-          <img src="/images/wcgame/sso.png" alt="" velocity="1" />
-          <p>Kanapka SSO Integration</p>
+          <img src="/images/sso/email.png" alt="" velocity="1" />
+          <p>Custom email service</p>
         </ParallaxContent>
       </section>
-      <div></div>
+      <section marker>
+        <ParallaxContent :progress="scroll?.markers[3]?.visibleProgress">
+          <img src="/images/sso/accounts.png" alt="" velocity="2" />
+          <p>Add and switch between multiple accounts</p>
+        </ParallaxContent>
+      </section>
+      <section marker>
+        <ParallaxContent :progress="scroll?.markers[4]?.visibleProgress">
+          <img src="/images/sso/manage.png" alt="" velocity="1" />
+          <p>Manage account details</p>
+        </ParallaxContent>
+      </section>
       <div></div>
     </div>
   </div>

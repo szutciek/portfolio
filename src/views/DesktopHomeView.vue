@@ -12,7 +12,13 @@
       <section vertical>
         <WebcamGameSection :scroll="sections[3]" />
       </section>
+      <section vertical>
+        <KanapkaSSOSection :scroll="sections[4]" />
+      </section>
       <!--   ....   -->
+      <div class="padding">
+        <p>The end for now</p>
+      </div>
     </div>
   </LenisScroll>
 </template>
@@ -27,6 +33,13 @@
 <style scoped>
 .container {
   min-height: 100dvh;
+}
+
+.padding {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
 
