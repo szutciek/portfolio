@@ -21,32 +21,32 @@
     <div class="screenShots">
       <div></div>
       <section marker>
-        <ParallaxContent :progress="scroll?.markers[0]?.visibleProgress">
-          <img src="/images/sso/trust.png" alt="" velocity="1" />
+        <ParallaxContent :progress="scroll?.markers[0]?.visibleProgress" velocity="1">
+          <img src="/images/sso/trust.png" alt="" />
           <p>First use of app</p>
         </ParallaxContent>
       </section>
       <section marker>
-        <ParallaxContent :progress="scroll?.markers[1]?.visibleProgress">
-          <img src="/images/sso/2FA.png" alt="" velocity="2" />
+        <ParallaxContent :progress="scroll?.markers[1]?.visibleProgress" velocity="2">
+          <img src="/images/sso/2FA.png" alt="" />
           <p>2FA via email w/ inbox detection</p>
         </ParallaxContent>
       </section>
       <section marker>
-        <ParallaxContent :progress="scroll?.markers[2]?.visibleProgress">
-          <img src="/images/sso/email.png" alt="" velocity="1" />
+        <ParallaxContent :progress="scroll?.markers[2]?.visibleProgress" velocity="1">
+          <img src="/images/sso/email.png" alt="" />
           <p>Custom email service</p>
         </ParallaxContent>
       </section>
       <section marker>
-        <ParallaxContent :progress="scroll?.markers[3]?.visibleProgress">
-          <img src="/images/sso/accounts.png" alt="" velocity="2" />
+        <ParallaxContent :progress="scroll?.markers[3]?.visibleProgress" velocity="2">
+          <img src="/images/sso/accounts.png" alt="" />
           <p>Add and switch between multiple accounts</p>
         </ParallaxContent>
       </section>
       <section marker>
-        <ParallaxContent :progress="scroll?.markers[4]?.visibleProgress">
-          <img src="/images/sso/manage.png" alt="" velocity="1" />
+        <ParallaxContent :progress="scroll?.markers[4]?.visibleProgress" velocity="1">
+          <img src="/images/sso/manage.png" alt="" />
           <p>Manage account details</p>
         </ParallaxContent>
       </section>
