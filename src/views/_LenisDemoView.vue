@@ -5,51 +5,51 @@
         <div class="text" style="height: 100vh">
           <h1>Welcome to the Home View</h1>
         </div>
-        <ParallaxPicture :progress="sections[0]?.visibleProgress">
+        <ParallaxContent :progress="sections[0]?.visibleProgress">
           <img
             src="https://gaming.kanapka.eu/profiles/2F-agressive-turtle.png"
             alt=""
             velocity="0.5"
           />
-        </ParallaxPicture>
+        </ParallaxContent>
       </div>
     </section>
 
     <section vertical>
       <div class="split" style="height: 20vh">
         <div class="split" style="height: 20vh">
-          <ParallaxPicture :progress="sections[1]?.visibleProgress">
+          <ParallaxContent :progress="sections[1]?.visibleProgress">
             <img
               src="https://gaming.kanapka.eu/profiles/2F-agressive-turtle.png"
               alt=""
               offset="-100"
               velocity="2"
             />
-          </ParallaxPicture>
-          <ParallaxPicture :progress="sections[1]?.visibleProgress">
+          </ParallaxContent>
+          <ParallaxContent :progress="sections[1]?.visibleProgress">
             <img
               src="https://gaming.kanapka.eu/profiles/2F-agressive-turtle.png"
               alt=""
               velocity="1"
             />
-          </ParallaxPicture>
+          </ParallaxContent>
         </div>
         <div class="split" style="height: 20vh">
-          <ParallaxPicture :progress="sections[1]?.visibleProgress">
+          <ParallaxContent :progress="sections[1]?.visibleProgress">
             <img
               src="https://gaming.kanapka.eu/profiles/2F-agressive-turtle.png"
               alt=""
               offset="-100"
               velocity="2"
             />
-          </ParallaxPicture>
-          <ParallaxPicture :progress="sections[1]?.visibleProgress">
+          </ParallaxContent>
+          <ParallaxContent :progress="sections[1]?.visibleProgress">
             <img
               src="https://gaming.kanapka.eu/profiles/2F-agressive-turtle.png"
               alt=""
               velocity="1"
             />
-          </ParallaxPicture>
+          </ParallaxContent>
         </div>
       </div>
     </section>

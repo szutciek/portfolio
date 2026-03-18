@@ -6,8 +6,8 @@
     </div>
   </section>
   <section vertical>
-    <EducationSection :scroll="scroll2?.markers[0]?.coveredProgress" />
-    <InterestsSection :scroll="scroll2?.markers[1]?.coveredProgress" />
+    <!-- <EducationSection :scroll="scroll2?.markers[0]?.coveredProgress" />
+    <InterestsSection :scroll="scroll2?.markers[1]?.coveredProgress" /> -->
   </section>
 </template>
 
