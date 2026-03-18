@@ -3,10 +3,20 @@
     <p>KS</p>
     <div>
       <ul>
-        <li class="scrollToProjectsBtn">Projects</li>
-        <li class="scrollToProjectsBtn">About</li>
+        <li class="scrollToProjectsBtn" data-cursor-target data-cursor-offset="4" v-if="!isOpen">
+          Projects
+        </li>
+        <li class="scrollToProjectsBtn" data-cursor-target data-cursor-offset="4" v-if="!isOpen">
+          About
+        </li>
       </ul>
-      <button @click="$emit('open')">
+      <button
+        @click="$emit('open')"
+        data-cursor-target
+        data-cursor-offset="4"
+        data-cursor-snap-color="var(--main-color-l)"
+        v-if="!isOpen"
+      >
         <svg
           width="20"
           height="13"
@@ -83,8 +93,8 @@ nav li:hover {
 }
 
 nav li:hover::after {
-  animation-name: liUnderline;
-  animation-duration: 1s;
+  /* animation-name: liUnderline;
+  animation-duration: 1s; */
 }
 
 nav button {
@@ -115,3 +125,9 @@ nav button {
   }
 }
 </style>
+
+<script setup>
+const props = defineProps({
+  isOpen: Boolean,
+})
+</script>

@@ -33,19 +33,42 @@
             </AdjacentIcon>
           </div>
           <div class="infoGrid">
-            <div class="infoItem">
+            <div
+              class="infoItem"
+              data-cursor-target
+              data-cursor-offset="8"
+              @click="
+                openUrl(
+                  `https://www.tue.nl/en/education/bachelor-college/bachelor-computer-science-and-engineering`,
+                )
+              "
+            >
               <img src="/images/tue.png" alt="TU/e Logo" />
               <div>
                 <p>Second Year Bachelor</p>
                 <h2>Computer Science & Engineering</h2>
               </div>
+              <AdjacentIcon class="onSnap" style="position: absolute; top: 4px; right: 4px">
+                <p>Program Website</p>
+                <p>&nearr;</p>
+              </AdjacentIcon>
             </div>
-            <div class="infoItem">
+            <div class="border"></div>
+            <div
+              class="infoItem"
+              data-cursor-target
+              data-cursor-offset="8"
+              @click="openUrl(`https://github.com/szutciek`)"
+            >
               <img src="/images/kanapka.png" alt="Kanapka Logo" />
               <div>
                 <p>6+ Years of Experience</p>
                 <h2>Full Stack Web & Game Developer</h2>
               </div>
+              <AdjacentIcon class="onSnap" style="position: absolute; top: 4px; right: 4px">
+                <p>GitHub</p>
+                <p>&nearr;</p>
+              </AdjacentIcon>
             </div>
           </div>
         </div>
@@ -79,6 +102,10 @@ const scrollingToNext = (scroll) => {
     monitor.value.style.position = 'absolute'
   }
   monitor.value.style.transform = `translateX(-${scroll * 100}vw)`
+}
+
+const openUrl = (url) => {
+  window.open(url)
 }
 
 watch(() => props.scroll, spinningMonitor)
@@ -135,21 +162,20 @@ watch(() => props.nextPageScroll, scrollingToNext)
 
 .infoGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1px 1fr;
+  gap: 40px;
 }
-
+.infoGrid .border {
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-color-ll);
+}
 .infoItem {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  position: relative;
   gap: 20px;
-
-  border-left: 1px solid var(--bg-color-l);
-  padding-left: 40px;
-}
-.infoItem:first-of-type {
-  border-left: none;
-  padding-left: 0;
 }
 .infoItem img {
   height: 40px;
@@ -157,6 +183,12 @@ watch(() => props.nextPageScroll, scrollingToNext)
   max-width: 80px;
   width: min-content;
   object-fit: contain;
+}
+.infoItem .onSnap {
+  display: none;
+}
+.infoItem.cursor-snapped .onSnap {
+  display: flex;
 }
 
 @media (max-width: 1200px) {

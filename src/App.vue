@@ -16,8 +16,10 @@ html,
   height: 100%;
   background-color: var(--bg-color-d);
   font-family: 'Poppins', sans-serif;
+  user-select: none;
 }
 :root {
+  --bg-color-ll: #2b2b2b;
   --bg-color-l: #1b1b1b;
   --bg-color-dl: #171717;
   --bg-color-d: #131313;

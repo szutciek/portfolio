@@ -1,0 +1,679 @@
+<template>
+  <teleport to="body">
+    <svg
+      ref="svgEl"
+      class="cursor-morph"
+      :width="svgSize"
+      :height="svgSize"
+      :style="svgStyle"
+      aria-hidden="true"
+    >
+      <g :transform="deformTransform">
+        <path
+          v-show="renderMode !== 'underline'"
+          :d="currentPath"
+          fill="none"
+          :stroke="activeStrokeColor"
+          :stroke-width="strokeWidth"
+        />
+      </g>
+
+      <line
+        v-show="ul.phase1 > 0.01"
+        :x1="ul.cx - ul.halfW"
+        :y1="ul.y"
+        :x2="ul.cx + ul.halfW"
+        :y2="ul.y"
+        :stroke="activeStrokeColor"
+        :stroke-width="Math.max(1, underlineHeight - (underlineHeight - 1) * ul.phase1)"
+        stroke-linecap="round"
+      />
+    </svg>
+  </teleport>
+</template>
+
+<script setup>
+/**
+ * CursorMorph.vue
+ *
+ * A magnetic morphing cursor that blends from a circle into the exact
+ * rounded-rect shape of any element marked with data-cursor-target.
+ * Always wireframe — no fill anywhere.
+ *
+ * DIRECTIVE / ATTRIBUTE USAGE
+ * ----------------------------
+ * Add  data-cursor-target  to any element you want the cursor to morph into.
+ * Optionally add  data-cursor-offset="8"  (px, positive = expand outward,
+ * negative = shrink inward).
+ * Optionally add  data-cursor-mode="wireframe|underline"  to override the
+ * render mode for that specific element.
+ * Optionally add  data-cursor-snap-color="#f00"  to use a different stroke
+ * color when the cursor is snapped to that element. Falls back to strokeColor.
+ *
+ * Examples:
+ *   <button data-cursor-target data-cursor-offset="6">Click me</button>
+ *   <button data-cursor-target data-cursor-snap-color="#000">Dark snap</button>
+ *   <a      data-cursor-target data-cursor-mode="underline" data-cursor-snap-color="red">Link</a>
+ *
+ * PROPS
+ * -----
+ * size            {Number}  Default circle radius in px.             Default: 32
+ * strokeColor     {String}  Stroke color (free-roaming + snap fallback). Default: '#fff'
+ * strokeWidth     {Number}  Stroke width in px.                      Default: 1.5
+ * underlineHeight {Number}  Underline thickness in px.               Default: 2
+ * mode            {String}  'wireframe' | 'underline'                Default: 'wireframe'
+ * stiffness       {Number}  Spring stiffness 0–1.                    Default: 0.2
+ * attractRadius   {Number}  Px from element edge to start pull.      Default: 160
+ * snapRadius      {Number}  Px from element edge — snap at boundary. Default: 80
+ * snapStiffness   {Number}  Spring stiffness inside snap zone.       Default: 0.2
+ * virtualClick    {Boolean} Swallow real clicks, re-fire on snap.    Default: false
+ */
+
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { isSnapped, snappedEl, snappedMode } from '@/composables/useCursorSnap.js'
+
+const SNAP_CLASS = 'cursor-snapped'
+
+const props = defineProps({
+  size: { type: Number, default: 32 },
+  strokeColor: { type: String, default: 'var(--main-color-l)' },
+  strokeWidth: { type: Number, default: 1.5 },
+  underlineHeight: { type: Number, default: 2 },
+  mode: { type: String, default: 'wireframe' },
+  stiffness: { type: Number, default: 0.2 },
+  attractRadius: { type: Number, default: 160 },
+  snapRadius: { type: Number, default: 80 },
+  snapStiffness: { type: Number, default: 0.2 },
+  virtualClick: { type: Boolean, default: false },
+})
+
+// ─── State ────────────────────────────────────────────────────────────────────
+
+const svgEl = ref(null)
+const svgSize = 2000
+
+const renderMode = ref(props.mode)
+const mouse = { x: -999, y: -999 }
+
+// Stroke color override set when snapping to an element with data-cursor-snap-color.
+// null = fall back to props.strokeColor.
+const snapStrokeColor = ref(null)
+
+const activeStrokeColor = computed(() =>
+  isSnapped.value && snapStrokeColor.value ? snapStrokeColor.value : props.strokeColor,
+)
+
+// Shape spring
+const spring = ref({
+  x: -999,
+  y: -999,
+  w: 0,
+  h: 0,
+  rtl: 0,
+  rtr: 0,
+  rbr: 0,
+  rbl: 0,
+})
+const target = {
+  x: -999,
+  y: -999,
+  w: 0,
+  h: 0,
+  rtl: 0,
+  rtr: 0,
+  rbr: 0,
+  rbl: 0,
+}
+
+// Deformation spring — pull vector for circle squash/stretch in attract zone
+const deform = ref({ dx: 0, dy: 0 })
+const deformT = { dx: 0, dy: 0 }
+
+// Element nudge spring — translates the target element slightly toward cursor
+const nudge = ref({ x: 0, y: 0 })
+const nudgeT = { x: 0, y: 0 }
+let nudgeEl = null
+
+// Previous nudge target — decays independently back to zero after handoff
+const prevNudge = ref({ x: 0, y: 0 })
+let prevNudgeEl = null
+
+// Underline spring
+const ul = ref({ phase1: 0, halfW: 0, cx: 0, y: 0 })
+const ulT = { phase1: 0, halfW: 0, cx: 0, y: 0 }
+let ulActive = false
+
+// When snapped to a glyph element, holds the SVG path string to render directly.
+const activeGlyphPath = ref(null)
+const currentPath = ref('')
+let rafId = null
+let targets = []
+
+// ─── SVG positioning ──────────────────────────────────────────────────────────
+
+const svgStyle = computed(() => ({
+  position: 'fixed',
+  top: '0px',
+  left: '0px',
+  pointerEvents: 'none',
+  overflow: 'visible',
+  zIndex: '99999',
+}))
+
+// ─── Deformation transform ────────────────────────────────────────────────────
+
+const deformTransform = computed(() => {
+  const s = spring.value
+  const dx = deform.value.dx
+  const dy = deform.value.dy
+  const mag = Math.hypot(dx, dy)
+  if (mag < 0.001) return ''
+
+  const stretch = 1 + mag * 0.15
+  const squash = 1 - mag * 0.08
+  const angle = Math.atan2(dy, dx) * (180 / Math.PI)
+  const cx = s.x,
+    cy = s.y
+
+  return [
+    `translate(${cx} ${cy})`,
+    `rotate(${angle})`,
+    `scale(${stretch} ${squash})`,
+    `rotate(${-angle})`,
+    `translate(${-cx} ${-cy})`,
+  ].join(' ')
+})
+
+// ─── Rounded-rect path builder ────────────────────────────────────────────────
+
+const K = 0.5522848
+
+function roundedRectPath(cx, cy, w, h, rtl, rtr, rbr, rbl) {
+  const hw = w / 2,
+    hh = h / 2
+  rtl = Math.min(rtl, hw, hh)
+  rtr = Math.min(rtr, hw, hh)
+  rbr = Math.min(rbr, hw, hh)
+  rbl = Math.min(rbl, hw, hh)
+  const x0 = cx - hw,
+    y0 = cy - hh
+  const x1 = cx + hw,
+    y1 = cy + hh
+  const ktl = rtl * K,
+    ktr = rtr * K,
+    kbr = rbr * K,
+    kbl = rbl * K
+  return [
+    `M ${x0 + rtl} ${y0}`,
+    `L ${x1 - rtr} ${y0}`,
+    `C ${x1 - rtr + ktr} ${y0} ${x1} ${y0 + rtr - ktr} ${x1} ${y0 + rtr}`,
+    `L ${x1} ${y1 - rbr}`,
+    `C ${x1} ${y1 - rbr + kbr} ${x1 - rbr + kbr} ${y1} ${x1 - rbr} ${y1}`,
+    `L ${x0 + rbl} ${y1}`,
+    `C ${x0 + rbl - kbl} ${y1} ${x0} ${y1 - rbl + kbl} ${x0} ${y1 - rbl}`,
+    `L ${x0} ${y0 + rtl}`,
+    `C ${x0} ${y0 + rtl - ktl} ${x0 + rtl - ktl} ${y0} ${x0 + rtl} ${y0}`,
+    'Z',
+  ].join(' ')
+}
+
+// ─── DOM scanning ─────────────────────────────────────────────────────────────
+
+function scanTargets() {
+  targets = Array.from(document.querySelectorAll('[data-cursor-target]')).map((el) => ({
+    el,
+    offset: parseFloat(el.dataset.cursorOffset ?? '0'),
+    cursorMode: el.dataset.cursorMode ?? null,
+    snapStrokeColor: el.dataset.cursorSnapColor ?? null,
+    // If true, this element's glyph path is written to data-cursor-glyph-path
+    // each frame by CursorText — we read it directly instead of building a rect.
+    isGlyph: el.dataset.cursorGlyph === 'true',
+  }))
+}
+
+function getTargetShape(el, offset) {
+  // ── Glyph path mode ────────────────────────────────────────────────────────
+  // CursorText writes the current viewport-space SVG path string to
+  // data-cursor-glyph-path on every animation frame. We read it here so the
+  // shape is always in sync with the rendered letter position.
+  if (el.dataset.cursorGlyph === 'true') {
+    const rect = el.getBoundingClientRect()
+    return {
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
+      w: rect.width,
+      h: rect.height,
+      rtl: 0,
+      rtr: 0,
+      rbr: 0,
+      rbl: 0,
+      glyphPath: el.dataset.cursorGlyphPath ?? null,
+    }
+  }
+
+  // ── Normal rect mode ───────────────────────────────────────────────────────
+  const rect = el.getBoundingClientRect()
+  const cs = getComputedStyle(el)
+  const parseR = (v) => parseFloat(v) || 0
+  const r = (v) => {
+    const base = parseR(v)
+    return base === 0 ? 0 : base + offset
+  }
+  return {
+    x: rect.left + rect.width / 2,
+    y: rect.top + rect.height / 2,
+    w: rect.width + offset * 2,
+    h: rect.height + offset * 2,
+    rtl: r(cs.borderTopLeftRadius),
+    rtr: r(cs.borderTopRightRadius),
+    rbr: r(cs.borderBottomRightRadius),
+    rbl: r(cs.borderBottomLeftRadius),
+    glyphPath: null,
+  }
+}
+
+// ─── Real cursor style ────────────────────────────────────────────────────────
+
+function setRealCursor(style) {
+  document.documentElement.style.setProperty('cursor', style, 'important')
+}
+
+// ─── Hover emulation ──────────────────────────────────────────────────────────
+
+let hoveredEl = null
+
+function emitEnter(el) {
+  if (!el || hoveredEl === el) return
+  if (hoveredEl) emitLeave(hoveredEl)
+  hoveredEl = el
+  el.dispatchEvent(
+    new PointerEvent('pointerenter', { bubbles: false, cancelable: false, pointerType: 'mouse' }),
+  )
+  el.dispatchEvent(new MouseEvent('mouseover', { bubbles: true, cancelable: true }))
+}
+
+function emitLeave(el) {
+  if (!el) return
+  if (hoveredEl === el) hoveredEl = null
+  el.dispatchEvent(
+    new PointerEvent('pointerleave', { bubbles: false, cancelable: false, pointerType: 'mouse' }),
+  )
+  el.dispatchEvent(new MouseEvent('mouseout', { bubbles: true, cancelable: true }))
+}
+
+// ─── Attraction logic ─────────────────────────────────────────────────────────
+
+function distToRect(mx, my, rect, offset) {
+  const ex = Math.max(rect.left - offset, Math.min(mx, rect.right + offset))
+  const ey = Math.max(rect.top - offset, Math.min(my, rect.bottom + offset))
+  return Math.hypot(mx - ex, my - ey)
+}
+
+function attractWeight(dist) {
+  const t =
+    1 -
+    Math.max(0, Math.min(1, (dist - props.snapRadius) / (props.attractRadius - props.snapRadius)))
+  return t * t
+}
+
+let inSnapZone = false
+let activeElement = null
+let prevSnappedEl = null
+
+function computeTarget() {
+  const defaultW = props.size * 2
+  const defaultR = props.size
+
+  let bestDist = Infinity
+  let bestShape = null
+  let bestEntry = null
+
+  for (const entry of targets) {
+    const rect = entry.el.getBoundingClientRect()
+    const dist = distToRect(mouse.x, mouse.y, rect, entry.offset)
+    if (dist < props.attractRadius && dist < bestDist) {
+      bestDist = dist
+      bestShape = getTargetShape(entry.el, entry.offset)
+      bestEntry = entry
+    }
+  }
+
+  if (bestShape) {
+    inSnapZone = bestDist <= props.snapRadius
+    activeElement = bestEntry
+
+    renderMode.value = bestEntry.cursorMode ?? props.mode
+    ulActive = renderMode.value === 'underline'
+
+    if (inSnapZone) {
+      setRealCursor('pointer')
+
+      if (!isSnapped.value || snappedEl.value !== bestEntry.el) {
+        if (prevSnappedEl && prevSnappedEl !== bestEntry.el) {
+          prevSnappedEl.classList.remove(SNAP_CLASS)
+        }
+        bestEntry.el.classList.add(SNAP_CLASS)
+        prevSnappedEl = bestEntry.el
+        isSnapped.value = true
+        snappedEl.value = bestEntry.el
+        snappedMode.value = renderMode.value
+        snapStrokeColor.value = bestEntry.snapStrokeColor
+        activeGlyphPath.value = bestShape.glyphPath // null for normal targets
+        emitEnter(bestEntry.el)
+      }
+
+      deformT.dx = 0
+      deformT.dy = 0
+
+      const rect2 = bestEntry.el.getBoundingClientRect()
+      const elCx = rect2.left + rect2.width / 2
+      const elCy = rect2.top + rect2.height / 2
+      const toCurX = mouse.x - elCx
+      const toCurY = mouse.y - elCy
+      const toDist = Math.hypot(toCurX, toCurY) || 1
+      nudgeT.x = (toCurX / toDist) * Math.min(toDist, 14)
+      nudgeT.y = (toCurY / toDist) * Math.min(toDist, 14)
+      if (nudgeEl !== bestEntry.el) {
+        if (nudgeEl && nudgeEl !== bestEntry.el) {
+          prevNudgeEl = nudgeEl
+          prevNudge.value.x = nudge.value.x
+          prevNudge.value.y = nudge.value.y
+        }
+        nudge.value.x = 0
+        nudge.value.y = 0
+        nudgeEl = bestEntry.el
+      }
+
+      target.x = bestShape.x
+      target.y = bestShape.y
+      target.w = bestShape.w
+      target.h = bestShape.h
+      target.rtl = bestShape.rtl
+      target.rtr = bestShape.rtr
+      target.rbr = bestShape.rbr
+      target.rbl = bestShape.rbl
+    } else {
+      setRealCursor('none')
+
+      if (isSnapped.value) {
+        prevSnappedEl?.classList.remove(SNAP_CLASS)
+        emitLeave(prevSnappedEl)
+        prevSnappedEl = null
+        isSnapped.value = false
+        snappedEl.value = null
+        snappedMode.value = null
+        snapStrokeColor.value = null
+        activeGlyphPath.value = null
+      }
+
+      const w = attractWeight(bestDist)
+
+      const rect = bestEntry.el.getBoundingClientRect()
+      const off = bestEntry.offset
+      const closestX = Math.max(rect.left - off, Math.min(mouse.x, rect.right + off))
+      const closestY = Math.max(rect.top - off, Math.min(mouse.y, rect.bottom + off))
+
+      target.x = mouse.x + (closestX - mouse.x) * w
+      target.y = mouse.y + (closestY - mouse.y) * w
+
+      const pullX = closestX - mouse.x
+      const pullY = closestY - mouse.y
+      const pullDist = Math.hypot(pullX, pullY) || 1
+      deformT.dx = (pullX / pullDist) * w
+      deformT.dy = (pullY / pullDist) * w
+
+      const rect3 = bestEntry.el.getBoundingClientRect()
+      const elCx3 = rect3.left + rect3.width / 2
+      const elCy3 = rect3.top + rect3.height / 2
+      const toC3X = mouse.x - elCx3
+      const toC3Y = mouse.y - elCy3
+      const toD3 = Math.hypot(toC3X, toC3Y) || 1
+      nudgeT.x = (toC3X / toD3) * Math.min(toD3, 8 * w)
+      nudgeT.y = (toC3Y / toD3) * Math.min(toD3, 8 * w)
+      if (nudgeEl !== bestEntry.el) {
+        if (nudgeEl && nudgeEl !== bestEntry.el) {
+          prevNudgeEl = nudgeEl
+          prevNudge.value.x = nudge.value.x
+          prevNudge.value.y = nudge.value.y
+        }
+        nudge.value.x = 0
+        nudge.value.y = 0
+        nudgeEl = bestEntry.el
+      }
+
+      target.w = defaultW
+      target.h = defaultW
+      target.rtl = defaultR
+      target.rtr = defaultR
+      target.rbr = defaultR
+      target.rbl = defaultR
+    }
+
+    if (ulActive) {
+      ulT.phase1 = 1
+      ulT.cx = bestShape.x
+      ulT.y = bestShape.y + bestShape.h / 2
+      ulT.halfW = ul.value.phase1 > 0.5 ? bestShape.w / 2 : 0
+    } else {
+      ulT.phase1 = 0
+      ulT.halfW = 0
+    }
+  } else {
+    inSnapZone = false
+    activeElement = null
+    ulActive = false
+    renderMode.value = props.mode
+
+    if (isSnapped.value) {
+      prevSnappedEl?.classList.remove(SNAP_CLASS)
+      emitLeave(prevSnappedEl)
+      prevSnappedEl = null
+      isSnapped.value = false
+      snappedEl.value = null
+      snappedMode.value = null
+      snapStrokeColor.value = null
+      activeGlyphPath.value = null
+    }
+
+    deformT.dx = 0
+    deformT.dy = 0
+    nudgeT.x = 0
+    nudgeT.y = 0
+    ulT.phase1 = 0
+    ulT.halfW = 0
+
+    target.x = mouse.x
+    target.y = mouse.y
+    target.w = defaultW
+    target.h = defaultW
+    target.rtl = defaultR
+    target.rtr = defaultR
+    target.rbr = defaultR
+    target.rbl = defaultR
+  }
+}
+
+// ─── Spring & render loop ─────────────────────────────────────────────────────
+
+function springStep(key) {
+  const k = inSnapZone ? props.snapStiffness : props.stiffness
+  spring.value[key] += (target[key] - spring.value[key]) * k
+}
+
+const UL_K = 0.14
+const DEFORM_K = 0.18
+const NUDGE_K = 0.12
+
+function ulSpringStep(key) {
+  ul.value[key] += (ulT[key] - ul.value[key]) * UL_K
+}
+
+function tick() {
+  computeTarget()
+
+  springStep('x')
+  springStep('y')
+  springStep('w')
+  springStep('h')
+  springStep('rtl')
+  springStep('rtr')
+  springStep('rbr')
+  springStep('rbl')
+
+  ulSpringStep('phase1')
+  ulSpringStep('halfW')
+  ulSpringStep('cx')
+  ulSpringStep('y')
+
+  deform.value.dx += (deformT.dx - deform.value.dx) * DEFORM_K
+  deform.value.dy += (deformT.dy - deform.value.dy) * DEFORM_K
+
+  nudge.value.x += (nudgeT.x - nudge.value.x) * NUDGE_K
+  nudge.value.y += (nudgeT.y - nudge.value.y) * NUDGE_K
+
+  if (prevNudgeEl) {
+    prevNudge.value.x += (0 - prevNudge.value.x) * (NUDGE_K * 0.5)
+    prevNudge.value.y += (0 - prevNudge.value.y) * (NUDGE_K * 0.5)
+    const px = prevNudge.value.x
+    const py = prevNudge.value.y
+    if (Math.abs(px) > 0.01 || Math.abs(py) > 0.01) {
+      prevNudgeEl.style.transform = `translate(${px.toFixed(2)}px, ${py.toFixed(2)}px)`
+      prevNudgeEl.style.willChange = 'transform'
+    } else {
+      prevNudgeEl.style.transform = ''
+      prevNudgeEl.style.willChange = ''
+      prevNudgeEl = null
+    }
+  }
+
+  const currentNudgeEl = nudgeEl ?? prevSnappedEl
+  if (currentNudgeEl) {
+    const nx = nudge.value.x
+    const ny = nudge.value.y
+    if (Math.abs(nx) > 0.01 || Math.abs(ny) > 0.01) {
+      currentNudgeEl.style.transform = `translate(${nx.toFixed(2)}px, ${ny.toFixed(2)}px)`
+      currentNudgeEl.style.willChange = 'transform'
+    } else {
+      currentNudgeEl.style.transform = ''
+      currentNudgeEl.style.willChange = ''
+    }
+  }
+
+  const s = spring.value
+
+  // If snapped to a glyph, read the fresh path CursorText wrote this frame.
+  // Otherwise build the rounded-rect path from spring values as normal.
+  if (isSnapped.value && snappedEl.value?.dataset.cursorGlyph === 'true') {
+    const p = snappedEl.value.dataset.cursorGlyphPath
+    if (p) currentPath.value = p
+  } else {
+    currentPath.value = roundedRectPath(
+      s.x,
+      s.y,
+      s.w,
+      s.h,
+      Math.max(0, s.rtl),
+      Math.max(0, s.rtr),
+      Math.max(0, s.rbr),
+      Math.max(0, s.rbl),
+    )
+  }
+
+  rafId = requestAnimationFrame(tick)
+}
+
+// ─── Virtual click interception ───────────────────────────────────────────────
+
+const SYNTHETIC_MARKER = '__cursorMorphSynthetic'
+
+function onCaptureClick(e) {
+  if (!props.virtualClick) return
+  if (e[SYNTHETIC_MARKER]) return
+  if (isSnapped.value && snappedEl.value) {
+    e.preventDefault()
+    e.stopPropagation()
+    const synthetic = new MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+      ctrlKey: e.ctrlKey,
+      metaKey: e.metaKey,
+      shiftKey: e.shiftKey,
+      altKey: e.altKey,
+    })
+    synthetic[SYNTHETIC_MARKER] = true
+    snappedEl.value.dispatchEvent(synthetic)
+  }
+}
+
+// ─── Event listeners ──────────────────────────────────────────────────────────
+
+function onMouseMove(e) {
+  mouse.x = e.clientX
+  mouse.y = e.clientY
+  if (spring.value.x === -999) {
+    spring.value.x = mouse.x
+    spring.value.y = mouse.y
+    spring.value.w = props.size * 2
+    spring.value.h = props.size * 2
+    spring.value.rtl = spring.value.rtr = spring.value.rbr = spring.value.rbl = props.size
+    ul.value.cx = mouse.x
+    ulT.cx = mouse.x
+    ul.value.y = mouse.y
+    ulT.y = mouse.y
+  }
+}
+
+let observer = null
+
+onMounted(() => {
+  scanTargets()
+  window.addEventListener('mousemove', onMouseMove)
+  window.addEventListener('click', onCaptureClick, { capture: true })
+  rafId = requestAnimationFrame(tick)
+
+  // See if cursor should be shown or not
+  if (props.virtualClick) {
+    setRealCursor('none')
+  }
+
+  observer = new MutationObserver(scanTargets)
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: [
+      'data-cursor-target',
+      'data-cursor-offset',
+      'data-cursor-mode',
+      'data-cursor-snap-color',
+    ],
+  })
+})
+
+onUnmounted(() => {
+  window.removeEventListener('mousemove', onMouseMove)
+  window.removeEventListener('click', onCaptureClick, { capture: true })
+  cancelAnimationFrame(rafId)
+  observer?.disconnect()
+  prevSnappedEl?.classList.remove(SNAP_CLASS)
+  emitLeave(prevSnappedEl)
+  if (nudgeEl) {
+    nudgeEl.style.transform = ''
+    nudgeEl.style.willChange = ''
+  }
+  if (prevNudgeEl) {
+    prevNudgeEl.style.transform = ''
+    prevNudgeEl.style.willChange = ''
+  }
+  if (prevSnappedEl) {
+    prevSnappedEl.style.transform = ''
+    prevSnappedEl.style.willChange = ''
+  }
+})
+</script>
+
+<style scoped>
+.cursor-morph {
+  cursor: none;
+}
+</style>
