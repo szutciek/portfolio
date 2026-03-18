@@ -17,7 +17,6 @@ declare module 'vue' {
     CurvedPath: typeof import('./src/components/CurvedPath.vue')['default']
     Demo: typeof import('./src/components/cursor/Demo.vue')['default']
     EducationSection: typeof import('./src/components/EducationSection.vue')['default']
-    Follower: typeof import('./src/components/cursor/Follower.vue')['default']
     Fonts: typeof import('./src/components/Fonts.vue')['default']
     HorizontalSticky: typeof import('./src/components/scroll/HorizontalSticky.vue')['default']
     InterestsSection: typeof import('./src/components/InterestsSection.vue')['default']
@@ -34,7 +33,6 @@ declare module 'vue' {
     SimpleModelRender: typeof import('./src/components/3d/SimpleModelRender.vue')['default']
     SpinTextExternal: typeof import('./src/components/SpinTextExternal.vue')['default']
     SpinTextInternal: typeof import('./src/components/SpinTextInternal.vue')['default']
-    Text: typeof import('./src/components/cursor/Text.vue')['default']
     VideoScrollSync: typeof import('./src/components/scroll/VideoScrollSync.vue')['default']
     WebcamGameSection: typeof import('./src/components/WebcamGameSection.vue')['default']
   }
