@@ -56,7 +56,7 @@ onBeforeUnmount(() => {
 .adjacent {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: var(--base);
 }
 
 .adjacent > *:first-child {

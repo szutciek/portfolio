@@ -26,7 +26,7 @@
 
 ._desktopHome section[vertical],
 ._desktopHome section[horizontal] {
-  padding: 0 80px;
+  padding: 0 var(--base8);
 }
 </style>
 

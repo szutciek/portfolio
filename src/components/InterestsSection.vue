@@ -17,6 +17,6 @@ const props = defineProps({
 .interests {
   width: calc(var(--full-width) / 2);
   height: 100vh;
-  padding: 40px;
+  padding: calc(var(--base) * 4);
 }
 </style>

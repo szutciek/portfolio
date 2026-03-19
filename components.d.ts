@@ -35,6 +35,7 @@ declare module 'vue' {
     NavigationSocials: typeof import('./src/components/navigation/NavigationSocials.vue')['default']
     OpaqueButton: typeof import('./src/components/OpaqueButton.vue')['default']
     ParallaxContent: typeof import('./src/components/scroll/ParallaxContent.vue')['default']
+    ProjectDemonstration: typeof import('./src/components/ProjectDemonstration.vue')['default']
     ProjectSection: typeof import('./src/components/ProjectSection.vue')['default']
     RoomganizerSection: typeof import('./src/components/RoomganizerSection.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

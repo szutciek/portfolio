@@ -31,7 +31,7 @@ nav {
   width: calc(100vw - 160px);
   top: 0;
   left: 80px;
-  padding: 20px;
+  padding: calc(var(--base) * 2);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -52,13 +52,13 @@ nav p {
 
 nav div {
   display: flex;
-  gap: 30px;
+  gap: calc(var(--base) * 3);
 }
 
 nav ul {
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: calc(var(--base) * 3);
 }
 
 nav li {
@@ -94,7 +94,7 @@ nav button {
   border: none;
   cursor: pointer;
   background-color: var(--main-color-l);
-  margin-right: 10px;
+  margin-right: var(--base);
 }
 
 @keyframes liUnderline {

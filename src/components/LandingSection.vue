@@ -36,7 +36,7 @@
             <div
               class="infoItem"
               data-cursor-target
-              data-cursor-offset="12"
+              data-cursor-offset="10"
               @click="
                 openUrl(
                   `https://www.tue.nl/en/education/bachelor-college/bachelor-computer-science-and-engineering`,
@@ -57,7 +57,7 @@
             <div
               class="infoItem"
               data-cursor-target
-              data-cursor-offset="12"
+              data-cursor-offset="10"
               @click="openUrl(`https://github.com/szutciek`)"
             >
               <img src="/images/kanapka.png" alt="Kanapka Logo" />
@@ -157,18 +157,17 @@ watch(() => props.nextPageScroll, scrollingToNext)
   justify-content: flex-end;
   height: 100vh;
   width: 100%;
-  padding: 80px 40px 70px 0;
+  padding: var(--base8) var(--base4);
   color: #fff;
   background-color: var(--bg-color-l);
 }
 
 .header .box {
   border-left: 1px solid var(--bg-color-l);
-  padding-left: 40px;
 }
 
 .main {
-  margin-bottom: 100px;
+  margin-bottom: var(--base8);
 }
 .main img {
   aspect-ratio: 1;
@@ -178,7 +177,7 @@ watch(() => props.nextPageScroll, scrollingToNext)
 .infoGrid {
   display: grid;
   grid-template-columns: 1fr 1px 1fr;
-  gap: 40px;
+  gap: var(--base4);
 }
 .infoGrid .border {
   width: 100%;
@@ -190,7 +189,7 @@ watch(() => props.nextPageScroll, scrollingToNext)
   flex-direction: column;
   justify-content: flex-start;
   position: relative;
-  gap: 20px;
+  gap: var(--base2);
 }
 .infoItem img {
   height: 40px;
@@ -209,11 +208,10 @@ watch(() => props.nextPageScroll, scrollingToNext)
 @media (max-width: 1200px) {
   .infoGrid {
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: var(--base4);
   }
   .infoItem {
     border-left: none;
-    padding-left: 0;
   }
 }
 </style>

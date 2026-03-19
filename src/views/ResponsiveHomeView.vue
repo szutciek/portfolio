@@ -33,7 +33,7 @@ h2 span {
   font-size: 16px;
   font-weight: 500;
   color: #888;
-  margin-left: 20px;
+  margin-left: var(--base2);
 }
 h3 {
   font-size: 24px;

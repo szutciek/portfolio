@@ -27,6 +27,10 @@ html,
   --main-color-d: #9e4a1b;
 
   --base: 10px;
+  --base2: 20px;
+  --base3: 30px;
+  --base4: 40px;
+  --base8: 80px;
 }
 ::-webkit-scrollbar {
   width: 6px;
