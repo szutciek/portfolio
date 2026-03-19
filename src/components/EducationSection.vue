@@ -1,5 +1,5 @@
 <template>
-  <section marker class="education">
+  <section marker class="education _half">
     <h1>Education</h1>
     <p>Bachelor degree in Computer Science at Eindhoven University of Technology</p>
   </section>

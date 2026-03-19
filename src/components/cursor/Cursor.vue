@@ -36,29 +36,19 @@
 /**
  * CursorMorph.vue
  *
- * A magnetic morphing cursor that blends from a circle into the exact
- * rounded-rect shape of any element marked with data-cursor-target.
- * Always wireframe — no fill anywhere.
- *
  * DIRECTIVE / ATTRIBUTE USAGE
  * ----------------------------
- * Add  data-cursor-target  to any element you want the cursor to morph into.
- * Optionally add  data-cursor-offset="8"  (px, positive = expand outward,
- * negative = shrink inward).
- * Optionally add  data-cursor-mode="wireframe|underline"  to override the
- * render mode for that specific element.
- * Optionally add  data-cursor-snap-color="#f00"  to use a different stroke
- * color when the cursor is snapped to that element. Falls back to strokeColor.
- *
- * Examples:
- *   <button data-cursor-target data-cursor-offset="6">Click me</button>
- *   <button data-cursor-target data-cursor-snap-color="#000">Dark snap</button>
- *   <a      data-cursor-target data-cursor-mode="underline" data-cursor-snap-color="red">Link</a>
+ * data-cursor-target              — register element as a cursor target
+ * data-cursor-offset="8"          — expand/shrink bounding box (px)
+ * data-cursor-mode="wireframe|underline"
+ * data-cursor-snap-color="#f00"   — stroke override when snapped
+ * data-cursor-passive             — passive target: no pointer cursor, no
+ *                                   click, stroke becomes #fffa
  *
  * PROPS
  * -----
  * size            {Number}  Default circle radius in px.             Default: 32
- * strokeColor     {String}  Stroke color (free-roaming + snap fallback). Default: '#fff'
+ * strokeColor     {String}  Stroke color (free-roaming + snap fallback).
  * strokeWidth     {Number}  Stroke width in px.                      Default: 1.5
  * underlineHeight {Number}  Underline thickness in px.               Default: 2
  * mode            {String}  'wireframe' | 'underline'                Default: 'wireframe'
@@ -73,6 +63,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { isSnapped, snappedEl, snappedMode } from '@/composables/useCursorSnap.js'
 
 const SNAP_CLASS = 'cursor-snapped'
+const PASSIVE_COLOR = '#fff'
 
 const props = defineProps({
   size: { type: Number, default: 32 },
@@ -95,13 +86,17 @@ const svgSize = 2000
 const renderMode = ref(props.mode)
 const mouse = { x: -999, y: -999 }
 
-// Stroke color override set when snapping to an element with data-cursor-snap-color.
-// null = fall back to props.strokeColor.
 const snapStrokeColor = ref(null)
+// Whether the currently snapped target is passive
+const snapIsPassive = ref(false)
 
-const activeStrokeColor = computed(() =>
-  isSnapped.value && snapStrokeColor.value ? snapStrokeColor.value : props.strokeColor,
-)
+const activeStrokeColor = computed(() => {
+  if (isSnapped.value) {
+    if (snapIsPassive.value) return PASSIVE_COLOR
+    if (snapStrokeColor.value) return snapStrokeColor.value
+  }
+  return props.strokeColor
+})
 
 // Shape spring
 const spring = ref({
@@ -125,16 +120,16 @@ const target = {
   rbl: 0,
 }
 
-// Deformation spring — pull vector for circle squash/stretch in attract zone
+// Deformation spring
 const deform = ref({ dx: 0, dy: 0 })
 const deformT = { dx: 0, dy: 0 }
 
-// Element nudge spring — translates the target element slightly toward cursor
+// Element nudge spring
 const nudge = ref({ x: 0, y: 0 })
 const nudgeT = { x: 0, y: 0 }
 let nudgeEl = null
 
-// Previous nudge target — decays independently back to zero after handoff
+// Previous nudge target decay
 const prevNudge = ref({ x: 0, y: 0 })
 let prevNudgeEl = null
 
@@ -143,7 +138,6 @@ const ul = ref({ phase1: 0, halfW: 0, cx: 0, y: 0 })
 const ulT = { phase1: 0, halfW: 0, cx: 0, y: 0 }
 let ulActive = false
 
-// When snapped to a glyph element, holds the SVG path string to render directly.
 const activeGlyphPath = ref(null)
 const currentPath = ref('')
 let rafId = null
@@ -225,17 +219,13 @@ function scanTargets() {
     offset: parseFloat(el.dataset.cursorOffset ?? '0'),
     cursorMode: el.dataset.cursorMode ?? null,
     snapStrokeColor: el.dataset.cursorSnapColor ?? null,
-    // If true, this element's glyph path is written to data-cursor-glyph-path
-    // each frame by CursorText — we read it directly instead of building a rect.
     isGlyph: el.dataset.cursorGlyph === 'true',
+    // Passive: morphs silently — no pointer cursor, no click, #fffa stroke
+    passive: el.hasAttribute('data-cursor-passive'),
   }))
 }
 
 function getTargetShape(el, offset) {
-  // ── Glyph path mode ────────────────────────────────────────────────────────
-  // CursorText writes the current viewport-space SVG path string to
-  // data-cursor-glyph-path on every animation frame. We read it here so the
-  // shape is always in sync with the rendered letter position.
   if (el.dataset.cursorGlyph === 'true') {
     const rect = el.getBoundingClientRect()
     return {
@@ -251,7 +241,6 @@ function getTargetShape(el, offset) {
     }
   }
 
-  // ── Normal rect mode ───────────────────────────────────────────────────────
   const rect = el.getBoundingClientRect()
   const cs = getComputedStyle(el)
   const parseR = (v) => parseFloat(v) || 0
@@ -301,6 +290,27 @@ function emitLeave(el) {
   el.dispatchEvent(new MouseEvent('mouseout', { bubbles: true, cancelable: true }))
 }
 
+// ─── Occlusion check ──────────────────────────────────────────────────────────
+
+function isVisible(el) {
+  const rect = el.getBoundingClientRect()
+  if (rect.width === 0 || rect.height === 0) return false
+  if (rect.bottom < 0 || rect.top > window.innerHeight) return false
+  if (rect.right < 0 || rect.left > window.innerWidth) return false
+
+  const cs = getComputedStyle(el)
+  if (cs.display === 'none' || cs.visibility === 'hidden' || cs.opacity === '0') return false
+
+  const tx = Math.max(rect.left + 1, Math.min(mouse.x, rect.right - 1))
+  const ty = Math.max(rect.top + 1, Math.min(mouse.y, rect.bottom - 1))
+  let node = document.elementFromPoint(tx, ty)
+  while (node) {
+    if (node === el) return true
+    node = node.parentElement
+  }
+  return false
+}
+
 // ─── Attraction logic ─────────────────────────────────────────────────────────
 
 function distToRect(mx, my, rect, offset) {
@@ -331,15 +341,8 @@ function computeTarget() {
   for (const entry of targets) {
     const rect = entry.el.getBoundingClientRect()
     const dist = distToRect(mouse.x, mouse.y, rect, entry.offset)
-    const x = rect.x + rect.width / 2
-    const y = rect.y + rect.height / 2
-    let node = document.elementFromPoint(x, y)
-    while (node) {
-      if (node === entry.el) break
-      node = node.parentElement
-    }
-    const isVisible = node === entry.el
-    if (isVisible && dist < props.attractRadius && dist < bestDist) {
+    const alreadySnapped = isSnapped.value && snappedEl.value === entry.el
+    if (dist < props.attractRadius && dist < bestDist && (alreadySnapped || isVisible(entry.el))) {
       bestDist = dist
       bestShape = getTargetShape(entry.el, entry.offset)
       bestEntry = entry
@@ -354,7 +357,8 @@ function computeTarget() {
     ulActive = renderMode.value === 'underline'
 
     if (inSnapZone) {
-      setRealCursor('pointer')
+      // Passive targets: keep cursor hidden, no hover emulation
+      setRealCursor(bestEntry.passive ? 'none' : 'pointer')
 
       if (!isSnapped.value || snappedEl.value !== bestEntry.el) {
         if (prevSnappedEl && prevSnappedEl !== bestEntry.el) {
@@ -366,8 +370,11 @@ function computeTarget() {
         snappedEl.value = bestEntry.el
         snappedMode.value = renderMode.value
         snapStrokeColor.value = bestEntry.snapStrokeColor
-        activeGlyphPath.value = bestShape.glyphPath // null for normal targets
-        emitEnter(bestEntry.el)
+        snapIsPassive.value = bestEntry.passive
+        activeGlyphPath.value = bestShape.glyphPath
+
+        // Only emulate hover for non-passive targets
+        if (!bestEntry.passive) emitEnter(bestEntry.el)
       }
 
       deformT.dx = 0
@@ -405,12 +412,13 @@ function computeTarget() {
 
       if (isSnapped.value) {
         prevSnappedEl?.classList.remove(SNAP_CLASS)
-        emitLeave(prevSnappedEl)
+        if (!snapIsPassive.value) emitLeave(prevSnappedEl)
         prevSnappedEl = null
         isSnapped.value = false
         snappedEl.value = null
         snappedMode.value = null
         snapStrokeColor.value = null
+        snapIsPassive.value = false
         activeGlyphPath.value = null
       }
 
@@ -474,15 +482,17 @@ function computeTarget() {
 
     if (isSnapped.value) {
       prevSnappedEl?.classList.remove(SNAP_CLASS)
-      emitLeave(prevSnappedEl)
+      if (!snapIsPassive.value) emitLeave(prevSnappedEl)
       prevSnappedEl = null
       isSnapped.value = false
       snappedEl.value = null
       snappedMode.value = null
       snapStrokeColor.value = null
+      snapIsPassive.value = false
       activeGlyphPath.value = null
     }
 
+    setRealCursor('none')
     deformT.dx = 0
     deformT.dy = 0
     nudgeT.x = 0
@@ -568,9 +578,6 @@ function tick() {
   }
 
   const s = spring.value
-
-  // If snapped to a glyph, read the fresh path CursorText wrote this frame.
-  // Otherwise build the rounded-rect path from spring values as normal.
   if (isSnapped.value && snappedEl.value?.dataset.cursorGlyph === 'true') {
     const p = snappedEl.value.dataset.cursorGlyphPath
     if (p) currentPath.value = p
@@ -597,6 +604,14 @@ const SYNTHETIC_MARKER = '__cursorMorphSynthetic'
 function onCaptureClick(e) {
   if (!props.virtualClick) return
   if (e[SYNTHETIC_MARKER]) return
+
+  // Passive target — swallow the click entirely, fire nothing
+  if (isSnapped.value && snapIsPassive.value) {
+    e.preventDefault()
+    e.stopPropagation()
+    return
+  }
+
   if (isSnapped.value && snappedEl.value) {
     e.preventDefault()
     e.stopPropagation()
@@ -639,10 +654,7 @@ onMounted(() => {
   window.addEventListener('click', onCaptureClick, { capture: true })
   rafId = requestAnimationFrame(tick)
 
-  // See if cursor should be shown or not
-  if (props.virtualClick) {
-    setRealCursor('none')
-  }
+  if (props.virtualClick) setRealCursor('none')
 
   observer = new MutationObserver(scanTargets)
   observer.observe(document.body, {
@@ -654,6 +666,7 @@ onMounted(() => {
       'data-cursor-offset',
       'data-cursor-mode',
       'data-cursor-snap-color',
+      'data-cursor-passive',
     ],
   })
 })

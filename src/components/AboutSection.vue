@@ -1,7 +1,10 @@
 <template>
   <div class="horizontal">
     <section marker style="position: absolute; left: 0; width: var(--full-width)"></section>
-    <LocationSection :scroll="scroll?.markers[1]?.coveredProgress" />
+    <LocationSection
+      :gScroll="scroll?.visibleProgress"
+      :scroll="scroll?.markers[1]?.coveredProgress"
+    />
     <EducationSection :scroll="scroll?.markers[2]?.coveredProgress" />
     <InterestsSection :scroll="scroll?.markers[3]?.coveredProgress" />
   </div>

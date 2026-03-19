@@ -98,6 +98,7 @@ const spinningMonitor = (scroll) => {
 const scrollingToNext = (scroll) => {
   if (scroll > 0) {
     monitor.value.style.position = 'fixed'
+    monitor.value.style.zIndex = '-1'
   } else {
     monitor.value.style.position = 'absolute'
   }

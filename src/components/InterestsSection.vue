@@ -1,5 +1,5 @@
 <template>
-  <section marker class="interests">
+  <section marker class="interests _half">
     <div class="content">
       <h1>Interests</h1>
       <p>Programming, music, gaming, and more</p>
