@@ -292,6 +292,14 @@ function emitLeave(el) {
 
 // ─── Occlusion check ──────────────────────────────────────────────────────────
 
+function testPoint(node, target) {
+  while (node) {
+    if (node === target) return true
+    node = node.parentElement
+  }
+  return false
+}
+
 function isVisible(el) {
   const rect = el.getBoundingClientRect()
   if (rect.width === 0 || rect.height === 0) return false
@@ -301,14 +309,15 @@ function isVisible(el) {
   const cs = getComputedStyle(el)
   if (cs.display === 'none' || cs.visibility === 'hidden' || cs.opacity === '0') return false
 
-  const tx = Math.max(rect.left + 1, Math.min(mouse.x, rect.right - 1))
-  const ty = Math.max(rect.top + 1, Math.min(mouse.y, rect.bottom - 1))
-  let node = document.elementFromPoint(tx, ty)
-  while (node) {
-    if (node === el) return true
-    node = node.parentElement
-  }
-  return false
+  let node = document.elementFromPoint(rect.x + rect.width / 2, rect.y + 1)
+  if (!testPoint(node, el)) return false
+  node = document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height - 1)
+  if (!testPoint(node, el)) return false
+  node = document.elementFromPoint(rect.x + 1, rect.y + rect.height / 2)
+  if (!testPoint(node, el)) return false
+  node = document.elementFromPoint(rect.x + rect.width - 1, rect.y + rect.height / 2)
+  if (!testPoint(node, el)) return false
+  return true
 }
 
 // ─── Attraction logic ─────────────────────────────────────────────────────────
@@ -341,8 +350,7 @@ function computeTarget() {
   for (const entry of targets) {
     const rect = entry.el.getBoundingClientRect()
     const dist = distToRect(mouse.x, mouse.y, rect, entry.offset)
-    const alreadySnapped = isSnapped.value && snappedEl.value === entry.el
-    if (dist < props.attractRadius && dist < bestDist && (alreadySnapped || isVisible(entry.el))) {
+    if (dist < props.attractRadius && dist < bestDist && isVisible(entry.el)) {
       bestDist = dist
       bestShape = getTargetShape(entry.el, entry.offset)
       bestEntry = entry

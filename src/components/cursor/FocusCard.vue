@@ -16,6 +16,7 @@
   gap: 10px;
 
   border: 1px solid var(--bg-color-l);
+  background-color: var(--bg-color-l);
 }
 
 .focusCard.cursor-snapped {

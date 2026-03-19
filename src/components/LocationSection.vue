@@ -16,7 +16,7 @@
           <h2>Warsaw, Poland</h2>
         </template>
         <template #main>
-          <p>I was born in Warsaw, Poland and spent the majority of my life there.</p>
+          <p>I was born in Warsaw, Poland in 2005 and spent the majority of my life there.</p>
         </template>
       </FocusCard>
       <FocusCard class="card" data-city="eindhoven">
@@ -24,7 +24,7 @@
           <h2>Eindhoven, The Netherlands</h2>
         </template>
         <template #main>
-          <p>I recently moved to Eindhoven to attend TU/e.</p>
+          <p>In August 2024 I moved to Eindhoven to attend university.</p>
         </template>
       </FocusCard>
     </div>

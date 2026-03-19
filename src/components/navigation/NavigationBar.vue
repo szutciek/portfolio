@@ -7,7 +7,6 @@
         data-cursor-target
         data-cursor-offset="4"
         data-cursor-snap-color="var(--main-color-l)"
-        v-if="!isOpen"
       >
         <svg
           width="20"
