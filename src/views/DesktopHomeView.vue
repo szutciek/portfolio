@@ -7,22 +7,24 @@
         :nextPageScroll="sections[1]?.markers[0]?.coveredProgress"
       />
       <!-- ABOUT -->
-      <AboutSection :scroll1="sections[1]" :scroll2="sections[2]" />
+      <section horizontal>
+        <AboutSection :scroll="sections[1]" />
+      </section>
       <!-- PROJECTS -->
       <section vertical>
-        <WebcamGameSection :scroll="sections[3]" />
+        <WebcamGameSection :scroll="sections[2]" />
       </section>
       <section vertical>
-        <KanapkaSSOSection :scroll="sections[4]" />
+        <KanapkaSSOSection :scroll="sections[3]" />
       </section>
       <section vertical>
-        <CheckoutSection :scroll="sections[5]" />
+        <CheckoutSection :scroll="sections[4]" />
       </section>
       <section vertical>
-        <RoomganizerSection :scroll="sections[6]" />
+        <RoomganizerSection :scroll="sections[5]" />
       </section>
       <section vertical>
-        <ZolwieSection :scroll="sections[7]" />
+        <ZolwieSection :scroll="sections[6]" />
       </section>
       <!--   ....   -->
       <div class="padding">
