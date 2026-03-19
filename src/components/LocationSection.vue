@@ -44,7 +44,6 @@ const props = defineProps({
 <style scoped>
 .location {
   position: relative;
-  width: var(--full-width);
   height: 100vh;
   width: calc(var(--full-width) / 2);
   padding: 40px;

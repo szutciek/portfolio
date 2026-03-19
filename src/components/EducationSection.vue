@@ -13,7 +13,7 @@ const props = defineProps({
 
 <style scoped>
 .education {
-  width: var(--full-width);
+  width: calc(var(--full-width) / 2);
   height: 100vh;
   padding: 40px;
 }
