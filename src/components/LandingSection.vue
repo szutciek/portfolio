@@ -49,7 +49,7 @@
                 <h2>Computer Science & Engineering</h2>
               </div>
               <AdjacentIcon class="onSnap" style="position: absolute; top: 4px; right: 4px">
-                <p>Program Info</p>
+                <p>Study Info</p>
                 <p>&nearr;</p>
               </AdjacentIcon>
             </div>

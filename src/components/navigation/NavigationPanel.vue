@@ -127,45 +127,6 @@
   font-weight: 300;
   color: #c7c7c7;
 }
-.spinWhite {
-  color: white;
-  height: 46px;
-  line-height: 46px;
-  margin: 15px 0;
-  font-size: 18px;
-  overflow: hidden;
-  transition: 0.4s;
-}
-.spinWhite h1 {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 30px;
-  font-weight: 300;
-  transition: 0.4s;
-}
-.spinWhite svg {
-  height: 35px;
-  width: 35px;
-  stroke: white;
-  stroke-width: 24px;
-}
-.spinWhite:hover h1 {
-  transform: translateY(-46px);
-}
-.spinWhite .moveSvg {
-  opacity: 0;
-  transition:
-    transform 0.7s ease-out,
-    opacity 0.1s;
-}
-.spinWhite:hover .moveSvg {
-  transform: translateX(50px);
-  opacity: 1;
-}
-.spinWhite:hover {
-  transform: translateX(-10px);
-}
 .navArea h4 {
   margin-top: auto;
   color: #909090;

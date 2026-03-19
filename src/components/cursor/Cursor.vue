@@ -331,7 +331,15 @@ function computeTarget() {
   for (const entry of targets) {
     const rect = entry.el.getBoundingClientRect()
     const dist = distToRect(mouse.x, mouse.y, rect, entry.offset)
-    if (dist < props.attractRadius && dist < bestDist) {
+    const x = rect.x + rect.width / 2
+    const y = rect.y + rect.height / 2
+    let node = document.elementFromPoint(x, y)
+    while (node) {
+      if (node === entry.el) break
+      node = node.parentElement
+    }
+    const isVisible = node === entry.el
+    if (isVisible && dist < props.attractRadius && dist < bestDist) {
       bestDist = dist
       bestShape = getTargetShape(entry.el, entry.offset)
       bestEntry = entry
