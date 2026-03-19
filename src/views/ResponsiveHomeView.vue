@@ -13,6 +13,7 @@ const { isMobile } = useBreakpoint()
 <style>
 h1 {
   font-size: 120px;
+  font-weight: 700;
   color: #fff;
 }
 ._half h1 {
@@ -20,7 +21,23 @@ h1 {
   color: #fff;
 }
 h2 {
+  font-size: 60px;
+  font-weight: 700;
+  color: #fff;
+}
+._half h2 {
+  font-size: 50px;
+  color: #fff;
+}
+h2 span {
+  font-size: 16px;
+  font-weight: 500;
+  color: #888;
+  margin-left: 20px;
+}
+h3 {
   font-size: 24px;
+  font-weight: 600;
   color: #ddd;
 }
 p {
@@ -30,11 +47,15 @@ p {
 @media (max-width: 1800px) {
   h1 {
     font-size: 90px;
-    color: #fff;
   }
   ._half h1 {
     font-size: 70px;
-    color: #fff;
+  }
+  h2 {
+    font-size: 45px;
+  }
+  ._half h2 {
+    font-size: 35px;
   }
 }
 @media (max-width: 1600px) {
@@ -43,6 +64,12 @@ p {
   }
   ._half h1 {
     font-size: 60px;
+  }
+  h2 {
+    font-size: 40px;
+  }
+  ._half h2 {
+    font-size: 30px;
   }
 }
 @media (max-width: 1400px) {
@@ -53,6 +80,12 @@ p {
     font-size: 40px;
   }
   h2 {
+    font-size: 30px;
+  }
+  ._half h2 {
+    font-size: 20px;
+  }
+  h3 {
     font-size: 20px;
   }
   p {

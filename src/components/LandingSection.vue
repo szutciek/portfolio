@@ -46,7 +46,7 @@
               <img src="/images/tue.png" alt="TU/e Logo" />
               <div>
                 <p>Second Year Bachelor</p>
-                <h2>Computer Science & Engineering</h2>
+                <h3>Computer Science & Engineering</h3>
               </div>
               <AdjacentIcon class="onSnap" style="position: absolute; top: 4px; right: 4px">
                 <p>Study Info</p>
@@ -63,7 +63,7 @@
               <img src="/images/kanapka.png" alt="Kanapka Logo" />
               <div>
                 <p>6+ Years of Experience</p>
-                <h2>Full Stack Web & Game Developer</h2>
+                <h3>Full Stack Web & Game Developer</h3>
               </div>
               <AdjacentIcon class="onSnap" style="position: absolute; top: 4px; right: 4px">
                 <p>GitHub</p>

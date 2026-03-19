@@ -1,15 +1,13 @@
 <template>
   <div class="focusCard" data-cursor-target data-cursor-passive>
-    <slot name="header" />
-    <slot name="main" />
-    <slot name="footer" />
+    <slot />
   </div>
 </template>
 
 <style scoped>
 .focusCard {
   width: fit-content;
-  padding: 20px;
+  padding: 30px;
 
   display: flex;
   flex-direction: column;
