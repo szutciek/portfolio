@@ -44,7 +44,8 @@ const props = defineProps({
   stroke: white;
   stroke-width: 24px;
 }
-.spinWhite:hover h1 {
+.spinWhite:hover h1,
+.cursor-snapped .spinWhite h1 {
   transform: translateY(-46px);
 }
 .spinWhite .moveSvg {
@@ -53,11 +54,13 @@ const props = defineProps({
     transform 0.7s ease-out,
     opacity 0.1s;
 }
-.spinWhite:hover .moveSvg {
+.spinWhite:hover .moveSvg,
+.cursor-snapped .spinWhite .moveSvg {
   transform: translateX(50px);
   opacity: 1;
 }
-.spinWhite:hover {
+.spinWhite:hover,
+.cursor-snapped .spinWhite {
   transform: translateX(-10px);
 }
 </style>
