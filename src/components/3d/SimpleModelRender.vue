@@ -65,6 +65,10 @@ const container = ref(null)
 let renderer, scene, camera, controls, frameId, model
 let textureLoader = new THREE.TextureLoader()
 
+// Video texture state
+let videoElement = null
+let videoTexture = null
+
 let mouseX = 0
 let mouseY = 0
 
@@ -156,19 +160,84 @@ function onMouseMove(event) {
   targetPanX = -normalizedY * 0.05
 }
 
+/**
+ * Returns true if the given URL points to a video file (webm or mp4).
+ */
+function isVideoUrl(url) {
+  if (!url) return false
+  const lower = url.toLowerCase().split('?')[0] // strip query params before checking extension
+  return lower.endsWith('.webm') || lower.endsWith('.mp4')
+}
+
+/**
+ * Disposes the current video element and its Three.js texture, if any.
+ */
+function disposeVideoTexture() {
+  if (videoElement) {
+    videoElement.pause()
+    videoElement.removeAttribute('src')
+    videoElement.load()
+    videoElement = null
+  }
+  if (videoTexture) {
+    videoTexture.dispose()
+    videoTexture = null
+  }
+}
+
+/**
+ * Creates a <video> element for the given URL, returns a THREE.VideoTexture.
+ * The video plays once (no loop) and pauses on end.
+ */
+function createVideoTexture(url) {
+  disposeVideoTexture()
+
+  videoElement = document.createElement('video')
+  videoElement.src = url
+  videoElement.crossOrigin = 'anonymous'
+  videoElement.muted = false // unmuted — adjust if autoplay policy requires muted
+  videoElement.loop = false
+  videoElement.playsInline = true
+
+  // Play as soon as enough data is available
+  videoElement.addEventListener(
+    'canplay',
+    () => {
+      videoElement.play().catch(() => {
+        // Autoplay may be blocked; the texture will still update once the user
+        // interacts with the page and playback starts.
+      })
+    },
+    { once: true },
+  )
+
+  // Pause at the last frame when the video ends (no black flash)
+  videoElement.addEventListener('ended', () => {
+    videoElement.pause()
+  })
+
+  videoElement.load()
+
+  videoTexture = new THREE.VideoTexture(videoElement)
+  videoTexture.colorSpace = THREE.SRGBColorSpace
+
+  // Match the orientation tweaks used for static textures
+  videoTexture.center.set(0.5, 0.5)
+  videoTexture.rotation = -Math.PI / 2
+  videoTexture.flipY = false
+
+  return videoTexture
+}
+
 function applyScreenTexture() {
   if (!model || !props.screenMeshName || !props.screenTextureUrl) return
 
   const screenMesh = model.getObjectByName(props.screenMeshName)
   if (!screenMesh) return
 
-  textureLoader.load(props.screenTextureUrl, (texture) => {
-    texture.colorSpace = THREE.SRGBColorSpace
-    texture.anisotropy = renderer.capabilities.getMaxAnisotropy()
-
-    texture.center.set(0.5, 0.5) // rotate around center
-    texture.rotation = -Math.PI / 2 // rotate -90°
-    texture.flipY = false // important for glTF
+  if (isVideoUrl(props.screenTextureUrl)) {
+    // ── Video path ──────────────────────────────────────────────────────────
+    const texture = createVideoTexture(props.screenTextureUrl)
 
     const material = new THREE.MeshStandardMaterial({
       map: texture,
@@ -178,7 +247,28 @@ function applyScreenTexture() {
     })
 
     screenMesh.material = material
-  })
+  } else {
+    // ── Static image path (original behaviour) ───────────────────────────
+    disposeVideoTexture()
+
+    textureLoader.load(props.screenTextureUrl, (texture) => {
+      texture.colorSpace = THREE.SRGBColorSpace
+      texture.anisotropy = renderer.capabilities.getMaxAnisotropy()
+
+      texture.center.set(0.5, 0.5)
+      texture.rotation = -Math.PI / 2
+      texture.flipY = false
+
+      const material = new THREE.MeshStandardMaterial({
+        map: texture,
+        emissive: new THREE.Color(0xffffff),
+        emissiveMap: texture,
+        emissiveIntensity: 1,
+      })
+
+      screenMesh.material = material
+    })
+  }
 }
 
 function loadModel() {
@@ -217,12 +307,15 @@ function animate() {
 
   if (controls) controls.update()
 
+  if (videoTexture && videoElement && !videoElement.paused && !videoElement.ended) {
+    videoTexture.needsUpdate = true
+  }
+
   if (model) {
     if (props.limitControls) {
       panOffsetX += (targetPanX - panOffsetX) * 0.08
       panOffsetY += (targetPanY - panOffsetY) * 0.08
     }
-
     model.rotation.set(baseRotation.x, baseRotation.y + panOffsetY, baseRotation.z + panOffsetX)
   }
 
@@ -247,6 +340,8 @@ onBeforeUnmount(() => {
   if (props.limitControls && container.value) {
     window.removeEventListener('mousemove', onMouseMove)
   }
+
+  disposeVideoTexture()
 
   if (renderer) {
     renderer.dispose()

@@ -78,6 +78,10 @@
 </template>
 
 <script setup>
+import { useCursorSnap } from '@/composables/useCursorSnap.js'
+
+const { isSnapped, snappedEl } = useCursorSnap()
+
 const props = defineProps({
   scroll: Number,
   nextPageScroll: Number,
@@ -87,12 +91,20 @@ const monitor = ref(null)
 
 const textureUrl = ref('/images/pic.png')
 
-const spinningMonitor = (scroll) => {
-  if (scroll > 0.5) {
-    textureUrl.value = `/images/aboutme.png`
-  } else {
+const selectTexture = () => {
+  if (props.scroll < 0.5) {
     textureUrl.value = `/images/pic.png`
+    return
   }
+  if (snappedEl?.value?.dataset?.city === 'warsaw') {
+    textureUrl.value = `/videos/warsaw.webm`
+    return
+  }
+  if (snappedEl?.value?.dataset?.city === 'eindhoven') {
+    textureUrl.value = `/videos/eindhoven.webm`
+    return
+  }
+  textureUrl.value = `/images/aboutme.png`
 }
 
 const scrollingToNext = (scroll) => {
@@ -109,7 +121,9 @@ const openUrl = (url) => {
   window.open(url)
 }
 
-watch(() => props.scroll, spinningMonitor)
+watch(() => props.scroll, selectTexture)
+watch(isSnapped, selectTexture)
+
 watch(() => props.nextPageScroll, scrollingToNext)
 </script>
 

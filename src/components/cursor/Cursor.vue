@@ -43,7 +43,7 @@
  * data-cursor-mode="wireframe|underline"
  * data-cursor-snap-color="#f00"   — stroke override when snapped
  * data-cursor-passive             — passive target: no pointer cursor, no
- *                                   click, stroke becomes #fffa
+ *                                   click, stroke becomes #fff
  *
  * PROPS
  * -----
@@ -87,7 +87,6 @@ const renderMode = ref(props.mode)
 const mouse = { x: -999, y: -999 }
 
 const snapStrokeColor = ref(null)
-// Whether the currently snapped target is passive
 const snapIsPassive = ref(false)
 
 const activeStrokeColor = computed(() => {
@@ -142,6 +141,14 @@ const activeGlyphPath = ref(null)
 const currentPath = ref('')
 let rafId = null
 let targets = []
+
+// ─── Target-switch toggle ─────────────────────────────────────────────────────
+// When the snapped element changes while already snapped, we set isSnapped to
+// false for exactly one RAF tick so watchers see the transition false → true.
+// pendingSnapEl holds the incoming element during that one-tick gap.
+let pendingSnapEl = null
+let pendingSnapEntry = null
+let pendingSnapShape = null
 
 // ─── SVG positioning ──────────────────────────────────────────────────────────
 
@@ -220,7 +227,6 @@ function scanTargets() {
     cursorMode: el.dataset.cursorMode ?? null,
     snapStrokeColor: el.dataset.cursorSnapColor ?? null,
     isGlyph: el.dataset.cursorGlyph === 'true',
-    // Passive: morphs silently — no pointer cursor, no click, #fffa stroke
     passive: el.hasAttribute('data-cursor-passive'),
   }))
 }
@@ -292,9 +298,9 @@ function emitLeave(el) {
 
 // ─── Occlusion check ──────────────────────────────────────────────────────────
 
-function testPoint(node, target) {
+function testPoint(node, el) {
   while (node) {
-    if (node === target) return true
+    if (node === el) return true
     node = node.parentElement
   }
   return false
@@ -309,15 +315,42 @@ function isVisible(el) {
   const cs = getComputedStyle(el)
   if (cs.display === 'none' || cs.visibility === 'hidden' || cs.opacity === '0') return false
 
-  let node = document.elementFromPoint(rect.x + rect.width / 2, rect.y + 1)
-  if (!testPoint(node, el)) return false
-  node = document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height - 1)
-  if (!testPoint(node, el)) return false
-  node = document.elementFromPoint(rect.x + 1, rect.y + rect.height / 2)
-  if (!testPoint(node, el)) return false
-  node = document.elementFromPoint(rect.x + rect.width - 1, rect.y + rect.height / 2)
-  if (!testPoint(node, el)) return false
+  const cx = rect.x + rect.width / 2
+  const cy = rect.y + rect.height / 2
+  if (!testPoint(document.elementFromPoint(cx, rect.y + 1), el)) return false
+  if (!testPoint(document.elementFromPoint(cx, rect.y + rect.height - 1), el)) return false
+  if (!testPoint(document.elementFromPoint(rect.x + 1, cy), el)) return false
+  if (!testPoint(document.elementFromPoint(rect.x + rect.width - 1, cy), el)) return false
   return true
+}
+
+// ─── Snap helpers ─────────────────────────────────────────────────────────────
+
+function applySnap(entry, shape) {
+  if (prevSnappedEl && prevSnappedEl !== entry.el) {
+    prevSnappedEl.classList.remove(SNAP_CLASS)
+  }
+  entry.el.classList.add(SNAP_CLASS)
+  prevSnappedEl = entry.el
+  isSnapped.value = true
+  snappedEl.value = entry.el
+  snappedMode.value = renderMode.value
+  snapStrokeColor.value = entry.snapStrokeColor
+  snapIsPassive.value = entry.passive
+  activeGlyphPath.value = shape.glyphPath
+  if (!entry.passive) emitEnter(entry.el)
+}
+
+function clearSnap() {
+  prevSnappedEl?.classList.remove(SNAP_CLASS)
+  if (!snapIsPassive.value) emitLeave(prevSnappedEl)
+  prevSnappedEl = null
+  isSnapped.value = false
+  snappedEl.value = null
+  snappedMode.value = null
+  snapStrokeColor.value = null
+  snapIsPassive.value = false
+  activeGlyphPath.value = null
 }
 
 // ─── Attraction logic ─────────────────────────────────────────────────────────
@@ -343,6 +376,29 @@ function computeTarget() {
   const defaultW = props.size * 2
   const defaultR = props.size
 
+  // ── Resolve pending snap from previous tick ────────────────────────────────
+  // If last tick we cleared snap to signal a target switch, re-apply now with
+  // the new target so watchers see false → true across exactly one tick.
+  if (pendingSnapEl) {
+    applySnap(pendingSnapEntry, pendingSnapShape)
+    setRealCursor(pendingSnapEntry.passive ? 'none' : 'pointer')
+
+    // Set shape targets for the new element
+    target.x = pendingSnapShape.x
+    target.y = pendingSnapShape.y
+    target.w = pendingSnapShape.w
+    target.h = pendingSnapShape.h
+    target.rtl = pendingSnapShape.rtl
+    target.rtr = pendingSnapShape.rtr
+    target.rbr = pendingSnapShape.rbr
+    target.rbl = pendingSnapShape.rbl
+
+    pendingSnapEl = null
+    pendingSnapEntry = null
+    pendingSnapShape = null
+    return // skip normal target finding this tick — snap is already resolved
+  }
+
   let bestDist = Infinity
   let bestShape = null
   let bestEntry = null
@@ -350,7 +406,8 @@ function computeTarget() {
   for (const entry of targets) {
     const rect = entry.el.getBoundingClientRect()
     const dist = distToRect(mouse.x, mouse.y, rect, entry.offset)
-    if (dist < props.attractRadius && dist < bestDist && isVisible(entry.el)) {
+    const alreadySnapped = isSnapped.value && snappedEl.value === entry.el
+    if (dist < props.attractRadius && dist < bestDist && (alreadySnapped || isVisible(entry.el))) {
       bestDist = dist
       bestShape = getTargetShape(entry.el, entry.offset)
       bestEntry = entry
@@ -365,25 +422,20 @@ function computeTarget() {
     ulActive = renderMode.value === 'underline'
 
     if (inSnapZone) {
-      // Passive targets: keep cursor hidden, no hover emulation
       setRealCursor(bestEntry.passive ? 'none' : 'pointer')
 
-      if (!isSnapped.value || snappedEl.value !== bestEntry.el) {
-        if (prevSnappedEl && prevSnappedEl !== bestEntry.el) {
-          prevSnappedEl.classList.remove(SNAP_CLASS)
-        }
-        bestEntry.el.classList.add(SNAP_CLASS)
-        prevSnappedEl = bestEntry.el
-        isSnapped.value = true
-        snappedEl.value = bestEntry.el
-        snappedMode.value = renderMode.value
-        snapStrokeColor.value = bestEntry.snapStrokeColor
-        snapIsPassive.value = bestEntry.passive
-        activeGlyphPath.value = bestShape.glyphPath
-
-        // Only emulate hover for non-passive targets
-        if (!bestEntry.passive) emitEnter(bestEntry.el)
+      if (!isSnapped.value) {
+        // Fresh snap — no previous target
+        applySnap(bestEntry, bestShape)
+      } else if (snappedEl.value !== bestEntry.el) {
+        // Target switched while snapped — toggle isSnapped for one tick
+        clearSnap()
+        inSnapZone = false // treat this tick as unsnapped for spring
+        pendingSnapEl = bestEntry.el
+        pendingSnapEntry = bestEntry
+        pendingSnapShape = bestShape
       }
+      // else: same element, nothing to do
 
       deformT.dx = 0
       deformT.dy = 0
@@ -417,18 +469,7 @@ function computeTarget() {
       target.rbl = bestShape.rbl
     } else {
       setRealCursor('none')
-
-      if (isSnapped.value) {
-        prevSnappedEl?.classList.remove(SNAP_CLASS)
-        if (!snapIsPassive.value) emitLeave(prevSnappedEl)
-        prevSnappedEl = null
-        isSnapped.value = false
-        snappedEl.value = null
-        snappedMode.value = null
-        snapStrokeColor.value = null
-        snapIsPassive.value = false
-        activeGlyphPath.value = null
-      }
+      if (isSnapped.value) clearSnap()
 
       const w = attractWeight(bestDist)
 
@@ -488,17 +529,7 @@ function computeTarget() {
     ulActive = false
     renderMode.value = props.mode
 
-    if (isSnapped.value) {
-      prevSnappedEl?.classList.remove(SNAP_CLASS)
-      if (!snapIsPassive.value) emitLeave(prevSnappedEl)
-      prevSnappedEl = null
-      isSnapped.value = false
-      snappedEl.value = null
-      snappedMode.value = null
-      snapStrokeColor.value = null
-      snapIsPassive.value = false
-      activeGlyphPath.value = null
-    }
+    if (isSnapped.value) clearSnap()
 
     setRealCursor('none')
     deformT.dx = 0
@@ -613,7 +644,6 @@ function onCaptureClick(e) {
   if (!props.virtualClick) return
   if (e[SYNTHETIC_MARKER]) return
 
-  // Passive target — swallow the click entirely, fire nothing
   if (isSnapped.value && snapIsPassive.value) {
     e.preventDefault()
     e.stopPropagation()
