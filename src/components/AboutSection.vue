@@ -1,18 +1,20 @@
 <template>
-  <div class="horizontal">
-    <section marker style="position: absolute; left: 0; width: var(--full-width)"></section>
-    <LocationSection
-      :gScroll="scroll?.visibleProgress"
-      :scroll="scroll?.markers[1]?.coveredProgress"
-    />
-    <EducationSection :scroll="scroll?.markers[2]?.coveredProgress" />
-    <InterestsSection :scroll="scroll?.markers[3]?.coveredProgress" />
-  </div>
+  <section horizontal>
+    <div class="horizontal">
+      <section marker style="position: absolute; left: 0; width: var(--full-width)"></section>
+      <LocationSection
+        :gScroll="sections[0]?.visibleProgress"
+        :scroll="sections[0]?.markers[1]?.coveredProgress"
+      />
+      <EducationSection :scroll="sections[0]?.markers[2]?.coveredProgress" />
+      <InterestsSection :scroll="sections[0]?.markers[3]?.coveredProgress" />
+    </div>
+  </section>
 </template>
 
 <script setup>
 const props = defineProps({
-  scroll: Object,
+  sections: Array,
 })
 </script>
 

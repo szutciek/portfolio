@@ -61,5 +61,14 @@ import { useBreakpoint } from '@/composables/useBreakpoint'
 import DesktopLayout from '@/layouts/DesktopLayout.vue'
 import MobileLayout from '@/layouts/MobileLayout.vue'
 
+Object.defineProperty(Array.prototype, 'subset', {
+  value(startIndex, endIndex) {
+    return endIndex === undefined ? this.slice(startIndex) : this.slice(startIndex, endIndex + 1)
+  },
+  writable: true,
+  configurable: true,
+  enumerable: false,
+})
+
 const { isMobile } = useBreakpoint()
 </script>

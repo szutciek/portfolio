@@ -7,25 +7,9 @@
         :nextPageScroll="sections[1]?.markers[0]?.coveredProgress"
       />
       <!-- ABOUT -->
-      <section horizontal>
-        <AboutSection :scroll="sections[1]" />
-      </section>
+      <AboutSection :sections="sections?.subset(1, 1)" />
       <!-- PROJECTS -->
-      <section vertical>
-        <WebcamGameSection :scroll="sections[2]" />
-      </section>
-      <section vertical>
-        <KanapkaSSOSection :scroll="sections[3]" />
-      </section>
-      <section vertical>
-        <CheckoutSection :scroll="sections[4]" />
-      </section>
-      <section vertical>
-        <RoomganizerSection :scroll="sections[5]" />
-      </section>
-      <section vertical>
-        <ZolwieSection :scroll="sections[6]" />
-      </section>
+      <ProjectSection :sections="sections?.subset(2)" />
       <!--   ....   -->
       <div class="padding">
         <p>The end for now</p>
@@ -39,6 +23,11 @@
   --nav-space: 160px;
   --full-width: calc(100vw - var(--nav-space));
 }
+
+._desktopHome section[vertical],
+._desktopHome section[horizontal] {
+  padding: 0 80px;
+}
 </style>
 
 <style scoped>
@@ -51,12 +40,5 @@
   display: flex;
   justify-content: center;
   align-items: center;
-}
-</style>
-
-<style>
-._desktopHome section[vertical],
-._desktopHome section[horizontal] {
-  padding: 0 80px;
 }
 </style>
