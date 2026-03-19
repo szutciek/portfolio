@@ -15,6 +15,6 @@ const props = defineProps({
 .education {
   width: var(--full-width);
   height: 100vh;
-  padding: 80px;
+  padding: 40px;
 }
 </style>

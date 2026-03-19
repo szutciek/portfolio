@@ -20,6 +20,7 @@ declare module 'vue' {
     CurvedPath: typeof import('./src/components/CurvedPath.vue')['default']
     Demo: typeof import('./src/components/cursor/Demo.vue')['default']
     EducationSection: typeof import('./src/components/EducationSection.vue')['default']
+    FocusCard: typeof import('./src/components/cursor/FocusCard.vue')['default']
     Fonts: typeof import('./src/components/Fonts.vue')['default']
     HorizontalSticky: typeof import('./src/components/scroll/HorizontalSticky.vue')['default']
     InterestsSection: typeof import('./src/components/InterestsSection.vue')['default']
