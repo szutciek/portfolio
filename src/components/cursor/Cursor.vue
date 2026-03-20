@@ -47,7 +47,7 @@
  *
  * PROPS
  * -----
- * size            {Number}  Default circle radius in px.             Default: 32
+ * size            {Number}  Default circle radius in px.             Default: 30
  * strokeColor     {String}  Stroke color (free-roaming + snap fallback).
  * strokeWidth     {Number}  Stroke width in px.                      Default: 1.5
  * underlineHeight {Number}  Underline thickness in px.               Default: 2
@@ -66,7 +66,7 @@ const SNAP_CLASS = 'cursor-snapped'
 const PASSIVE_COLOR = '#fff'
 
 const props = defineProps({
-  size: { type: Number, default: 32 },
+  size: { type: Number, default: 30 },
   strokeColor: { type: String, default: 'var(--main-color-l)' },
   strokeWidth: { type: Number, default: 1.5 },
   underlineHeight: { type: Number, default: 2 },

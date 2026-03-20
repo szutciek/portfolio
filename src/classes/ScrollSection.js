@@ -52,6 +52,7 @@ export default class ScrollSection {
     return {
       coveredProgress: this.getClampedCoveredScrollProgress(scroll),
       visibleProgress: this.getVisibleScrollProgress(scroll),
+      debug: this.element,
       markers: this.markers.map((m) => {
         return m.getSectionData(scroll)
       }),

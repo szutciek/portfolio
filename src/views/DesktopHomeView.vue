@@ -28,6 +28,17 @@
 ._desktopHome section[horizontal] {
   padding: 0 var(--base8);
 }
+
+._subsectionTitle svg {
+  margin-left: var(--base3);
+  height: var(--base4);
+  width: var(--base4);
+}
+._subsectionTitle path,
+._subsectionTitle circle {
+  stroke-width: var(--base3);
+  stroke: var(--main-color-l);
+}
 </style>
 
 <style scoped>

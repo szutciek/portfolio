@@ -6,7 +6,7 @@
         :gScroll="sections[0]?.visibleProgress"
         :scroll="sections[0]?.markers[1]?.coveredProgress"
       />
-      <EducationSection :scroll="sections[0]?.markers[2]?.coveredProgress" />
+      <EducationSection :scroll="sections[0]?.markers[2]" />
       <InterestsSection :scroll="sections[0]?.markers[3]?.coveredProgress" />
     </div>
   </section>
@@ -16,6 +16,11 @@
 const props = defineProps({
   sections: Array,
 })
+
+setInterval(() => {
+  console.log(props.sections[0]?.markers[1]?.debug)
+  console.log(props.sections[0]?.markers[2]?.debug)
+}, 1000)
 </script>
 
 <style scoped>
