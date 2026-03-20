@@ -2,13 +2,16 @@
   <LenisScroll v-slot="{ global, sections }" sections>
     <div class="_desktopHome container">
       <!-- INTRODUCTION -->
+      <div id="introduction"></div>
       <LandingSection
         :scroll="sections[0]?.coveredProgress"
         :nextPageScroll="sections[1]?.markers[0]?.coveredProgress"
       />
       <!-- ABOUT -->
+      <div id="about"></div>
       <AboutSection :sections="sections?.subset(1, 1)" />
       <!-- PROJECTS -->
+      <div id="projects"></div>
       <ProjectSection :sections="sections?.subset(2)" />
       <!--   ....   -->
       <div class="padding">

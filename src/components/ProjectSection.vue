@@ -11,13 +11,15 @@
             :scrollRange="10"
           />
         </div>
-        <div class="content"></div>
+        <div class="content">
+          <h1 style="color: var(--main-color-l); text-align: center">PROJECTS</h1>
+        </div>
       </div>
     </section>
     <section vertical>
       <ProjectDemonstration>
         <template #head>
-          <h1>Webcam Game</h1>
+          <h2>Webcam Game</h2>
           <p>SEEING YOUR ENEMY, REDEFINED</p>
         </template>
         <template #buttons>
@@ -61,7 +63,7 @@
     <section vertical>
       <ProjectDemonstration>
         <template #head>
-          <h1>Kanapka SSO</h1>
+          <h2>Kanapka SSO</h2>
           <p>FLEXIBLE OAUTH2 SINGLE SIGN ON</p>
         </template>
         <template #buttons>
@@ -117,7 +119,7 @@
     <section vertical>
       <ProjectDemonstration>
         <template #head>
-          <h1>Cafeteria Kiosk</h1>
+          <h2>Cafeteria Kiosk</h2>
           <p>MCDONALDS STYLE DISPLAY FOR TAKING ORDERS AT A SCHOOL</p>
         </template>
         <template #buttons>
@@ -167,7 +169,7 @@
     <section vertical>
       <ProjectDemonstration>
         <template #head>
-          <h1>Roomganizer</h1>
+          <h2>Roomganizer</h2>
           <p>REVOLUTIONARY FACILITY MANAGEMENT SYSTEM</p>
         </template>
         <template #buttons>
@@ -217,7 +219,7 @@
     <section vertical>
       <ProjectDemonstration>
         <template #head>
-          <h1>Turtle Game</h1>
+          <h2>Turtle Game</h2>
           <p>ONLINE MULTIPLAYER VERSION OF POPULAR BOARD GAME</p>
         </template>
         <template #buttons>

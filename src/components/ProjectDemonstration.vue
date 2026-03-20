@@ -7,9 +7,7 @@
       </div>
     </div>
     <div class="screenShots">
-      <div></div>
       <slot name="screenshots" />
-      <div></div>
     </div>
   </div>
 </template>
@@ -18,6 +16,7 @@
 ._projectDemonstration {
   min-height: 100vh;
   padding: var(--base8);
+  padding-bottom: 40vh;
   display: grid;
   grid-template-columns: 1fr 1fr;
 }
@@ -27,7 +26,7 @@
   align-self: start;
 }
 ._projectDemonstration .actions {
-  margin-top: var(--base4);
+  margin-top: var(--base3);
   display: flex;
   gap: var(--base2);
 }
