@@ -1,19 +1,25 @@
 <template>
   <section marker class="education _half">
+    <section marker class="phantomMarker"></section>
     <div class="absolute">
       <HorizontalSticky :stick="scroll?.coveredProgress">
         <AdjacentIcon class="title _subsectionTitle" overrideGap="var(--base3)">
           <!-- prettier-ignore -->
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 160c16-63.16 76.43-95.41 208-96a15.94 15.94 0 0116 16v288a16 16 0 01-16 16c-128 0-177.45 25.81-208 64-30.37-38-80-64-208-64-9.88 0-16-8.05-16-17.93V80a15.94 15.94 0 0116-16c131.57.59 192 32.84 208 96zM256 160v288" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/></svg>
-          <h2>{{ scroll?.visibleProgress }}Education & Experience<span>/ About me </span></h2>
+          <h2>Education & Experience<span>/ About me</span></h2>
         </AdjacentIcon>
       </HorizontalSticky>
     </div>
     <div class="content">
       <div class="media">
-        <!-- images that are currently selected -->
+        <!-- temporary solution -->
+        <div class="absolute">
+          <HorizontalSticky :stick="scroll?.coveredProgress">
+            <p style="text-align: center; margin-top: 100px">Accompanying images incoming...</p>
+          </HorizontalSticky>
+        </div>
       </div>
-      <TimelineComponent :scroll="scroll?.markers[0]?.visibleProgress" />
+      <TimelineComponent :scroll="scroll?.markers[0]?.coveredProgress" />
     </div>
   </section>
 </template>
@@ -28,7 +34,7 @@ const props = defineProps({
 .education {
   height: 100vh;
   position: relative;
-  width: 200vw;
+  min-width: 150vw;
 }
 .absolute {
   position: absolute;
@@ -38,6 +44,12 @@ const props = defineProps({
 .title {
   padding: var(--base8);
   width: 100vw;
+}
+
+.phantomMarker {
+  position: absolute;
+  left: calc(var(--full-width) / -2);
+  width: calc(100%);
 }
 
 .content {

@@ -16,11 +16,6 @@
 const props = defineProps({
   sections: Array,
 })
-
-setInterval(() => {
-  console.log(props.sections[0]?.markers[1]?.debug)
-  console.log(props.sections[0]?.markers[2]?.debug)
-}, 1000)
 </script>
 
 <style scoped>

@@ -10,10 +10,8 @@
         :style="{ left: ev.position + '%' }"
       >
         <div class="card card-top">
-          <p class="ev-label">{{ ev.label }}</p>
-          <h3 class="ev-title">{{ ev.title }}</h3>
-          <p class="ev-desc">{{ ev.description }}</p>
-          <span class="ev-period">{{ ev.period }}</span>
+          <h4>{{ ev.title }}</h4>
+          <p>{{ ev.period }}</p>
         </div>
         <div class="stem"></div>
         <div class="dot"></div>
@@ -51,10 +49,8 @@
         <div class="dot"></div>
         <div class="stem"></div>
         <div class="card card-bot">
-          <p class="ev-label">{{ ev.label }}</p>
-          <h3 class="ev-title">{{ ev.title }}</h3>
-          <p class="ev-desc">{{ ev.description }}</p>
-          <span class="ev-period">{{ ev.period }}</span>
+          <h4>{{ ev.title }}</h4>
+          <p>{{ ev.period }}</p>
         </div>
       </div>
     </div>
@@ -82,8 +78,8 @@ const progress = computed(() => Math.min(100, Math.max(0, props.scroll * 100)))
 
 // Active: the nub is within this many % units of the node
 const ACTIVE_WINDOW = 3.5
-const isPassed = (pos) => progress.value > pos + ACTIVE_WINDOW / 2
-const isActive = (pos) => Math.abs(progress.value - pos) <= ACTIVE_WINDOW
+const isPassed = (pos) => progress.value > pos
+const isActive = (pos) => Math.abs(progress.value - pos) <= 0
 
 // ─────────────────────────────────────────────────────────────────
 // Data – replace with your own events
@@ -102,73 +98,58 @@ const isActive = (pos) => Math.abs(progress.value - pos) <= ACTIVE_WINDOW
  */
 const topEvents = [
   {
-    position: 10,
-    label: 'Education',
-    title: 'School name',
-    description: 'A short description of this stage of your education goes here.',
-    period: '20XX – 20XX',
+    position: 20,
+    title: 'Start IB Diploma Programme @ ASW',
+    description: 'Transfer to the American School of Warsaw.',
+    period: 'September 2022',
   },
   {
-    position: 38,
-    label: 'Education',
-    title: 'School name',
-    description: 'A short description of this stage of your education goes here.',
-    period: '20XX – 20XX',
+    position: 55,
+    title: 'Graduation IB Diploma Programme @ ASW',
+    description: 'Successful graduation with the bilingual diploma.',
+    period: 'May 2024',
   },
   {
     position: 65,
-    label: 'Education',
-    title: 'Degree title',
-    description: 'University or institution name. Area of study or specialisation.',
-    period: '20XX – 20XX',
+    title: 'Start Computer Science & Engineering @ TU/e',
+    description: 'Start of the first academic year at university.',
+    period: 'September 2024',
   },
   {
-    position: 88,
-    label: 'Education',
-    title: 'Degree title',
-    description: 'University or institution name. Area of study or specialisation.',
-    period: '20XX – 20XX',
+    position: 95,
+    title: 'Graduation Computer Science & Engineering @ TU/e*',
+    description: 'Expected graduation from TU/e.',
+    period: 'Summer 2027',
   },
 ]
 
 const bottomEvents = [
   {
-    position: 18,
-    label: 'Sport',
-    title: 'Activity name',
-    description: 'Brief description of the sport or activity and your involvement.',
-    period: '20XX – 20XX',
+    position: 5,
+    title: 'End of swimming career',
+    description: 'I quit my swimming career to pursue higher education in Computer Science.',
+    period: 'Summer 2021',
   },
   {
-    position: 44,
-    label: 'Sport',
-    title: 'Activity name',
-    description: 'Brief description of the sport or activity and your involvement.',
-    period: '20XX – 20XX',
+    position: 45,
+    title: 'Drivers License Obtained',
+    description: 'I passed the drivers license text for B category vehicles.',
+    period: 'October 2023',
   },
   {
-    position: 70,
-    label: 'Work',
-    title: 'Job title',
-    description: 'Company or organisation name. What you worked on.',
-    period: '20XX – 20XX',
-  },
-  {
-    position: 92,
-    label: 'Work',
-    title: 'Job title',
-    description: 'Company or organisation name. What you worked on.',
-    period: '20XX – 20XX',
+    position: 80,
+    title: 'Epic 4000m Tandem Skydive',
+    description: 'I jumped out of a plane before it landed.',
+    period: 'July 2025',
   },
 ]
 
 const yearMarkers = [
-  { year: '20XX', position: 0 },
-  { year: '20XX', position: 20 },
-  { year: '20XX', position: 40 },
-  { year: '20XX', position: 60 },
-  { year: '20XX', position: 80 },
-  { year: '20XX', position: 100 },
+  { year: '2022', position: 10 },
+  { year: '2023', position: 30 },
+  { year: '2024', position: 50 },
+  { year: '2025', position: 70 },
+  { year: '2026', position: 90 },
 ]
 </script>
 
@@ -178,14 +159,9 @@ const yearMarkers = [
 .tl-root {
   --accent: var(--main-color-l);
   --spine-off: var(--bg-color-l);
-  --node-off: #c8cfd9;
-  --text-faint: #9ba8b8;
-  --text-mid: #5a6880;
-  --text-dark: #1a2236;
-  --card-border: #e2e6ec;
-  --card-bg: #ffffff;
-  --tag-bg: #eef2fb;
-  --tag-color: #1a56f0;
+  --node-off: #777;
+  --text-faint: #777;
+  --text-mid: #ddd;
 }
 
 /* ── Root ────────────────────────────────────────────────────── */
@@ -193,23 +169,21 @@ const yearMarkers = [
   position: relative;
   width: 100%;
   min-width: 1100px;
-  padding: 0 80px;
-  box-sizing: border-box;
-  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  padding: 0 var(--base8);
   background: transparent;
 }
 
 /* ── Spine ───────────────────────────────────────────────────── */
 .spine-outer {
   position: relative;
-  height: 4px;
+  height: var(--base);
 }
 
 .spine-track {
   position: absolute;
   inset: 0;
   background: var(--spine-off);
-  border-radius: 2px;
+  border-radius: var(--base);
   overflow: visible;
 }
 
@@ -219,21 +193,22 @@ const yearMarkers = [
   left: 0;
   height: 100%;
   background: var(--accent);
-  border-radius: 2px;
-  transition: width 0.04s linear;
+  border-radius: var(--base);
+  transition: width 0.3s;
 }
 
 .progress-head {
+  display: none;
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 10px;
-  height: 10px;
+  width: var(--base);
+  height: var(--base);
   border-radius: 50%;
   background: var(--accent);
-  border: 2px solid #ffffff;
+  border: 2px solid #fff;
   box-shadow: 0 0 0 1.5px var(--accent);
-  transition: left 0.04s linear;
+  transition: left 0.3s;
   z-index: 5;
 }
 
@@ -242,8 +217,8 @@ const yearMarkers = [
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 6px;
-  height: 6px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: var(--node-off);
   transition: background 0.3s;
@@ -256,11 +231,10 @@ const yearMarkers = [
 
 .yr-label {
   position: absolute;
-  top: 12px;
+  top: var(--base2);
   left: 50%;
   transform: translateX(-50%);
-  font-size: 10px;
-  letter-spacing: 0.05em;
+  font-size: var(--base);
   color: var(--text-faint);
   white-space: nowrap;
   user-select: none;
@@ -274,7 +248,8 @@ const yearMarkers = [
 /* ── Tracks ──────────────────────────────────────────────────── */
 .track {
   position: relative;
-  height: 210px;
+  height: 100%;
+  background-color: red;
 }
 
 /* ── Event nodes ─────────────────────────────────────────────── */
@@ -295,12 +270,13 @@ const yearMarkers = [
 }
 
 .dot {
-  width: 10px;
-  height: 10px;
+  display: none;
+  width: calc(var(--base) * 1.5);
+  height: calc(var(--base) * 1.5);
   border-radius: 50%;
   background: var(--node-off);
-  border: 2px solid #ffffff;
-  outline: 1.5px solid var(--node-off);
+  border: 3px solid #ffffff;
+  outline: 2px solid var(--node-off);
   flex-shrink: 0;
   z-index: 2;
   transition:
@@ -315,16 +291,16 @@ const yearMarkers = [
 }
 
 .ev.active .dot {
-  outline-width: 2px;
-  outline-offset: 2px;
+  outline-width: 3px;
+  outline-offset: 3px;
 }
 
 .stem {
-  width: 1px;
+  width: 5px;
   height: 30px;
   flex-shrink: 0;
-  background: var(--node-off);
-  transition: background 0.3s;
+  background: var(--spine-off);
+  transition: background 0.1s;
 }
 
 .ev.passed .stem,
@@ -333,52 +309,35 @@ const yearMarkers = [
 }
 
 .card {
-  width: 196px;
-  padding: 12px 14px;
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 8px;
-  transition:
-    border-color 0.3s,
-    transform 0.3s;
+  max-width: calc((150vw - var(--base8) * 2) / 10 - var(--base2));
+  padding: var(--base2);
+  border: 1px solid var(--bg-color-l);
+  transition: 0.3s;
 }
 
+.ev.passed .card,
 .ev.active .card {
-  border-color: var(--accent);
+  background: var(--bg-color-l);
+  border: 1px solid var(--main-color-l);
 }
 
-.track-top .ev.active .card {
-  transform: translateY(-3px);
+.ev h4 {
+  color: #777;
+  transition: 0.3s;
 }
-.track-bot .ev.active .card {
-  transform: translateY(3px);
-}
-
-.ev-label {
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--tag-color);
-  background: var(--tag-bg);
-  display: inline-block;
-  padding: 2px 6px;
-  border-radius: 3px;
-  margin: 0 0 6px;
+.ev p {
+  color: #444;
+  transition: 0.3s;
 }
 
-.ev-title {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-faint);
-  margin: 0 0 4px;
-  line-height: 1.3;
-  transition: color 0.3s;
+.ev.passed h4,
+.ev.active h4 {
+  color: #fff;
 }
 
-.ev.passed .ev-title,
-.ev.active .ev-title {
-  color: var(--text-dark);
+.ev.passed p,
+.ev.active p {
+  color: #777;
 }
 
 .ev-desc {

@@ -40,6 +40,11 @@ h3 {
   font-weight: 600;
   color: #ddd;
 }
+h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ddd;
+}
 p {
   font-size: 16px;
   color: #aaa;
