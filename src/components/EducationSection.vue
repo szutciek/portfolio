@@ -14,12 +14,7 @@
       <div class="media">
         <div class="absolute">
           <HorizontalSticky :stick="scroll?.coveredProgress">
-            <TiledComponent
-              title="Behind the Scenes"
-              description="A look at how the project came together."
-              short-text="Studio Series"
-              :media="['/images/pic.png', '/images/aboutme.png']"
-            />
+            <!-- placeholder -->
           </HorizontalSticky>
         </div>
       </div>

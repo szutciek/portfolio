@@ -207,9 +207,11 @@
           </section>
           <section marker>
             <ParallaxContent :progress="sections[4]?.markers[3]?.visibleProgress" velocity="0.5">
-              <VideoScrollSync :progress="sections[4]?.markers[3]?.visibleProgress">
-                <video src="/videos/roomganizer/window.mp4" muted playsinline></video>
-              </VideoScrollSync>
+              <FullScreenableMedia text="Satisfying animations">
+                <VideoScrollSync :progress="sections[4]?.markers[3]?.visibleProgress">
+                  <video src="/videos/roomganizer/window.mp4" muted playsinline></video>
+                </VideoScrollSync>
+              </FullScreenableMedia>
               <p>Dynamically adjusting window</p>
             </ParallaxContent>
           </section>
