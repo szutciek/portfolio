@@ -406,8 +406,7 @@ function computeTarget() {
   for (const entry of targets) {
     const rect = entry.el.getBoundingClientRect()
     const dist = distToRect(mouse.x, mouse.y, rect, entry.offset)
-    const alreadySnapped = isSnapped.value && snappedEl.value === entry.el
-    if (dist < props.attractRadius && dist < bestDist && (alreadySnapped || isVisible(entry.el))) {
+    if (dist < props.attractRadius && dist < bestDist && isVisible(entry.el)) {
       bestDist = dist
       bestShape = getTargetShape(entry.el, entry.offset)
       bestEntry = entry

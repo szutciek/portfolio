@@ -169,10 +169,6 @@ watch(() => props.nextPageScroll, scrollingToNext)
 .main {
   margin-bottom: var(--base8);
 }
-.main img {
-  aspect-ratio: 1;
-  border-radius: 4px;
-}
 
 .infoGrid {
   display: grid;
@@ -204,7 +200,11 @@ watch(() => props.nextPageScroll, scrollingToNext)
 .infoItem.cursor-snapped .onSnap {
   display: flex;
 }
-
+@media (max-width: 1800px) {
+  .header .description {
+    padding: var(--base4);
+  }
+}
 @media (max-width: 1200px) {
   .infoGrid {
     grid-template-columns: 1fr;

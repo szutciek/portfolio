@@ -7,7 +7,7 @@
 <style scoped>
 .transparent {
   background-color: transparent;
-  padding: calc(var(--base1) * 1.5) var(--base2);
+  padding: calc(var(--base) * 1.5) var(--base2);
   width: fit-content;
   border-radius: 100px;
 }
