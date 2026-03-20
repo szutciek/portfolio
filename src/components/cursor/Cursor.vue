@@ -300,7 +300,7 @@ function emitLeave(el) {
 
 function testPoint(node, el) {
   while (node) {
-    if (node === el) return true
+    if (node === el || node.classList.contains('_cursor-transparent')) return true
     node = node.parentElement
   }
   return false

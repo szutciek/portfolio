@@ -37,16 +37,16 @@
         <template #screenshots>
           <section marker>
             <ParallaxContent :progress="sections[1]?.markers[0]?.visibleProgress" velocity="1">
-              <img src="/images/wcgame/soccer.png" alt="" />
+              <FullScreenableMedia text="A game of football">
+                <img src="/images/wcgame/soccer.png" alt="" />
+              </FullScreenableMedia>
               <p>A game of football</p>
             </ParallaxContent>
           </section>
           <section marker>
             <ParallaxContent :progress="sections[1]?.markers[1]?.visibleProgress" velocity="2">
-              <FullScreenableImage>
-                <img src="/images/wcgame/amongus.png" alt="" />
-              </FullScreenableImage>
-              <p>A game of suspicious</p>
+              <img src="/images/wcgame/amongus.png" alt="" />
+              <p>A game of Among Us</p>
             </ParallaxContent>
           </section>
           <section marker>
@@ -99,7 +99,9 @@
           </section>
           <section marker>
             <ParallaxContent :progress="sections[2]?.markers[3]?.visibleProgress" velocity="2">
-              <img src="/images/sso/accounts.png" alt="" />
+              <FullScreenableMedia text="Add and switch between multiple accounts">
+                <img src="/images/sso/accounts.png" alt="" />
+              </FullScreenableMedia>
               <p>Add and switch between multiple accounts</p>
             </ParallaxContent>
           </section>
@@ -135,15 +137,19 @@
           </section>
           <section marker>
             <ParallaxContent :progress="sections[3]?.markers[1]?.visibleProgress" velocity="2">
-              <img src="/images/checkout/touchscreen.png" alt="" />
+              <FullScreenableMedia text="Clean interface optimized for interaction via touchscreen">
+                <img src="/images/checkout/touchscreen.png" alt="" />
+              </FullScreenableMedia>
               <p>Clean interface optimized<br />for interaction via touchscreen</p>
             </ParallaxContent>
           </section>
           <section marker>
             <ParallaxContent :progress="sections[3]?.markers[2]?.visibleProgress" velocity="0.5">
-              <VideoScrollSync :progress="sections[3]?.markers[2]?.visibleProgress">
-                <video src="/videos/checkout/animations.mp4" muted playsinline></video>
-              </VideoScrollSync>
+              <FullScreenableMedia text="Satisfying animations">
+                <VideoScrollSync :progress="sections[3]?.markers[2]?.visibleProgress">
+                  <video src="/videos/checkout/animations.mp4" muted playsinline></video>
+                </VideoScrollSync>
+              </FullScreenableMedia>
               <p>Satisfying animations</p>
             </ParallaxContent>
           </section>

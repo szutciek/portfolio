@@ -99,19 +99,19 @@ const isActive = (pos) => Math.abs(progress.value - pos) <= 0
 const topEvents = [
   {
     position: 20,
-    title: 'Start IB Diploma Programme @ ASW',
+    title: 'Start of IB Diploma Programme @ ASW',
     description: 'Transfer to the American School of Warsaw.',
     period: 'September 2022',
   },
   {
     position: 55,
-    title: 'Graduation IB Diploma Programme @ ASW',
+    title: 'Graduation with IB Bilingual Diploma @ ASW',
     description: 'Successful graduation with the bilingual diploma.',
     period: 'May 2024',
   },
   {
     position: 65,
-    title: 'Start Computer Science & Engineering @ TU/e',
+    title: 'Start of Computer Science & Engineering @ TU/e',
     description: 'Start of the first academic year at university.',
     period: 'September 2024',
   },

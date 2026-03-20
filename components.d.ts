@@ -24,6 +24,7 @@ declare module 'vue' {
     FocusCard: typeof import('./src/components/cursor/FocusCard.vue')['default']
     Fonts: typeof import('./src/components/Fonts.vue')['default']
     FullScreenableImage: typeof import('./src/components/FullScreenableImage.vue')['default']
+    FullScreenableMedia: typeof import('./src/components/FullScreenableMedia.vue')['default']
     HorizontalSticky: typeof import('./src/components/scroll/HorizontalSticky.vue')['default']
     InterestsSection: typeof import('./src/components/InterestsSection.vue')['default']
     KanapkaSSOSection: typeof import('./src/components/KanapkaSSOSection.vue')['default']

@@ -1,5 +1,5 @@
 <template>
-  <nav>
+  <nav class="_cursor-transparent">
     <p>KS</p>
     <div>
       <button
