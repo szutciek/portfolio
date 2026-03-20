@@ -126,9 +126,9 @@ const topEvents = [
 const bottomEvents = [
   {
     position: 5,
-    title: 'End of swimming career',
+    title: 'First Software Projects',
     description: 'I quit my swimming career to pursue higher education in Computer Science.',
-    period: 'Summer 2021',
+    period: 'Late 2020',
   },
   {
     position: 45,

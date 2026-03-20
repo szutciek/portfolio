@@ -12,10 +12,14 @@
     </div>
     <div class="content">
       <div class="media">
-        <!-- temporary solution -->
         <div class="absolute">
           <HorizontalSticky :stick="scroll?.coveredProgress">
-            <p style="text-align: center; margin-top: 100px">Accompanying images incoming...</p>
+            <TiledComponent
+              title="Behind the Scenes"
+              description="A look at how the project came together."
+              short-text="Studio Series"
+              :media="['/images/pic.png', '/images/aboutme.png']"
+            />
           </HorizontalSticky>
         </div>
       </div>

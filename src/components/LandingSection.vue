@@ -62,7 +62,7 @@
             >
               <img src="/images/kanapka.png" alt="Kanapka Logo" />
               <div>
-                <p>6+ Years of Experience</p>
+                <p>5+ Years of Experience</p>
                 <h3>Full Stack Web & Game Developer</h3>
               </div>
               <AdjacentIcon class="onSnap" style="position: absolute; top: 4px; right: 4px">
