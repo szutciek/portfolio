@@ -34,11 +34,13 @@ export default class ScrollSection {
       if (this.isVertical) {
         const sM = this.globalStart + m.element.offsetTop
         const eM = sM + m.element.offsetHeight
+        m.isVertical = true
         m.setGlobalScrollRange(sM, eM)
       }
       if (this.isHorizontal) {
         const sM = this.globalStart + m.element.offsetLeft
         const eM = sM + m.element.offsetWidth
+        m.isHorizontal = true
         m.setGlobalScrollRange(sM, eM)
       }
     })
@@ -73,8 +75,8 @@ export default class ScrollSection {
   }
 
   getVisibleScrollProgress(globalScrollPosition) {
-    const viewportHeight = window.innerHeight
-    const start = this.globalStart - viewportHeight
+    const viewportSize = this.isHorizontal ? window.innerWidth : window.innerHeight
+    const start = this.globalStart - viewportSize
     const end = this.globalEnd
     const progress = (globalScrollPosition - start) / (end - start)
     return Math.min(1, Math.max(0, progress))
