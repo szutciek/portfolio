@@ -15,7 +15,6 @@
       </div>
     </section>
     <section vertical>
-      <!-- <WebcamGameSection :scroll="sections[1]" /> -->
       <ProjectDemonstration>
         <template #head>
           <h1>Webcam Game</h1>
@@ -44,7 +43,9 @@
           </section>
           <section marker>
             <ParallaxContent :progress="sections[1]?.markers[1]?.visibleProgress" velocity="2">
-              <img src="/images/wcgame/amongus.png" alt="" />
+              <FullScreenableImage>
+                <img src="/images/wcgame/amongus.png" alt="" />
+              </FullScreenableImage>
               <p>A game of suspicious</p>
             </ParallaxContent>
           </section>
@@ -58,7 +59,6 @@
       </ProjectDemonstration>
     </section>
     <section vertical>
-      <!-- <KanapkaSSOSection :scroll="sections[2]" /> -->
       <ProjectDemonstration>
         <template #head>
           <h1>Kanapka SSO</h1>
@@ -113,7 +113,6 @@
       </ProjectDemonstration>
     </section>
     <section vertical>
-      <!-- <CheckoutSection :scroll="sections[3]" /> -->
       <ProjectDemonstration>
         <template #head>
           <h1>Cafeteria Kiosk</h1>
@@ -160,7 +159,6 @@
       </ProjectDemonstration>
     </section>
     <section vertical>
-      <!-- <RoomganizerSection :scroll="sections[4]" /> -->
       <ProjectDemonstration>
         <template #head>
           <h1>Roomganizer</h1>
@@ -211,7 +209,6 @@
       </ProjectDemonstration>
     </section>
     <section vertical>
-      <!-- <ZolwieSection :scroll="sections[5]" /> -->
       <ProjectDemonstration>
         <template #head>
           <h1>Turtle Game</h1>
@@ -259,6 +256,10 @@ import ScrollText from '@/components/effects/ScrollText.vue'
 const props = defineProps({
   sections: Array,
 })
+
+const openUrl = (url) => {
+  window.open(url)
+}
 </script>
 
 <style scoped>
