@@ -27,10 +27,14 @@ watch(() => props.stick, onScroll)
 <style scoped>
 .rail {
   width: 100%;
-  height: 100vh;
+  min-height: fit-content;
+  height: 100%;
+  max-height: 100vh;
 }
 .content {
   width: calc(var(--full-width));
-  height: 100vh;
+  min-height: fit-content;
+  height: 100%;
+  max-height: 100vh;
 }
 </style>

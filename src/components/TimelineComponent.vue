@@ -3,11 +3,12 @@
     <!-- ── Top track: Education ───────────────────────────── -->
     <div class="track track-top">
       <div
-        v-for="(ev, i) in topEvents"
+        v-for="(ev, i) in events.top"
         :key="'top-' + i"
-        class="ev"
+        class="ev _eventSlide"
         :class="{ passed: isPassed(ev.position), active: isActive(ev.position) }"
         :style="{ left: ev.position + '%' }"
+        :data-position="ev.position"
       >
         <div class="card card-top">
           <h4>{{ ev.title }}</h4>
@@ -24,7 +25,7 @@
         <div class="spine-fill" :style="{ width: progress + '%' }"></div>
 
         <div
-          v-for="(m, i) in yearMarkers"
+          v-for="(m, i) in props.markers"
           :key="'m-' + i"
           class="yr-tick"
           :class="{ lit: progress >= m.position }"
@@ -40,7 +41,7 @@
     <!-- ── Bottom track: Other activities ────────────────── -->
     <div class="track track-bot">
       <div
-        v-for="(ev, i) in bottomEvents"
+        v-for="(ev, i) in events.bottom"
         :key="'bot-' + i"
         class="ev"
         :class="{ passed: isPassed(ev.position), active: isActive(ev.position) }"
@@ -72,22 +73,30 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  events: {
+    type: Object,
+    default: { top: [], bottom: [] },
+  },
+  markers: {
+    type: Array,
+    default: [],
+  },
 })
 
 const progress = computed(() => Math.min(100, Math.max(0, props.scroll * 100)))
 
 // Active: the nub is within this many % units of the node
-const ACTIVE_WINDOW = 3.5
+const ACTIVE_WINDOW = 0
 const isPassed = (pos) => progress.value > pos
-const isActive = (pos) => Math.abs(progress.value - pos) <= 0
+const isActive = (pos) => Math.abs(progress.value - pos) <= ACTIVE_WINDOW
 
 // ─────────────────────────────────────────────────────────────────
 // Data – replace with your own events
 // ─────────────────────────────────────────────────────────────────
 
 /**
- * topEvents    → Education (above the spine)
- * bottomEvents → Other activities (below the spine)
+ * events.top    → Education (above the spine)
+ * events.bottom → Other activities (below the spine)
  *
  * Each event:
  *   position    {Number} 0–100  – horizontal placement along the spine
@@ -96,61 +105,6 @@ const isActive = (pos) => Math.abs(progress.value - pos) <= 0
  *   description {String}        – one or two sentences
  *   period      {String}        – date or year range shown at the bottom
  */
-const topEvents = [
-  {
-    position: 20,
-    title: 'Start of IB Diploma Programme @ ASW',
-    description: 'Transfer to the American School of Warsaw.',
-    period: 'September 2022',
-  },
-  {
-    position: 55,
-    title: 'Graduation with IB Bilingual Diploma @ ASW',
-    description: 'Successful graduation with the bilingual diploma.',
-    period: 'May 2024',
-  },
-  {
-    position: 65,
-    title: 'Start of Computer Science & Engineering @ TU/e',
-    description: 'Start of the first academic year at university.',
-    period: 'September 2024',
-  },
-  {
-    position: 95,
-    title: 'Graduation Computer Science & Engineering @ TU/e*',
-    description: 'Expected graduation from TU/e.',
-    period: 'Summer 2027',
-  },
-]
-
-const bottomEvents = [
-  {
-    position: 5,
-    title: 'First Software Projects',
-    description: 'I quit my swimming career to pursue higher education in Computer Science.',
-    period: 'Late 2020',
-  },
-  {
-    position: 45,
-    title: 'Drivers License Obtained',
-    description: 'I passed the drivers license text for B category vehicles.',
-    period: 'October 2023',
-  },
-  {
-    position: 80,
-    title: 'Epic 4000m Tandem Skydive',
-    description: 'I jumped out of a plane before it landed.',
-    period: 'July 2025',
-  },
-]
-
-const yearMarkers = [
-  { year: '2022', position: 10 },
-  { year: '2023', position: 30 },
-  { year: '2024', position: 50 },
-  { year: '2025', position: 70 },
-  { year: '2026', position: 90 },
-]
 </script>
 
 <style scoped>
@@ -311,6 +265,7 @@ const yearMarkers = [
 .card {
   max-width: calc((150vw - var(--base8) * 2) / 10 - var(--base2));
   padding: var(--base2);
+  background: var(--bg-color-d);
   border: 1px solid var(--bg-color-l);
   transition: 0.3s;
 }

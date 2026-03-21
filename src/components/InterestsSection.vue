@@ -19,9 +19,9 @@ const props = defineProps({
 
 <style scoped>
 .interests {
-  width: calc(var(--full-width) / 2);
+  width: calc(var(--full-width));
   height: 100vh;
-  padding: calc(var(--base) * 4);
+  padding: var(--base8);
 }
 
 .content {
