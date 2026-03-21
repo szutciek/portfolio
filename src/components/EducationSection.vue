@@ -33,20 +33,20 @@ const events = {
       title: 'Start of IB Diploma Programme @ ASW',
       description: 'Transfer to the American School of Warsaw.',
       period: 'September 2022',
-      images: ['/images/aboutme.png', '/images/tue.png'],
     },
     {
       position: 55,
       title: 'Graduation with IB Bilingual Diploma @ ASW',
       description: 'Successful graduation with the bilingual diploma.',
       period: 'May 2024',
+      images: ['/images/timeline/ib.png', '/images/timeline/polin.png', '/images/timeline/asw.png'],
     },
     {
       position: 65,
       title: 'Start of Computer Science & Engineering @ TU/e',
       description: 'Start of the first academic year at university.',
       period: 'September 2024',
-      images: ['/images/aboutme.png', '/images/tue.png'],
+      images: ['/images/timeline/tue.png', '/images/timeline/eindhoven.png'],
     },
     {
       position: 95,
@@ -100,10 +100,12 @@ const deployImages = (imgs, initialX, initialY) => {
     element.style.opacity = 1
     element.style.left = `calc(${finalX}px - ${50 / imgs.length}%)`
     element.style.top = `${finalY}px`
-    element.style.width = `80px`
+    element.style.maxWidth = `80px`
+    element.style.maxHeight = `40vh`
+    element.style.objectFit = 'contain'
     const globalFinalX = rect.x + finalX
     const globalFinalY = rect.y + finalY
-    element.style.transform = `translate(${initialX - globalFinalX}px, ${initialY - globalFinalY}px) rotate(-70deg)`
+    element.style.transform = `translate(${initialX - globalFinalX}px, ${initialY - globalFinalY}px) rotate(70deg)`
     element.style.transition = 'none'
 
     slideTarget.value.appendChild(element)
@@ -111,7 +113,7 @@ const deployImages = (imgs, initialX, initialY) => {
 
     const randomAngle = Math.random() * 20 - 10
 
-    element.style.width = `${100 / imgs.length}%`
+    element.style.maxWidth = `${100 / imgs.length}%`
     element.style.transition = `1s cubic-bezier(0.22, 1, 0.36, 1)`
     element.style.transform = `translate(0, -50%) rotate(${randomAngle}deg)`
   })
@@ -144,9 +146,7 @@ const handleScroll = () => {
     const eventElement = document.querySelector(query)
     const rect = eventElement.getBoundingClientRect()
 
-    setTimeout(() => {
-      deployImages(newestEvent?._imageElements, rect.x, rect.y)
-    }, 1)
+    deployImages(newestEvent?._imageElements, rect.x + rect.width / 2, rect.y)
   }
 }
 

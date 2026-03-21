@@ -1,13 +1,20 @@
 <template>
-  <span
-    ref="anchor"
-    class="image-focus-anchor"
-    @click="open"
-    data-cursor-target
-    data-cursor-offset="10"
-  >
+  <span ref="slotContainer" class="image-focus-group">
     <slot />
   </span>
+
+  <!-- invisible click traps, one per media element -->
+  <Teleport to="body">
+    <span
+      v-for="(trap, i) in traps"
+      :key="i"
+      class="image-focus-trap"
+      :style="trap.style"
+      data-cursor-target
+      data-cursor-offset="10"
+      @click="open(trap.el)"
+    />
+  </Teleport>
 
   <Teleport to="body">
     <Transition name="backdrop">
@@ -21,7 +28,6 @@
       :style="flyStyle"
       @click="active ? close() : null"
     >
-      <!-- image mode -->
       <img
         v-if="mediaType === 'image'"
         class="image-focus-fly__media"
@@ -29,8 +35,6 @@
         :alt="mediaAlt"
         draggable="false"
       />
-
-      <!-- video mode -->
       <video
         v-else-if="mediaType === 'video'"
         ref="flyVideo"
@@ -43,7 +47,6 @@
         :muted="mediaMuted"
         draggable="false"
       />
-
       <Transition name="caption">
         <div v-if="text && settled" class="image-focus-fly__caption">
           <p>{{ text }}</p>
@@ -61,19 +64,22 @@ const props = defineProps({
 })
 
 /* ─── state ──────────────────────────────────────────────── */
-const anchor = ref(null)
+const slotContainer = ref(null)
 const flyEl = ref(null)
-const flyVideo = ref(null) // ref to the <video> inside the fly shell
+const flyVideo = ref(null)
 const active = ref(false)
 const cloneVisible = ref(false)
 const settled = ref(false)
 
-// media
-const mediaType = ref('image') // 'image' | 'video'
+const mediaType = ref('image')
 const mediaSrc = ref('')
 const mediaAlt = ref('')
 const mediaPoster = ref('')
 const mediaMuted = ref(true)
+
+let activeMedia = null
+let mutationObserver = null
+let resizeObserver = null
 
 const flyStyle = reactive({
   left: '0px',
@@ -82,17 +88,33 @@ const flyStyle = reactive({
   height: '0px',
 })
 
-/* ─── media element helpers ──────────────────────────────── */
-function getMediaEl() {
-  return anchor.value?.querySelector('img, video') ?? null
+/* ─── traps ──────────────────────────────────────────────── */
+const traps = ref([]) // [{ el, style }]
+
+function syncTraps() {
+  const container = slotContainer.value
+  if (!container) return
+
+  const mediaEls = [...container.querySelectorAll('img, video')]
+
+  traps.value = mediaEls.map((el) => {
+    const r = el.getBoundingClientRect()
+    return {
+      el,
+      style: {
+        position: 'fixed',
+        left: `${r.left}px`,
+        top: `${r.top}px`,
+        width: `${r.width}px`,
+        height: `${r.height}px`,
+        cursor: 'zoom-in',
+        zIndex: 10,
+      },
+    }
+  })
 }
 
-function getMediaRect() {
-  const el = getMediaEl()
-  return el?.getBoundingClientRect() ?? anchor.value?.getBoundingClientRect()
-}
-
-/** Natural pixel dimensions of img or video */
+/* ─── media helpers ──────────────────────────────────────── */
 function getNaturalSize(el) {
   if (el.tagName === 'IMG') {
     return {
@@ -100,7 +122,6 @@ function getNaturalSize(el) {
       h: el.naturalHeight || el.getBoundingClientRect().height,
     }
   }
-  // video: prefer videoWidth (intrinsic), fall back to rendered size
   return {
     w: el.videoWidth || el.getBoundingClientRect().width,
     h: el.videoHeight || el.getBoundingClientRect().height,
@@ -162,14 +183,11 @@ function flyTo(toRect, { duration = 500, arcHeight = 80, onDone = () => {} } = {
 }
 
 /* ─── open / close ───────────────────────────────────────── */
-async function open() {
+async function open(media) {
   if (active.value) return
-  const media = getMediaEl()
-  if (!media) return
+  activeMedia = media
 
   const tag = media.tagName
-
-  // Populate fly shell state
   if (tag === 'IMG') {
     mediaType.value = 'image'
     mediaSrc.value = media.src
@@ -181,8 +199,7 @@ async function open() {
     mediaMuted.value = media.muted
   }
 
-  // Snap shell to source
-  const srcRect = getMediaRect()
+  const srcRect = media.getBoundingClientRect()
   Object.assign(flyStyle, {
     left: `${srcRect.left}px`,
     top: `${srcRect.top}px`,
@@ -192,11 +209,10 @@ async function open() {
 
   settled.value = false
   cloneVisible.value = true
-  hideOriginal(true)
+  media.style.opacity = '0'
 
   await nextTick()
 
-  // For video: seek fly shell to same timestamp and resume
   if (tag === 'VIDEO' && flyVideo.value) {
     flyVideo.value.currentTime = media.currentTime
     flyVideo.value.play().catch(() => {})
@@ -204,7 +220,6 @@ async function open() {
   }
 
   active.value = true
-
   const { w: nw, h: nh } = getNaturalSize(media)
   flyTo(targetRect(nw, nh), {
     arcHeight: -80,
@@ -216,49 +231,64 @@ async function open() {
 }
 
 function close() {
-  if (!active.value) return
+  if (!active.value || !activeMedia) return
   active.value = false
   settled.value = false
 
-  const destRect = getMediaRect()
-
+  const destRect = activeMedia.getBoundingClientRect()
   flyTo(
     { x: destRect.left, y: destRect.top, w: destRect.width, h: destRect.height },
     {
       arcHeight: 80,
       duration: 460,
       onDone: () => {
-        // Hand playback back to the original video
-        const media = getMediaEl()
-        if (media?.tagName === 'VIDEO' && flyVideo.value) {
-          media.currentTime = flyVideo.value.currentTime
-          media.play().catch(() => {})
+        if (activeMedia?.tagName === 'VIDEO' && flyVideo.value) {
+          activeMedia.currentTime = flyVideo.value.currentTime
+          activeMedia.play().catch(() => {})
         }
         cloneVisible.value = false
-        hideOriginal(false)
+        activeMedia.style.opacity = ''
+        activeMedia = null
       },
     },
   )
-}
-
-function hideOriginal(hide) {
-  const el = getMediaEl()
-  if (el) el.style.opacity = hide ? '0' : ''
 }
 
 /* ─── keyboard ───────────────────────────────────────────── */
 function onKey(e) {
   if (e.key === 'Escape' && active.value) close()
 }
-onMounted(() => window.addEventListener('keydown', onKey))
-onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
+
+/* ─── lifecycle ──────────────────────────────────────────── */
+onMounted(() => {
+  syncTraps()
+
+  mutationObserver = new MutationObserver(syncTraps)
+  mutationObserver.observe(slotContainer.value, { childList: true, subtree: true })
+
+  resizeObserver = new ResizeObserver(syncTraps)
+  resizeObserver.observe(slotContainer.value)
+
+  window.addEventListener('scroll', syncTraps, { passive: true, capture: true })
+  window.addEventListener('keydown', onKey)
+})
+
+onBeforeUnmount(() => {
+  mutationObserver?.disconnect()
+  resizeObserver?.disconnect()
+  window.removeEventListener('scroll', syncTraps, { capture: true })
+  window.removeEventListener('keydown', onKey)
+})
 </script>
 
 <style scoped>
-.image-focus-anchor {
-  display: inline-block;
-  cursor: zoom-in;
-  line-height: 0;
+.image-focus-group {
+  display: contents;
+}
+
+.image-focus-trap {
+  display: block;
+  pointer-events: all;
 }
 
 .image-focus-backdrop {
