@@ -172,7 +172,7 @@ watch(() => props.scroll, handleScroll)
 .education {
   height: 100vh;
   position: relative;
-  min-width: 150vw;
+  min-width: 100vw;
 }
 
 .title {
@@ -215,5 +215,14 @@ watch(() => props.scroll, handleScroll)
   width: 50vw;
   height: 20%;
   position: relative;
+}
+
+@media (max-height: 1200px) {
+  .container {
+    height: 100vh;
+    display: grid;
+    grid-template-rows: min-content 5fr 5fr;
+    align-items: center;
+  }
 }
 </style>

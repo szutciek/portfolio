@@ -111,6 +111,7 @@ const isActive = (pos) => Math.abs(progress.value - pos) <= ACTIVE_WINDOW
 /* ── Tokens ──────────────────────────────────────────────────── */
 /* Scoped to .tl-root so Vue's scoped CSS can resolve them */
 .tl-root {
+  --timeline-width: 3000px;
   --accent: var(--main-color-l);
   --spine-off: var(--bg-color-l);
   --node-off: #777;
@@ -121,8 +122,8 @@ const isActive = (pos) => Math.abs(progress.value - pos) <= ACTIVE_WINDOW
 /* ── Root ────────────────────────────────────────────────────── */
 .tl-root {
   position: relative;
-  width: 100%;
-  min-width: 1100px;
+  /* width: 100%; */
+  width: var(--timeline-width);
   padding: 0 var(--base8);
   background: transparent;
 }
@@ -263,7 +264,7 @@ const isActive = (pos) => Math.abs(progress.value - pos) <= ACTIVE_WINDOW
 }
 
 .card {
-  max-width: calc((150vw - var(--base8) * 2) / 10 - var(--base2));
+  max-width: calc((var(--timeline-width) - var(--base8) * 2) / 10 - var(--base2));
   padding: var(--base2);
   background: var(--bg-color-d);
   border: 1px solid var(--bg-color-l);
