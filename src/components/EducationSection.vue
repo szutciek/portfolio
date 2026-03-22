@@ -96,7 +96,7 @@ const generateMarkers = (startYear, nYears) => {
 const slideTarget = ref(null)
 let currentEvent = null
 
-const deployImages = (imgs, initialX, initialY) => {
+const deployImages = (imgs, initialX, initialY, dir) => {
   if (!imgs?.length || !slideTarget.value) return
 
   const rect = slideTarget.value.getBoundingClientRect()
@@ -114,13 +114,13 @@ const deployImages = (imgs, initialX, initialY) => {
     element.style.objectFit = 'contain'
     const globalFinalX = rect.x + finalX
     const globalFinalY = rect.y + finalY
-    element.style.transform = `translate(${initialX - globalFinalX}px, ${initialY - globalFinalY}px) rotate(70deg)`
+    element.style.transform = `translate(${initialX - globalFinalX}px, ${initialY - globalFinalY}px) rotate(${dir * 70}deg)`
     element.style.transition = 'none'
 
     slideTarget.value.appendChild(element)
     element.getBoundingClientRect()
 
-    const randomAngle = Math.random() * 20 - 10
+    const randomAngle = Math.random() * 10 - 5
 
     element.style.maxWidth = `${100 / imgs.length}%`
     element.style.transition = `1s cubic-bezier(0.22, 1, 0.36, 1)`
@@ -147,6 +147,11 @@ const handleScroll = () => {
   if (!newestEvent) return
   if (!newestEvent.images || !newestEvent.images.length) return
   if (currentEvent?.position !== newestEvent.position) {
+    let direction = 1
+    if (currentEvent?.position > newestEvent.position) {
+      direction = -1
+    }
+
     currentEvent = newestEvent
 
     hideImages()
@@ -155,7 +160,7 @@ const handleScroll = () => {
     const eventElement = document.querySelector(query)
     const rect = eventElement.getBoundingClientRect()
 
-    deployImages(newestEvent?._imageElements, rect.x + rect.width / 2, rect.y)
+    deployImages(newestEvent?._imageElements, rect.x + rect.width / 2, rect.y, direction)
   }
 }
 

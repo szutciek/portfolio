@@ -123,6 +123,7 @@ const redirectProgram = () => {
   window.open(url)
 }
 const redirectProjects = () => {
+  history.pushState(null, '', '/#projects')
   const el = document.getElementById('projects')
   if (el) {
     el.scrollIntoView({ behavior: 'smooth', block: 'start' })
