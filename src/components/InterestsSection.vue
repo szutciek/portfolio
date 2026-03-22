@@ -145,12 +145,6 @@ onUnmounted(() => {
 })
 </script>
 
-<style>
-* {
-  cursor: pointer !important;
-}
-</style>
-
 <style scoped>
 .interests {
   width: calc(var(--full-width) * 6 / 10);
