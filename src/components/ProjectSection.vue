@@ -149,7 +149,11 @@
             <ParallaxContent :progress="sections[3]?.markers[2]?.visibleProgress" velocity="0.5">
               <FullScreenableMedia text="Satisfying animations">
                 <VideoScrollSync :progress="sections[3]?.markers[2]?.visibleProgress">
-                  <video src="/videos/checkout/animations.mp4" muted playsinline></video>
+                  <video
+                    src="/videos/checkout/animations-compressed.webm"
+                    muted
+                    playsinline
+                  ></video>
                 </VideoScrollSync>
               </FullScreenableMedia>
               <p>Satisfying animations</p>
@@ -158,7 +162,7 @@
           <section marker>
             <ParallaxContent :progress="sections[3]?.markers[3]?.visibleProgress" velocity="0.5">
               <VideoScrollSync :progress="sections[3]?.markers[3]?.visibleProgress">
-                <video src="/videos/checkout/panel.mp4" muted playsinline></video>
+                <video src="/videos/checkout/panel-compressed.webm" muted playsinline></video>
               </VideoScrollSync>
               <p>Panels adjustable by touch</p>
             </ParallaxContent>
@@ -209,7 +213,7 @@
             <ParallaxContent :progress="sections[4]?.markers[3]?.visibleProgress" velocity="0.5">
               <FullScreenableMedia text="Satisfying animations">
                 <VideoScrollSync :progress="sections[4]?.markers[3]?.visibleProgress">
-                  <video src="/videos/roomganizer/window.mp4" muted playsinline></video>
+                  <video src="/videos/roomganizer/window-compressed.webm" muted playsinline></video>
                 </VideoScrollSync>
               </FullScreenableMedia>
               <p>Dynamically adjusting window</p>
