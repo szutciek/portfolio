@@ -3,7 +3,7 @@
     ref="container"
     class="opaque _opaque-button"
     data-cursor-target
-    :data-cursor-passive="highlightOnly"
+    :data-cursor-passive="highlightOnly ? '1' : null"
     data-cursor-offset="5"
     :style="`background-color: ${color}`"
   >

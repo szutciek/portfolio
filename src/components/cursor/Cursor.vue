@@ -228,7 +228,7 @@ function scanTargets() {
     cursorMode: el.dataset.cursorMode ?? null,
     snapStrokeColor: el.dataset.cursorSnapColor ?? null,
     isGlyph: el.dataset.cursorGlyph === 'true',
-    passive: el.hasAttribute('data-cursor-passive'),
+    passive: el.getAttribute('data-cursor-passive') != null,
   }))
 }
 

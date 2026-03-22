@@ -9,16 +9,24 @@
       <div class="section">
         <h3>Sports</h3>
         <div class="list _interest-list">
-          <OpaqueButton color="var(--bg-color-d)" data-url="/images/interests/dive.avif">
+          <OpaqueButton
+            color="var(--bg-color-d)"
+            data-url="/images/interests/dive.avif"
+            :highlightOnly="true"
+          >
             <p>Swimming</p>
           </OpaqueButton>
-          <OpaqueButton color="var(--bg-color-d)" data-url="/images/interests/bike.avif">
+          <OpaqueButton
+            color="var(--bg-color-d)"
+            data-url="/images/interests/bike.avif"
+            :highlightOnly="true"
+          >
             <p>Biking</p>
           </OpaqueButton>
-          <OpaqueButton color="var(--bg-color-d)">
+          <OpaqueButton color="var(--bg-color-d)" :highlightOnly="true">
             <p>Running</p>
           </OpaqueButton>
-          <OpaqueButton color="var(--bg-color-d)">
+          <OpaqueButton color="var(--bg-color-d)" :highlightOnly="true">
             <p>Skydiving</p>
           </OpaqueButton>
         </div>
@@ -26,10 +34,14 @@
       <div class="section">
         <h3>Free Time</h3>
         <div class="list _interest-list">
-          <OpaqueButton color="var(--bg-color-d)" data-url="/images/interests/cs2.avif">
+          <OpaqueButton
+            color="var(--bg-color-d)"
+            data-url="/images/interests/cs2.avif"
+            :highlightOnly="true"
+          >
             <p>CS2</p>
           </OpaqueButton>
-          <OpaqueButton color="var(--bg-color-d)">
+          <OpaqueButton color="var(--bg-color-d)" :highlightOnly="true">
             <p>Memes a.k.a. Brainrot</p>
           </OpaqueButton>
         </div>
@@ -37,10 +49,10 @@
       <div class="section">
         <h3>Computer Science</h3>
         <div class="list _interest-list">
-          <OpaqueButton color="var(--bg-color-d)">
+          <OpaqueButton color="var(--bg-color-d)" :highlightOnly="true">
             <p>Full-Stack Web Development</p>
           </OpaqueButton>
-          <OpaqueButton color="var(--bg-color-d)">
+          <OpaqueButton color="var(--bg-color-d)" :highlightOnly="true">
             <p>Cybersecurity</p>
           </OpaqueButton>
         </div>
