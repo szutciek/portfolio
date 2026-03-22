@@ -9,10 +9,10 @@
       <div class="section">
         <h3>Sports</h3>
         <div class="list _interest-list">
-          <OpaqueButton color="var(--bg-color-d)" data-url="/images/interests/dive.png">
+          <OpaqueButton color="var(--bg-color-d)" data-url="/images/interests/dive.avif">
             <p>Swimming</p>
           </OpaqueButton>
-          <OpaqueButton color="var(--bg-color-d)" data-url="/images/interests/bike.png">
+          <OpaqueButton color="var(--bg-color-d)" data-url="/images/interests/bike.avif">
             <p>Biking</p>
           </OpaqueButton>
           <OpaqueButton color="var(--bg-color-d)">
@@ -26,7 +26,7 @@
       <div class="section">
         <h3>Free Time</h3>
         <div class="list _interest-list">
-          <OpaqueButton color="var(--bg-color-d)" data-url="/images/interests/cs2.png">
+          <OpaqueButton color="var(--bg-color-d)" data-url="/images/interests/cs2.avif">
             <p>CS2</p>
           </OpaqueButton>
           <OpaqueButton color="var(--bg-color-d)">

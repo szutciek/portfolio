@@ -161,6 +161,12 @@ function flyTo(toRect, { duration = 500, arcHeight = 80, onDone = () => {} } = {
   el._raf = requestAnimationFrame(tick)
 }
 
+function toFullSrc(src) {
+  // /assets/hero/bg.avif        → /assets/hero/bg-full.avif
+  // /assets/intro-compressed.webm → /assets/intro-full.webm
+  return src.replace(/-compressed\.webm$/, '-full.webm').replace(/\.avif$/, '-full.avif')
+}
+
 /* ─── open / close ───────────────────────────────────────── */
 async function open() {
   if (active.value) return
@@ -172,11 +178,11 @@ async function open() {
   // Populate fly shell state
   if (tag === 'IMG') {
     mediaType.value = 'image'
-    mediaSrc.value = media.src
+    mediaSrc.value = toFullSrc(media.src)
     mediaAlt.value = media.alt
   } else {
     mediaType.value = 'video'
-    mediaSrc.value = media.currentSrc || media.src
+    mediaSrc.value = toFullSrc(media.currentSrc || media.src)
     mediaPoster.value = media.poster || ''
     mediaMuted.value = media.muted
   }

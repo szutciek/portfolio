@@ -33,22 +33,26 @@ const events = {
       title: 'End of Swimming Career',
       period: 'Summer 2021',
       // images: [
-      //   '/images/timeline/race.png',
-      //   '/images/timeline/gim92.png',
-      //   '/images/timeline/dive.png',
+      //   '/images/timeline/race.avif',
+      //   '/images/timeline/gim92.avif',
+      //   '/images/timeline/dive.avif',
       // ],
     },
     {
       position: 32.5,
       title: 'Graduation - IB Bilingual Diploma',
       period: 'May 2024',
-      images: ['/images/timeline/ib.png', '/images/timeline/polin.png', '/images/timeline/asw.png'],
+      images: [
+        '/images/timeline/ib.avif',
+        '/images/timeline/polin.avif',
+        '/images/timeline/asw.avif',
+      ],
     },
     {
       position: 47.5,
       title: 'Start of Studies - CSE @ TU/e',
       period: 'September 2024',
-      images: ['/images/timeline/tue.png', '/images/timeline/campus.png'],
+      images: ['/images/timeline/tue.avif', '/images/timeline/campus.avif'],
     },
     {
       position: 90,

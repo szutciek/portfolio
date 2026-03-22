@@ -40,20 +40,20 @@
           <section marker>
             <ParallaxContent :progress="sections[1]?.markers[0]?.visibleProgress" velocity="1">
               <FullScreenableMedia text="A game of football">
-                <img src="/images/wcgame/soccer.png" alt="" />
+                <img src="/images/wcgame/soccer.avif" alt="" />
               </FullScreenableMedia>
               <p>A game of football</p>
             </ParallaxContent>
           </section>
           <section marker>
             <ParallaxContent :progress="sections[1]?.markers[1]?.visibleProgress" velocity="2">
-              <img src="/images/wcgame/amongus.png" alt="" />
+              <img src="/images/wcgame/amongus.avif" alt="" />
               <p>A game of Among Us</p>
             </ParallaxContent>
           </section>
           <section marker>
             <ParallaxContent :progress="sections[1]?.markers[2]?.visibleProgress" velocity="1">
-              <img src="/images/wcgame/sso.png" alt="" />
+              <img src="/images/wcgame/sso.avif" alt="" />
               <p>Kanapka SSO Integration</p>
             </ParallaxContent>
           </section>
@@ -83,33 +83,33 @@
         <template #screenshots>
           <section marker>
             <ParallaxContent :progress="sections[2]?.markers[0]?.visibleProgress" velocity="1">
-              <img src="/images/sso/trust.png" alt="" />
+              <img src="/images/sso/trust.avif" alt="" />
               <p>First use of app</p>
             </ParallaxContent>
           </section>
           <section marker>
             <ParallaxContent :progress="sections[2]?.markers[1]?.visibleProgress" velocity="2">
-              <img src="/images/sso/2FA.png" alt="" />
+              <img src="/images/sso/2FA.avif" alt="" />
               <p>2FA via email w/ inbox detection</p>
             </ParallaxContent>
           </section>
           <section marker>
             <ParallaxContent :progress="sections[2]?.markers[2]?.visibleProgress" velocity="1">
-              <img src="/images/sso/email.png" alt="" />
+              <img src="/images/sso/email.avif" alt="" />
               <p>Custom email service</p>
             </ParallaxContent>
           </section>
           <section marker>
             <ParallaxContent :progress="sections[2]?.markers[3]?.visibleProgress" velocity="2">
               <FullScreenableMedia text="Add and switch between multiple accounts">
-                <img src="/images/sso/accounts.png" alt="" />
+                <img src="/images/sso/accounts.avif" alt="" />
               </FullScreenableMedia>
               <p>Add and switch between multiple accounts</p>
             </ParallaxContent>
           </section>
           <section marker>
             <ParallaxContent :progress="sections[2]?.markers[4]?.visibleProgress" velocity="1">
-              <img src="/images/sso/manage.png" alt="" />
+              <img src="/images/sso/manage.avif" alt="" />
               <p>Manage account details</p>
             </ParallaxContent>
           </section>
@@ -133,14 +133,14 @@
         <template #screenshots>
           <section marker>
             <ParallaxContent :progress="sections[3]?.markers[0]?.visibleProgress" velocity="1">
-              <img src="/images/checkout/login.png" alt="" />
+              <img src="/images/checkout/login.avif" alt="" />
               <p>Intuitive & fast checkout: scan QR code on phone when logged in</p>
             </ParallaxContent>
           </section>
           <section marker>
             <ParallaxContent :progress="sections[3]?.markers[1]?.visibleProgress" velocity="2">
               <FullScreenableMedia text="Clean interface optimized for interaction via touchscreen">
-                <img src="/images/checkout/touchscreen.png" alt="" />
+                <img src="/images/checkout/touchscreen.avif" alt="" />
               </FullScreenableMedia>
               <p>Clean interface optimized<br />for interaction via touchscreen</p>
             </ParallaxContent>
@@ -189,19 +189,19 @@
         <template #screenshots>
           <section marker>
             <ParallaxContent :progress="sections[4]?.markers[0]?.visibleProgress" velocity="1">
-              <img src="/images/roomganizer/map.png" alt="" />
+              <img src="/images/roomganizer/map.avif" alt="" />
               <p>3D map layout of facility displaying availability</p>
             </ParallaxContent>
           </section>
           <section marker>
             <ParallaxContent :progress="sections[4]?.markers[1]?.visibleProgress" velocity="2">
-              <img src="/images/roomganizer/scheduler.png" alt="" />
+              <img src="/images/roomganizer/scheduler.avif" alt="" />
               <p>Customizable event scheduler</p>
             </ParallaxContent>
           </section>
           <section marker>
             <ParallaxContent :progress="sections[4]?.markers[2]?.visibleProgress" velocity="1">
-              <img src="/images/roomganizer/timeline.png" alt="" />
+              <img src="/images/roomganizer/timeline.avif" alt="" />
               <p>Clean timeline of upcoming events</p>
             </ParallaxContent>
           </section>
@@ -241,13 +241,13 @@
         <template #screenshots>
           <section marker>
             <ParallaxContent :progress="sections[5]?.markers[0]?.visibleProgress" velocity="1">
-              <img src="/images/zolwie/game.png" alt="" />
+              <img src="/images/zolwie/game.avif" alt="" />
               <p>A game of chasing turtles</p>
             </ParallaxContent>
           </section>
           <section marker>
             <ParallaxContent :progress="sections[5]?.markers[1]?.visibleProgress" velocity="2">
-              <img src="/images/zolwie/menu.png" alt="" />
+              <img src="/images/zolwie/menu.avif" alt="" />
               <p>
                 Customize turtles,<br />
                 level and cards

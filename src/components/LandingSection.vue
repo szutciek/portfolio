@@ -40,7 +40,7 @@
               @click="redirectProgram"
             >
               <div class="logos">
-                <img src="/images/logo/tue.png" alt="TU/e Logo" />
+                <img src="/images/logo/tue.avif" alt="TU/e Logo" />
               </div>
               <div>
                 <p>Second Year Bachelor</p>
@@ -59,8 +59,8 @@
               @click="redirectProjects"
             >
               <div class="logos">
-                <img src="/images/logo/kanapka.png" alt="Kanapka Logo" />
-                <img src="/images/logo/totem.png" alt="Totem Game Dev Logo" />
+                <img src="/images/logo/kanapka.avif" alt="Kanapka Logo" />
+                <img src="/images/logo/totem.avif" alt="Totem Game Dev Logo" />
               </div>
               <div>
                 <p>5+ Years of Experience</p>
@@ -90,22 +90,22 @@ const props = defineProps({
 
 const monitor = ref(null)
 
-const textureUrl = ref('/images/pic.png')
+const textureUrl = ref('/images/pic.avif')
 
 const selectTexture = () => {
   if (props.scroll < 0.5) {
-    textureUrl.value = `/images/pic.png`
+    textureUrl.value = `/images/pic.avif`
     return
   }
   if (snappedEl?.value?.dataset?.city === 'warsaw') {
-    textureUrl.value = `/videos/warsaw.webm`
+    textureUrl.value = `/videos/warsaw-compressed.webm`
     return
   }
   if (snappedEl?.value?.dataset?.city === 'eindhoven') {
-    textureUrl.value = `/videos/eindhoven.webm`
+    textureUrl.value = `/videos/eindhoven-compressed.webm`
     return
   }
-  textureUrl.value = `/images/aboutme.png`
+  textureUrl.value = `/images/aboutme.avif`
 }
 
 const scrollingToNext = (scroll) => {
