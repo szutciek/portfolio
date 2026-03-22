@@ -54,10 +54,11 @@ const props = defineProps({
 
 <style scoped>
 .interests {
-  width: calc(var(--full-width) * 3 / 5);
+  width: calc(var(--full-width) * 6 / 10);
   height: 100vh;
   padding: var(--base8);
   background-color: var(--bg-color-l);
+  border-bottom-left-radius: calc(var(--full-width) * 1 / 10);
 }
 
 .content {

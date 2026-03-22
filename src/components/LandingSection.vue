@@ -169,6 +169,7 @@ watch(() => props.nextPageScroll, scrollingToNext)
   padding: var(--base8) var(--base4);
   color: #fff;
   background-color: var(--bg-color-l);
+  border-bottom-left-radius: var(--base4);
 }
 
 .header .box {
