@@ -52,9 +52,9 @@
  * strokeWidth     {Number}  Stroke width in px.                      Default: 1.5
  * underlineHeight {Number}  Underline thickness in px.               Default: 2
  * mode            {String}  'wireframe' | 'underline'                Default: 'wireframe'
- * stiffness       {Number}  Spring stiffness 0–1.                    Default: 0.2
+ * stiffness       {Number}  Spring stiffness 0-1.                    Default: 0.2
  * attractRadius   {Number}  Px from element edge to start pull.      Default: 160
- * snapRadius      {Number}  Px from element edge — snap at boundary. Default: 80
+ * snapRadius      {Number}  Px from element edge - snap at boundary. Default: 80
  * snapStiffness   {Number}  Spring stiffness inside snap zone.       Default: 0.2
  * virtualClick    {Boolean} Swallow real clicks, re-fire on snap.    Default: false
  */
@@ -78,7 +78,7 @@ const props = defineProps({
   virtualClick: { type: Boolean, default: false },
 })
 
-// ─── State ────────────────────────────────────────────────────────────────────
+// --- State -------------------------------------------------------------------
 
 const svgEl = ref(null)
 const svgSize = 2000
@@ -128,9 +128,10 @@ const nudge = ref({ x: 0, y: 0 })
 const nudgeT = { x: 0, y: 0 }
 let nudgeEl = null
 
-// Previous nudge target decay
-const prevNudge = ref({ x: 0, y: 0 })
-let prevNudgeEl = null
+// Previously nudged elements — Map<HTMLElement, { x, y }> tracking every
+// element that has been nudged so they all spring back to origin, not just
+// the most recent one.
+const prevNudgeMap = new Map()
 
 // Underline spring
 const ul = ref({ phase1: 0, halfW: 0, cx: 0, y: 0 })
@@ -142,15 +143,15 @@ const currentPath = ref('')
 let rafId = null
 let targets = []
 
-// ─── Target-switch toggle ─────────────────────────────────────────────────────
+// --- Target-switch toggle ----------------------------------------------------
 // When the snapped element changes while already snapped, we set isSnapped to
-// false for exactly one RAF tick so watchers see the transition false → true.
+// false for exactly one RAF tick so watchers see the transition false -> true.
 // pendingSnapEl holds the incoming element during that one-tick gap.
 let pendingSnapEl = null
 let pendingSnapEntry = null
 let pendingSnapShape = null
 
-// ─── SVG positioning ──────────────────────────────────────────────────────────
+// --- SVG positioning ---------------------------------------------------------
 
 const svgStyle = computed(() => ({
   position: 'fixed',
@@ -161,7 +162,7 @@ const svgStyle = computed(() => ({
   zIndex: '99999',
 }))
 
-// ─── Deformation transform ────────────────────────────────────────────────────
+// --- Deformation transform ---------------------------------------------------
 
 const deformTransform = computed(() => {
   const s = spring.value
@@ -185,7 +186,7 @@ const deformTransform = computed(() => {
   ].join(' ')
 })
 
-// ─── Rounded-rect path builder ────────────────────────────────────────────────
+// --- Rounded-rect path builder -----------------------------------------------
 
 const K = 0.5522848
 
@@ -218,7 +219,7 @@ function roundedRectPath(cx, cy, w, h, rtl, rtr, rbr, rbl) {
   ].join(' ')
 }
 
-// ─── DOM scanning ─────────────────────────────────────────────────────────────
+// --- DOM scanning ------------------------------------------------------------
 
 function scanTargets() {
   targets = Array.from(document.querySelectorAll('[data-cursor-target]')).map((el) => ({
@@ -267,13 +268,13 @@ function getTargetShape(el, offset) {
   }
 }
 
-// ─── Real cursor style ────────────────────────────────────────────────────────
+// --- Real cursor style -------------------------------------------------------
 
 function setRealCursor(style) {
   document.documentElement.style.setProperty('cursor', style, 'important')
 }
 
-// ─── Hover emulation ──────────────────────────────────────────────────────────
+// --- Hover emulation ---------------------------------------------------------
 
 let hoveredEl = null
 
@@ -296,7 +297,7 @@ function emitLeave(el) {
   el.dispatchEvent(new MouseEvent('mouseout', { bubbles: true, cancelable: true }))
 }
 
-// ─── Occlusion check ──────────────────────────────────────────────────────────
+// --- Occlusion check ---------------------------------------------------------
 
 function testPoint(node, el) {
   while (node) {
@@ -324,7 +325,7 @@ function isVisible(el) {
   return true
 }
 
-// ─── Snap helpers ─────────────────────────────────────────────────────────────
+// --- Snap helpers ------------------------------------------------------------
 
 function applySnap(entry, shape) {
   if (prevSnappedEl && prevSnappedEl !== entry.el) {
@@ -353,7 +354,7 @@ function clearSnap() {
   activeGlyphPath.value = null
 }
 
-// ─── Attraction logic ─────────────────────────────────────────────────────────
+// --- Attraction logic --------------------------------------------------------
 
 function distToRect(mx, my, rect, offset) {
   const ex = Math.max(rect.left - offset, Math.min(mx, rect.right + offset))
@@ -372,18 +373,40 @@ let inSnapZone = false
 let activeElement = null
 let prevSnappedEl = null
 
+// Retire the current nudgeEl into prevNudgeMap so it springs back to origin.
+// Seeds its position from the live nudge spring to avoid a jump.
+function retireNudgeEl() {
+  if (!nudgeEl) return
+  if (!prevNudgeMap.has(nudgeEl)) {
+    prevNudgeMap.set(nudgeEl, { x: nudge.value.x, y: nudge.value.y })
+  } else {
+    const pos = prevNudgeMap.get(nudgeEl)
+    pos.x = nudge.value.x
+    pos.y = nudge.value.y
+  }
+  nudge.value.x = 0
+  nudge.value.y = 0
+  nudgeEl = null
+}
+
+// Switch the active nudge element to `el`, retiring the old one first.
+function activateNudgeEl(el) {
+  if (nudgeEl === el) return
+  retireNudgeEl()
+  nudgeEl = el
+  // Remove from prevNudgeMap — it is now the active nudge target.
+  prevNudgeMap.delete(el)
+}
+
 function computeTarget() {
   const defaultW = props.size * 2
   const defaultR = props.size
 
-  // ── Resolve pending snap from previous tick ────────────────────────────────
-  // If last tick we cleared snap to signal a target switch, re-apply now with
-  // the new target so watchers see false → true across exactly one tick.
+  // Resolve pending snap from previous tick
   if (pendingSnapEl) {
     applySnap(pendingSnapEntry, pendingSnapShape)
     setRealCursor(pendingSnapEntry.passive ? 'none' : 'pointer')
 
-    // Set shape targets for the new element
     target.x = pendingSnapShape.x
     target.y = pendingSnapShape.y
     target.w = pendingSnapShape.w
@@ -396,7 +419,7 @@ function computeTarget() {
     pendingSnapEl = null
     pendingSnapEntry = null
     pendingSnapShape = null
-    return // skip normal target finding this tick — snap is already resolved
+    return
   }
 
   let bestDist = Infinity
@@ -424,17 +447,14 @@ function computeTarget() {
       setRealCursor(bestEntry.passive ? 'none' : 'pointer')
 
       if (!isSnapped.value) {
-        // Fresh snap — no previous target
         applySnap(bestEntry, bestShape)
       } else if (snappedEl.value !== bestEntry.el) {
-        // Target switched while snapped — toggle isSnapped for one tick
         clearSnap()
-        inSnapZone = false // treat this tick as unsnapped for spring
+        inSnapZone = false
         pendingSnapEl = bestEntry.el
         pendingSnapEntry = bestEntry
         pendingSnapShape = bestShape
       }
-      // else: same element, nothing to do
 
       deformT.dx = 0
       deformT.dy = 0
@@ -447,16 +467,7 @@ function computeTarget() {
       const toDist = Math.hypot(toCurX, toCurY) || 1
       nudgeT.x = (toCurX / toDist) * Math.min(toDist, 14)
       nudgeT.y = (toCurY / toDist) * Math.min(toDist, 14)
-      if (nudgeEl !== bestEntry.el) {
-        if (nudgeEl && nudgeEl !== bestEntry.el) {
-          prevNudgeEl = nudgeEl
-          prevNudge.value.x = nudge.value.x
-          prevNudge.value.y = nudge.value.y
-        }
-        nudge.value.x = 0
-        nudge.value.y = 0
-        nudgeEl = bestEntry.el
-      }
+      activateNudgeEl(bestEntry.el)
 
       target.x = bestShape.x
       target.y = bestShape.y
@@ -494,16 +505,7 @@ function computeTarget() {
       const toD3 = Math.hypot(toC3X, toC3Y) || 1
       nudgeT.x = (toC3X / toD3) * Math.min(toD3, 8 * w)
       nudgeT.y = (toC3Y / toD3) * Math.min(toD3, 8 * w)
-      if (nudgeEl !== bestEntry.el) {
-        if (nudgeEl && nudgeEl !== bestEntry.el) {
-          prevNudgeEl = nudgeEl
-          prevNudge.value.x = nudge.value.x
-          prevNudge.value.y = nudge.value.y
-        }
-        nudge.value.x = 0
-        nudge.value.y = 0
-        nudgeEl = bestEntry.el
-      }
+      activateNudgeEl(bestEntry.el)
 
       target.w = defaultW
       target.h = defaultW
@@ -538,6 +540,9 @@ function computeTarget() {
     ulT.phase1 = 0
     ulT.halfW = 0
 
+    // Retire the active nudge element so it springs back to origin too.
+    retireNudgeEl()
+
     target.x = mouse.x
     target.y = mouse.y
     target.w = defaultW
@@ -549,7 +554,7 @@ function computeTarget() {
   }
 }
 
-// ─── Spring & render loop ─────────────────────────────────────────────────────
+// --- Spring & render loop ----------------------------------------------------
 
 function springStep(key) {
   const k = inSnapZone ? props.snapStiffness : props.stiffness
@@ -587,18 +592,18 @@ function tick() {
   nudge.value.x += (nudgeT.x - nudge.value.x) * NUDGE_K
   nudge.value.y += (nudgeT.y - nudge.value.y) * NUDGE_K
 
-  if (prevNudgeEl) {
-    prevNudge.value.x += (0 - prevNudge.value.x) * (NUDGE_K * 0.5)
-    prevNudge.value.y += (0 - prevNudge.value.y) * (NUDGE_K * 0.5)
-    const px = prevNudge.value.x
-    const py = prevNudge.value.y
-    if (Math.abs(px) > 0.01 || Math.abs(py) > 0.01) {
-      prevNudgeEl.style.transform = `translate(${px.toFixed(2)}px, ${py.toFixed(2)}px)`
-      prevNudgeEl.style.willChange = 'transform'
+  // Spring ALL previously nudged elements back toward their original position.
+  for (const [el, pos] of prevNudgeMap) {
+    pos.x += (0 - pos.x) * (NUDGE_K * 0.5)
+    pos.y += (0 - pos.y) * (NUDGE_K * 0.5)
+    if (Math.abs(pos.x) > 0.01 || Math.abs(pos.y) > 0.01) {
+      el.style.transform = `translate(${pos.x.toFixed(2)}px, ${pos.y.toFixed(2)}px)`
+      el.style.willChange = 'transform'
     } else {
-      prevNudgeEl.style.transform = ''
-      prevNudgeEl.style.willChange = ''
-      prevNudgeEl = null
+      // Settled — clean up and remove from map.
+      el.style.transform = ''
+      el.style.willChange = ''
+      prevNudgeMap.delete(el)
     }
   }
 
@@ -635,7 +640,7 @@ function tick() {
   rafId = requestAnimationFrame(tick)
 }
 
-// ─── Virtual click interception ───────────────────────────────────────────────
+// --- Virtual click interception ----------------------------------------------
 
 const SYNTHETIC_MARKER = '__cursorMorphSynthetic'
 
@@ -665,7 +670,7 @@ function onCaptureClick(e) {
   }
 }
 
-// ─── Event listeners ──────────────────────────────────────────────────────────
+// --- Event listeners ---------------------------------------------------------
 
 function onMouseMove(e) {
   mouse.x = e.clientX
@@ -715,13 +720,15 @@ onUnmounted(() => {
   observer?.disconnect()
   prevSnappedEl?.classList.remove(SNAP_CLASS)
   emitLeave(prevSnappedEl)
+  // Clean up every element that was ever nudged.
+  for (const el of prevNudgeMap.keys()) {
+    el.style.transform = ''
+    el.style.willChange = ''
+  }
+  prevNudgeMap.clear()
   if (nudgeEl) {
     nudgeEl.style.transform = ''
     nudgeEl.style.willChange = ''
-  }
-  if (prevNudgeEl) {
-    prevNudgeEl.style.transform = ''
-    prevNudgeEl.style.willChange = ''
   }
   if (prevSnappedEl) {
     prevSnappedEl.style.transform = ''
