@@ -1,5 +1,5 @@
 <template>
-  <div ref="container" class="transparent" data-cursor-target data-cursor-offset="4">
+  <div ref="container" class="transparent" data-cursor-target data-cursor-offset="5">
     <slot />
   </div>
 </template>

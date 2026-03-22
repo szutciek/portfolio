@@ -29,60 +29,69 @@ const props = defineProps({
 const events = {
   top: [
     {
-      position: 20,
-      title: 'Start of IB Diploma Programme @ ASW',
-      description: 'Transfer to the American School of Warsaw.',
-      period: 'September 2022',
+      position: 10,
+      title: 'End of Swimming Career',
+      period: 'Summer 2021',
+      // images: [
+      //   '/images/timeline/race.png',
+      //   '/images/timeline/gim92.png',
+      //   '/images/timeline/dive.png',
+      // ],
     },
     {
-      position: 55,
-      title: 'Graduation with IB Bilingual Diploma @ ASW',
-      description: 'Successful graduation with the bilingual diploma.',
+      position: 32.5,
+      title: 'Graduation - IB Bilingual Diploma',
       period: 'May 2024',
       images: ['/images/timeline/ib.png', '/images/timeline/polin.png', '/images/timeline/asw.png'],
     },
     {
-      position: 65,
-      title: 'Start of Computer Science & Engineering @ TU/e',
-      description: 'Start of the first academic year at university.',
+      position: 47.5,
+      title: 'Start of Studies - CSE @ TU/e',
       period: 'September 2024',
-      images: ['/images/timeline/tue.png', '/images/timeline/eindhoven.png'],
+      images: ['/images/timeline/tue.png', '/images/timeline/campus.png'],
     },
     {
-      position: 95,
-      title: 'Graduation Computer Science & Engineering @ TU/e*',
-      description: 'Expected graduation from TU/e.',
-      period: 'Summer 2027',
+      position: 90,
+      title: 'Graduation - Computer Science & Engineering',
+      period: 'Expected Summer 2027',
     },
   ],
   bottom: [
     {
       position: 5,
       title: 'First Software Projects',
-      description: 'I quit my swimming career to pursue higher education in Computer Science.',
       period: 'Late 2020',
     },
     {
-      position: 45,
+      position: 22.5,
       title: 'Drivers License Obtained',
-      description: 'I passed the drivers license text for B category vehicles.',
       period: 'October 2023',
     },
     {
-      position: 80,
-      title: 'Epic 4000m Tandem Skydive',
-      description: 'I jumped out of a plane before it landed.',
-      period: 'July 2025',
+      position: 67.5,
+      title: 'Joined Totem Game Dev',
+      period: 'September 2025',
     },
   ],
 }
+
 const markers = [
-  { year: '2022', position: 10 },
-  { year: '2023', position: 30 },
-  { year: '2024', position: 50 },
-  { year: '2025', position: 70 },
-  { year: '2026', position: 90 },
+  { year: 2021, position: 10 },
+  { year: '...', position: 20 },
+  { year: 2024, position: 30 },
+  { year: 2025, position: 50 },
+  { year: 2026, position: 70 },
+  { year: 2027, position: 90 },
 ]
+
+const generateMarkers = (startYear, nYears) => {
+  nYears++
+  for (let i = 0; i < nYears; i++) {
+    markers.push({ year: `${startYear + i}`, position: ((i + 0.5) * 100) / nYears })
+    console.log(`{ year: ${startYear + i}, position: ${((i + 0.5) * 100) / nYears}}`)
+  }
+}
+// generateMarkers(2021, 4)
 
 const slideTarget = ref(null)
 let currentEvent = null

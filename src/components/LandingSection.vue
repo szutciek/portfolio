@@ -37,19 +37,17 @@
               class="infoItem"
               data-cursor-target
               data-cursor-offset="10"
-              @click="
-                openUrl(
-                  `https://www.tue.nl/en/education/bachelor-college/bachelor-computer-science-and-engineering`,
-                )
-              "
+              @click="redirectProgram"
             >
-              <img src="/images/tue.png" alt="TU/e Logo" />
+              <div class="logos">
+                <img src="/images/logo/tue.png" alt="TU/e Logo" />
+              </div>
               <div>
                 <p>Second Year Bachelor</p>
                 <h3>Computer Science & Engineering</h3>
               </div>
-              <AdjacentIcon class="onSnap" style="position: absolute; top: 4px; right: 4px">
-                <p>Study Info</p>
+              <AdjacentIcon class="onSnap" style="position: absolute; top: 5px; right: 5px">
+                <p>Explore Program</p>
                 <p>&nearr;</p>
               </AdjacentIcon>
             </div>
@@ -58,15 +56,18 @@
               class="infoItem"
               data-cursor-target
               data-cursor-offset="10"
-              @click="openUrl(`https://github.com/szutciek`)"
+              @click="redirectProjects"
             >
-              <img src="/images/kanapka.png" alt="Kanapka Logo" />
+              <div class="logos">
+                <img src="/images/logo/kanapka.png" alt="Kanapka Logo" />
+                <img src="/images/logo/totem.png" alt="Totem Game Dev Logo" />
+              </div>
               <div>
                 <p>5+ Years of Experience</p>
                 <h3>Full Stack Web & Game Developer</h3>
               </div>
-              <AdjacentIcon class="onSnap" style="position: absolute; top: 4px; right: 4px">
-                <p>GitHub</p>
+              <AdjacentIcon class="onSnap" style="position: absolute; top: 5px; right: 5px">
+                <p>Browse Projects</p>
                 <p>&nearr;</p>
               </AdjacentIcon>
             </div>
@@ -117,8 +118,15 @@ const scrollingToNext = (scroll) => {
   monitor.value.style.transform = `translateX(-${scroll * 100}vw)`
 }
 
-const openUrl = (url) => {
+const redirectProgram = () => {
+  const url = `https://www.tue.nl/en/education/bachelor-college/bachelor-computer-science-and-engineering`
   window.open(url)
+}
+const redirectProjects = () => {
+  const el = document.getElementById('projects')
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 }
 
 watch(() => props.scroll, selectTexture)
@@ -187,18 +195,28 @@ watch(() => props.nextPageScroll, scrollingToNext)
   position: relative;
   gap: var(--base2);
 }
-.infoItem img {
-  height: 40px;
-  min-width: 40px;
-  max-width: 80px;
+.infoItem .logos {
+  display: flex;
+  gap: var(--base);
+}
+.infoItem .logos img:first-of-type {
+  margin-top: 0;
+  height: var(--base4);
+  min-width: var(--base4);
+  max-width: var(--base8);
   width: min-content;
+}
+.infoItem .logos img {
+  height: var(--base4);
+  min-width: var(--base4);
+  max-width: var(--base8);
   object-fit: contain;
 }
 .infoItem .onSnap {
-  display: none;
+  opacity: 0.2;
 }
 .infoItem.cursor-snapped .onSnap {
-  display: flex;
+  opacity: 1;
 }
 @media (max-width: 1800px) {
   .header .description {

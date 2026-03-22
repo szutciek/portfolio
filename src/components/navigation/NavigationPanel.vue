@@ -7,21 +7,21 @@
         <li class="marker">Navigation</li>
         <SpinTextInternal
           data-cursor-target
-          data-cursor-offset="8"
+          data-cursor-offset="10"
           @click="$emit('close')"
           text="Introduction"
           target="#introduction"
         />
         <SpinTextInternal
           data-cursor-target
-          data-cursor-offset="8"
+          data-cursor-offset="10"
           @click="$emit('close')"
           text="About"
           target="#about"
         />
         <SpinTextInternal
           data-cursor-target
-          data-cursor-offset="8"
+          data-cursor-offset="10"
           @click="$emit('close')"
           text="Projects"
           target="#projects"
@@ -31,31 +31,31 @@
         <li class="marker">Live Projects</li>
         <SpinTextExternal
           data-cursor-target
-          data-cursor-offset="8"
+          data-cursor-offset="10"
           text="Turtle Game"
           target="https://zolwie.kanapka.eu"
         />
         <SpinTextExternal
           data-cursor-target
-          data-cursor-offset="8"
+          data-cursor-offset="10"
           text="Webcam Game"
           target="https://webcamgame.kanapka.eu"
         />
         <SpinTextExternal
           data-cursor-target
-          data-cursor-offset="8"
+          data-cursor-offset="10"
           text="IBpedia"
           target="https://ibpedia.kanapka.eu"
         />
         <SpinTextExternal
           data-cursor-target
-          data-cursor-offset="8"
+          data-cursor-offset="10"
           text="Sztorify"
           target="https://sztorify.kanapka.eu"
         />
         <SpinTextExternal
           data-cursor-target
-          data-cursor-offset="8"
+          data-cursor-offset="10"
           text="Gaming"
           target="https://gaming.kanapka.eu"
         />

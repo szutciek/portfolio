@@ -6,7 +6,10 @@
       <h2>Interests<span>/ About me</span></h2>
     </AdjacentIcon>
     <div class="content">
-      <p>Work in progress... Continue scrolling for now</p>
+      <!-- <OpaqueButton color="var(--bg-color-l)">
+        <p>Swimming</p>
+      </OpaqueButton> -->
+      <p>Work in progress. Continue scrolling...</p>
     </div>
   </section>
 </template>
