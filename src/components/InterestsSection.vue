@@ -23,10 +23,18 @@
           >
             <p>Biking</p>
           </OpaqueButton>
-          <OpaqueButton color="var(--bg-color-d)" :highlightOnly="true">
+          <OpaqueButton
+            color="var(--bg-color-d)"
+            data-url="/images/interests/run.avif"
+            :highlightOnly="true"
+          >
             <p>Running</p>
           </OpaqueButton>
-          <OpaqueButton color="var(--bg-color-d)" :highlightOnly="true">
+          <OpaqueButton
+            color="var(--bg-color-d)"
+            data-url="/images/interests/skydive.avif"
+            :highlightOnly="true"
+          >
             <p>Skydiving</p>
           </OpaqueButton>
         </div>
@@ -39,17 +47,25 @@
             data-url="/images/interests/cs2.avif"
             :highlightOnly="true"
           >
-            <p>CS2</p>
+            <p>Counter Strike 2</p>
           </OpaqueButton>
-          <OpaqueButton color="var(--bg-color-d)" :highlightOnly="true">
-            <p>Memes a.k.a. Brainrot</p>
+          <OpaqueButton
+            color="var(--bg-color-d)"
+            data-url="/images/interests/meme.avif"
+            :highlightOnly="true"
+          >
+            <p>Memes / Internet Culture</p>
           </OpaqueButton>
         </div>
       </div>
       <div class="section">
         <h3>Computer Science</h3>
         <div class="list _interest-list">
-          <OpaqueButton color="var(--bg-color-d)" :highlightOnly="true">
+          <OpaqueButton
+            color="var(--bg-color-d)"
+            data-url="/images/interests/fullstack.avif"
+            :highlightOnly="true"
+          >
             <p>Full-Stack Web Development</p>
           </OpaqueButton>
           <OpaqueButton color="var(--bg-color-d)" :highlightOnly="true">
@@ -61,13 +77,14 @@
 
     <!-- Teleported to body so fixed positioning is never clipped by a parent -->
     <Teleport to="body">
-      <img ref="cursorImageEl" class="_cursor-follow-image" src="" alt="" />
+      <img ref="cursorImageA" class="_cursor-follow-image" src="" alt="" />
+      <img ref="cursorImageB" class="_cursor-follow-image" src="" alt="" />
     </Teleport>
   </section>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { useCursorSnap } from '@/composables/useCursorSnap.js'
 import gsap from 'gsap'
 
@@ -76,11 +93,19 @@ const props = defineProps({
 })
 const { isSnapped, snappedEl } = useCursorSnap()
 
-const cursorImageEl = ref(null)
+const cursorImageA = ref(null)
+const cursorImageB = ref(null)
+let activeSlot = 'a'
+let isHovering = false
 
-// Set hidden state immediately on mount — no flash
+function getEls() {
+  return activeSlot === 'a'
+    ? { active: cursorImageA.value, next: cursorImageB.value }
+    : { active: cursorImageB.value, next: cursorImageA.value }
+}
+
 onMounted(() => {
-  gsap.set(cursorImageEl.value, {
+  gsap.set([cursorImageA.value, cursorImageB.value], {
     opacity: 0,
     scale: 0.88,
     x: 0,
@@ -88,11 +113,8 @@ onMounted(() => {
   })
 })
 
-/**
- * Move the image to follow the cursor with a smooth lag.
- */
 function trackMouse(event) {
-  gsap.to(cursorImageEl.value, {
+  gsap.to([cursorImageA.value, cursorImageB.value], {
     left: event.clientX,
     top: event.clientY,
     duration: 0.35,
@@ -101,38 +123,33 @@ function trackMouse(event) {
   })
 }
 
-/**
- * Show the image at the cursor. Swaps src and animates in.
- * @param {string} imageSrc - path or URL of the image to show
- */
 function onHover(imageSrc) {
-  const el = cursorImageEl.value
-  el.src = imageSrc
+  const { active, next } = getEls()
 
-  gsap.killTweensOf(el, 'opacity,scale')
-  gsap.to(el, {
-    opacity: 1,
-    scale: 1,
-    duration: 0.25,
-    ease: 'power2.out',
-  })
+  next.src = imageSrc
+  next.onload = () => {
+    gsap.killTweensOf([active, next], 'opacity,scale')
+
+    // Fade in the next image
+    gsap.to(next, { opacity: 1, scale: 1, duration: 0.25, ease: 'power2.out' })
+
+    // Only animate the outgoing element out if we're still hovering (image swap).
+    // Skip the scale animation so it instantly hides without the shrink effect.
+    if (isHovering) {
+      gsap.to(active, { opacity: 0, duration: 0.18, ease: 'power2.in' })
+    } else {
+      gsap.set(active, { opacity: 0, scale: 0.88 })
+    }
+
+    activeSlot = activeSlot === 'a' ? 'b' : 'a'
+  }
 }
 
-/**
- * Hide the cursor image.
- * @param {string} [imageSrc] - optional guard: only hide if src still matches
- */
-function onUnHover(imageSrc) {
-  const el = cursorImageEl.value
-  if (imageSrc && el.src !== imageSrc) return
-
-  gsap.killTweensOf(el, 'opacity,scale')
-  gsap.to(el, {
-    opacity: 0,
-    scale: 0.88,
-    duration: 0.18,
-    ease: 'power2.in',
-  })
+function onUnHover() {
+  isHovering = false
+  const { active } = getEls()
+  gsap.killTweensOf(active, 'opacity,scale')
+  gsap.to(active, { opacity: 0, scale: 0.88, duration: 0.18, ease: 'power2.in' })
 }
 
 const handleHover = () => {
@@ -140,7 +157,8 @@ const handleHover = () => {
   if (!snappedEl?.value?.parentNode?.classList?.contains('_interest-list')) return onUnHover()
   const url = snappedEl?.value?.dataset?.url
   if (!url) return onUnHover()
-  if (url === cursorImageEl?.value?.src) return
+
+  isHovering = true
   onHover(url)
 }
 
@@ -150,10 +168,17 @@ const container = ref(null)
 
 onMounted(() => {
   if (!container?.value) return
+
   container.value.addEventListener('mousemove', trackMouse)
+
+  container.value.querySelectorAll('[data-url]').forEach((el) => {
+    const img = new Image()
+    img.src = el.dataset.url
+  })
 })
+
 onUnmounted(() => {
-  container.value.removeEventListener('mousemove', trackMouse)
+  container.value?.removeEventListener('mousemove', trackMouse)
 })
 </script>
 
@@ -188,8 +213,8 @@ onUnmounted(() => {
   position: fixed;
   pointer-events: none;
   z-index: 999999;
-  max-width: 15vw;
-  max-height: 25vh;
+  width: clamp(200px, 30vmin, 500px);
+  height: clamp(200px, 30vmin, 500px);
   object-fit: cover;
 }
 </style>
