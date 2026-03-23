@@ -136,6 +136,12 @@
             </AdjacentIcon>
           </TransparentButton>
         </template>
+        <template #client>
+          <AdjacentIcon>
+            <img src="/images/logo/myaura.avif" alt="MyAura Logo" />
+            <p>MyAura</p>
+          </AdjacentIcon>
+        </template>
         <template #screenshots>
           <section marker>
             <ParallaxContent :progress="sections[3]?.markers[0]?.visibleProgress" velocity="1">
@@ -191,6 +197,12 @@
               <p>&nearr;</p>
             </AdjacentIcon>
           </OpaqueButton>
+        </template>
+        <template #client>
+          <AdjacentIcon>
+            <img src="/images/logo/solivoda.avif" alt="Solivoda Logo" />
+            <p>Solivoda Catering</p>
+          </AdjacentIcon>
         </template>
         <template #screenshots>
           <section marker>
@@ -251,6 +263,12 @@
               <p>&nearr;</p>
             </AdjacentIcon>
           </TransparentButton>
+        </template>
+        <template #client>
+          <AdjacentIcon>
+            <img src="/images/logo/asw.avif" alt="ASW Logo" />
+            <p>American School of Warsaw</p>
+          </AdjacentIcon>
         </template>
         <template #screenshots>
           <section marker>

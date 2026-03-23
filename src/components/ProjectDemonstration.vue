@@ -5,6 +5,7 @@
       <div class="actions">
         <slot name="buttons" />
       </div>
+      <slot name="client"></slot>
     </div>
     <div class="screenShots">
       <slot name="screenshots" />
@@ -26,7 +27,7 @@
   align-self: start;
 }
 ._projectDemonstration .actions {
-  margin-top: var(--base3);
+  margin: var(--base3) 0 calc(var(--base3) * 2) 0;
   display: flex;
   gap: var(--base2);
 }
