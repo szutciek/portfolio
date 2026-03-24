@@ -1,5 +1,5 @@
 <template>
-  <a :href="props.target" target="_blank">
+  <a :href="props.target" target="_blank" data-cursor-target data-cursor-offset="10">
     <div class="spinWhite">
       <h1>{{ props.text }}</h1>
       <!-- prettier-ignore -->

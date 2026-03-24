@@ -22,11 +22,6 @@
 </template>
 
 <style>
-:root {
-  --nav-space: 160px;
-  --full-width: calc(100vw - var(--nav-space));
-}
-
 ._desktopHome section[vertical],
 ._desktopHome section[horizontal] {
   padding: 0 var(--base8);

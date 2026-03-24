@@ -1,6 +1,8 @@
 <template>
   <nav class="_cursor-transparent">
-    <p data-cursor-target data-cursor-offset="5" @click="goTop">KS</p>
+    <Link href="/" data-cursor-offset="5">
+      <p>KS</p>
+    </Link>
     <div>
       <button @click="$emit('open')" data-cursor-target data-cursor-offset="5">
         <svg
@@ -116,12 +118,4 @@ nav button {
 const props = defineProps({
   isOpen: Boolean,
 })
-
-const goTop = () => {
-  history.pushState(null, '', '/#introduction')
-  const el = document.getElementById('introduction')
-  if (el) {
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
-}
 </script>

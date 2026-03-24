@@ -13,6 +13,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AboutSection: typeof import('./src/components/AboutSection.vue')['default']
     AdjacentIcon: typeof import('./src/components/AdjacentIcon.vue')['default']
+    AV: typeof import('./src/components/aV.vue')['default']
     Background: typeof import('./src/components/cursor/Background.vue')['default']
     Cursor: typeof import('./src/components/cursor/Cursor.vue')['default']
     DrawPath: typeof import('./src/components/effects/DrawPath.vue')['default']
@@ -24,6 +25,7 @@ declare module 'vue' {
     InterestsSection: typeof import('./src/components/InterestsSection.vue')['default']
     LandingSection: typeof import('./src/components/LandingSection.vue')['default']
     LenisScroll: typeof import('./src/components/scroll/LenisScroll.vue')['default']
+    Link: typeof import('./src/components/Link.vue')['default']
     LocationSection: typeof import('./src/components/LocationSection.vue')['default']
     NavigationBar: typeof import('./src/components/navigation/NavigationBar.vue')['default']
     NavigationContact: typeof import('./src/components/navigation/NavigationContact.vue')['default']

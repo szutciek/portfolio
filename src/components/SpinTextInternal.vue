@@ -1,11 +1,11 @@
 <template>
-  <a :href="props.target" class="navButton">
+  <Link :href="props.target" data-cursor-target data-cursor-offset="10">
     <div class="spinWhite">
       <h1>{{ props.text }}</h1>
       <!-- prettier-ignore -->
       <h1>{{ props.text }}<svg class="moveSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><polyline points="268 112 412 256 268 400" style="fill:none;stroke-linecap:round;stroke-linejoin:round"/><line x1="392" y1="256" x2="100" y2="256" style="fill:none;stroke-linecap:round;stroke-linejoin:round"/></svg></h1>
     </div>
-  </a>
+  </Link>
 </template>
 
 <script setup>

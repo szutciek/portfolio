@@ -5,60 +5,21 @@
     <div class="navArea">
       <ul class="navAreaGrid">
         <li class="marker">Navigation</li>
-        <SpinTextInternal
-          data-cursor-target
-          data-cursor-offset="10"
-          @click="$emit('close')"
-          text="Introduction"
-          target="#introduction"
-        />
-        <SpinTextInternal
-          data-cursor-target
-          data-cursor-offset="10"
-          @click="$emit('close')"
-          text="About"
-          target="#about"
-        />
-        <SpinTextInternal
-          data-cursor-target
-          data-cursor-offset="10"
-          @click="$emit('close')"
-          text="Projects"
-          target="#projects"
-        />
+        <SpinTextInternal @click="$emit('close')" text="Introduction" target="/#introduction" />
+        <SpinTextInternal @click="$emit('close')" text="About" target="/#about" />
+        <SpinTextInternal @click="$emit('close')" text="Projects" target="/#projects" />
+      </ul>
+      <ul class="docAreaGrid">
+        <li class="marker">Documents</li>
+        <SpinTextInternal @click="$emit('close')" text="Resume" target="/resume" />
       </ul>
       <ul class="liveAreaGrid">
         <li class="marker">Live Projects</li>
-        <SpinTextExternal
-          data-cursor-target
-          data-cursor-offset="10"
-          text="Turtle Game"
-          target="https://zolwie.kanapka.eu"
-        />
-        <SpinTextExternal
-          data-cursor-target
-          data-cursor-offset="10"
-          text="Webcam Game"
-          target="https://webcamgame.kanapka.eu"
-        />
-        <SpinTextExternal
-          data-cursor-target
-          data-cursor-offset="10"
-          text="IBpedia"
-          target="https://ibpedia.kanapka.eu"
-        />
-        <SpinTextExternal
-          data-cursor-target
-          data-cursor-offset="10"
-          text="Sztorify"
-          target="https://sztorify.kanapka.eu"
-        />
-        <SpinTextExternal
-          data-cursor-target
-          data-cursor-offset="10"
-          text="Gaming"
-          target="https://gaming.kanapka.eu"
-        />
+        <SpinTextExternal text="Turtle Game" target="https://zolwie.kanapka.eu" />
+        <SpinTextExternal text="Webcam Game" target="https://webcamgame.kanapka.eu" />
+        <SpinTextExternal text="IBpedia" target="https://ibpedia.kanapka.eu" />
+        <SpinTextExternal text="Sztorify" target="https://sztorify.kanapka.eu" />
+        <SpinTextExternal text="Gaming" target="https://gaming.kanapka.eu" />
       </ul>
       <!-- <NavigationContact /> -->
       <h4 class="authAreaGrid">&copy; Maciej Szuter 2026</h4>
@@ -110,7 +71,7 @@
 .navArea {
   display: grid;
   grid-template-columns: 360px 360px minmax(auto, 500px);
-  grid-template-areas: 'nav live cont' 'auth auth auth';
+  grid-template-areas: 'nav doc cont' 'live e cont' 'auth auth auth';
   gap: 50px;
   height: 100%;
   padding: 200px 200px 0 200px;
@@ -137,6 +98,9 @@
 
 .navAreaGrid {
   grid-area: nav;
+}
+.docAreaGrid {
+  grid-area: doc;
 }
 .liveAreaGrid {
   grid-area: live;
