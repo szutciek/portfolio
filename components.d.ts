@@ -13,7 +13,6 @@ declare module 'vue' {
   export interface GlobalComponents {
     AboutSection: typeof import('./src/components/AboutSection.vue')['default']
     AdjacentIcon: typeof import('./src/components/AdjacentIcon.vue')['default']
-    AV: typeof import('./src/components/aV.vue')['default']
     Background: typeof import('./src/components/cursor/Background.vue')['default']
     Cursor: typeof import('./src/components/cursor/Cursor.vue')['default']
     DrawPath: typeof import('./src/components/effects/DrawPath.vue')['default']
