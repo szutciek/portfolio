@@ -2,38 +2,31 @@
   <div class="container">
     <div class="message _no-print">
       <AdjacentIcon>
-        <!-- prettier-ignore -->
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M336 176h40a40 40 0 0140 40v208a40 40 0 01-40 40H136a40 40 0 01-40-40V216a40 40 0 0140-40h40" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><path fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M176 272l80 80 80-80M256 48v288"/></svg>
-        <div class="text">
-          <h3>Use Print Window to Generate a PDF</h3>
-          <p>Via the shortcut (CTRL + P) or Browser Menu</p>
-        </div>
+        <OpaqueButton @click="exportPDF"><p>Export PDF</p></OpaqueButton>
+        <TransparentButton @click="openPrintMenu"><p>Print</p></TransparentButton>
       </AdjacentIcon>
     </div>
     <div class="page">
-      <h1>Maciej Szuter</h1>
+      <InfoColumn />
+      <MainColumn />
     </div>
   </div>
 </template>
 
 <style scoped>
 .message {
-  margin: var(--base4) auto;
+  margin: var(--base2) auto;
   width: fit-content;
-}
-.message svg {
-  stroke: var(--main-color-l);
 }
 .page {
   width: 210mm;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
   min-height: 297mm;
   margin: 0 auto;
-  padding: var(--base4);
+  padding: var(--base3);
   box-sizing: border-box;
-  background: #fff;
-}
-h1 {
-  color: #000;
+  background: #e9dedd;
 }
 </style>
 
@@ -51,8 +44,45 @@ h1 {
     box-shadow: none;
     margin: 0;
     width: 100%;
-    min-height: auto;
-    background: #0f0;
+    min-height: unset;
   }
 }
 </style>
+
+<script setup>
+import html2pdf from 'html2pdf.js'
+
+const openPrintMenu = () => {
+  window.print()
+}
+
+async function exportPDF() {
+  const pageEl = document.querySelector('.page')
+  const originalMinHeight = pageEl.style.minHeight
+  pageEl.style.minHeight = 'unset'
+
+  const now = new Date()
+  const date = `${now.getDate()}-${now.getMonth() + 1}-${now.getFullYear()}`
+
+  const opt = {
+    margin: 0,
+    filename: `cv_maciej_szuter_${date}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: {
+      scale: 2,
+      useCORS: true,
+      letterRendering: true,
+    },
+    jsPDF: {
+      unit: 'mm',
+      format: 'a4',
+      orientation: 'portrait',
+    },
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+  }
+
+  await html2pdf().set(opt).from(pageEl).save()
+
+  pageEl.style.minHeight = originalMinHeight
+}
+</script>
