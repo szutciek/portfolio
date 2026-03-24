@@ -1,5 +1,6 @@
 <template>
-  <div
+  <a
+    title=""
     :href="props.href"
     :target="props.blank ? '_blank' : '_self'"
     :rel="props.blank ? 'noopener noreferrer' : undefined"
@@ -23,7 +24,7 @@
         </span>
       </Transition>
     </Teleport>
-  </div>
+  </a>
 </template>
 
 <script setup>
@@ -44,6 +45,7 @@ const el = ref(null)
 
 /** Show preview when the cursor is snapped to this specific link element */
 const showPreview = computed(() => {
+  return false
   if (!snappedEl.value) return false
   if (snappedEl.value === el.value) return true
   let node = snappedEl.value
@@ -111,6 +113,10 @@ const navigate = () => {
 </script>
 
 <style scoped>
+a {
+  text-decoration: none;
+}
+
 .app-link {
   display: inline;
 }
