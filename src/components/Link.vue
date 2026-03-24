@@ -34,6 +34,7 @@ import { useCursorSnap } from '@/composables/useCursorSnap'
 const props = defineProps({
   href: { type: String, required: true },
   blank: { type: Boolean, default: false },
+  smooth: { type: Boolean, default: false },
 })
 
 const router = useRouter()
@@ -70,7 +71,7 @@ const previewUrl = computed(() => {
 const scrollToAnchor = (targetId) => {
   const el = document.getElementById(targetId)
   if (el) {
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    el.scrollIntoView({ behavior: props.smooth ? 'smooth' : 'instant', block: 'start' })
     return true
   }
   return false

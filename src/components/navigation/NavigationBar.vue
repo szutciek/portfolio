@@ -1,6 +1,6 @@
 <template>
   <nav class="_cursor-transparent">
-    <Link href="/" data-cursor-offset="5">
+    <Link href="/" data-cursor-target data-cursor-offset="5">
       <p>KS</p>
     </Link>
     <div>

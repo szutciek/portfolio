@@ -32,24 +32,24 @@
   position: fixed;
   top: 0;
   height: 100dvh;
-  width: calc(100vw - 80px);
+  width: calc(100vw - var(--nav-width));
   border-left: 1px solid #1f1f1f;
   background-color: var(--bg-color-d);
   transition:
     left 0.7s cubic-bezier(0.16, 1, 0.3, 1),
     background 0.2s linear;
   color: white;
-  padding: 0 80px 0 0;
+  padding: 0 var(--base8) 0 0;
   overflow-y: auto;
   z-index: 101;
 }
 .slideNav.hidden {
   background-color: var(--bg-color-d);
-  left: calc(100vw - 80px);
+  left: calc(100vw - var(--nav-width));
 }
 .slideNav.visible {
   background-color: var(--bg-color-l);
-  left: 80px;
+  left: var(--nav-width);
 }
 
 .close {
@@ -70,11 +70,11 @@
 }
 .navArea {
   display: grid;
-  grid-template-columns: 360px 360px minmax(auto, 500px);
-  grid-template-areas: 'nav doc cont' 'live e cont' 'auth auth auth';
-  gap: 50px;
+  grid-template-columns: 360px 360px 360px;
+  grid-template-areas: 'nav doc live' 'auth auth auth';
+  gap: var(--base8);
   height: 100%;
-  padding: 200px 200px 0 200px;
+  padding: var(--base16) var(--base16) 0 var(--base16);
   border-right: 1px solid #1f1f1f;
 }
 .navArea a {
@@ -93,7 +93,7 @@
   color: #909090;
   font-size: 15px;
   font-weight: 100;
-  padding-bottom: 100px;
+  padding-bottom: var(--base8);
 }
 
 .navAreaGrid {
@@ -110,6 +110,12 @@
 }
 .authAreaGrid {
   grid-area: auth;
+}
+
+@media (max-width: 1800px) {
+  .navArea {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
 }
 </style>
 

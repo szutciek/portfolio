@@ -31,6 +31,8 @@ html,
   --base3: 30px;
   --base4: 40px;
   --base8: 80px;
+  --base16: 160px;
+  --base32: 320px;
 }
 ::-webkit-scrollbar {
   width: 6px;

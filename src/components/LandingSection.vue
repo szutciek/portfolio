@@ -47,7 +47,13 @@
               </AdjacentIcon>
             </Link>
             <div class="border"></div>
-            <Link class="infoItem" data-cursor-target data-cursor-offset="10" href="/#projects">
+            <Link
+              class="infoItem"
+              data-cursor-target
+              data-cursor-offset="10"
+              href="/#projects"
+              :smooth="true"
+            >
               <div class="logos">
                 <img src="/images/logo/kanapka.avif" alt="Kanapka Logo" />
                 <img src="/images/logo/totem.avif" alt="Totem Game Dev Logo" />
