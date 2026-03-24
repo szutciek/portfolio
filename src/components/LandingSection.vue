@@ -33,12 +33,7 @@
             </AdjacentIcon>
           </div>
           <div class="infoGrid">
-            <div
-              class="infoItem"
-              data-cursor-target
-              data-cursor-offset="10"
-              @click="redirectProgram"
-            >
+            <Link class="infoItem" data-cursor-target data-cursor-offset="10" :href="tue">
               <div class="logos">
                 <img src="/images/logo/tue.avif" alt="TU/e Logo" />
               </div>
@@ -50,13 +45,14 @@
                 <p>Explore Program</p>
                 <p>&nearr;</p>
               </AdjacentIcon>
-            </div>
+            </Link>
             <div class="border"></div>
-            <div
+            <Link
               class="infoItem"
               data-cursor-target
               data-cursor-offset="10"
-              @click="redirectProjects"
+              href="/#projects"
+              :smooth="true"
             >
               <div class="logos">
                 <img src="/images/logo/kanapka.avif" alt="Kanapka Logo" />
@@ -70,7 +66,7 @@
                 <p>Browse Projects</p>
                 <p>&nearr;</p>
               </AdjacentIcon>
-            </div>
+            </Link>
           </div>
         </div>
       </div>
@@ -87,6 +83,8 @@ const props = defineProps({
   scroll: Number,
   nextPageScroll: Number,
 })
+
+const tue = `https://www.tue.nl/en/education/bachelor-college/bachelor-computer-science-and-engineering`
 
 const monitor = ref(null)
 
@@ -116,18 +114,6 @@ const scrollingToNext = (scroll) => {
     monitor.value.style.position = 'absolute'
   }
   monitor.value.style.transform = `translateX(-${scroll * 100}vw)`
-}
-
-const redirectProgram = () => {
-  const url = `https://www.tue.nl/en/education/bachelor-college/bachelor-computer-science-and-engineering`
-  window.open(url)
-}
-const redirectProjects = () => {
-  history.pushState(null, '', '/#projects')
-  const el = document.getElementById('projects')
-  if (el) {
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
 }
 
 watch(() => props.scroll, selectTexture)

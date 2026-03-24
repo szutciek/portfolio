@@ -2,7 +2,7 @@
   <teleport to="body">
     <svg
       ref="svgEl"
-      class="cursor-morph"
+      class="cursor-morph _no-print"
       :width="svgSize"
       :height="svgSize"
       :style="svgStyle"

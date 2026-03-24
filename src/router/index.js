@@ -8,7 +8,15 @@ const router = createRouter({
       name: 'home',
       component: () => import('@/views/ResponsiveHomeView.vue'),
     },
+    {
+      path: '/resume',
+      name: 'ResumePrint',
+      component: () => import('@/views/ResumePrint.vue'),
+    },
   ],
+  scrollBehavior(to, from, savedPosition) {
+    return { top: 0 }
+  },
 })
 
 export default router

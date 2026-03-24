@@ -1,11 +1,13 @@
 <template>
-  <a :href="props.target" target="_blank">
-    <div class="spinWhite">
-      <h1>{{ props.text }}</h1>
-      <!-- prettier-ignore -->
-      <h1>{{ props.text }}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M384,224V408a40,40,0,0,1-40,40H104a40,40,0,0,1-40-40V168a40,40,0,0,1,40-40H271.48" style="fill:none;stroke-linecap:round;stroke-linejoin:round"/><polyline points="336 64 448 64 448 176" style="fill:none;stroke-linecap:round;stroke-linejoin:round"/><line x1="224" y1="288" x2="440" y2="72" style="fill:none;stroke-linecap:round;stroke-linejoin:round"/></svg></h1>
-    </div>
-  </a>
+  <div class="snappable">
+    <Link :href="props.target" :blank="true" data-cursor-target data-cursor-offset="5">
+      <div class="spinWhite">
+        <h1>{{ props.text }}</h1>
+        <!-- prettier-ignore -->
+        <h1>{{ props.text }}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M384,224V408a40,40,0,0,1-40,40H104a40,40,0,0,1-40-40V168a40,40,0,0,1,40-40H271.48" style="fill:none;stroke-linecap:round;stroke-linejoin:round"/><polyline points="336 64 448 64 448 176" style="fill:none;stroke-linecap:round;stroke-linejoin:round"/><line x1="224" y1="288" x2="440" y2="72" style="fill:none;stroke-linecap:round;stroke-linejoin:round"/></svg></h1>
+      </div>
+    </Link>
+  </div>
 </template>
 
 <script setup>
@@ -20,11 +22,14 @@ const props = defineProps({
 </script>
 
 <style scoped>
+.snappable {
+  margin: var(--base) calc(-1 * var(--base));
+}
 .spinWhite {
   color: white;
   height: 46px;
   line-height: 46px;
-  margin: 15px 0;
+  margin: var(--base) var(--base);
   font-size: 18px;
   overflow: hidden;
   transition: 0.4s;
@@ -33,7 +38,8 @@ const props = defineProps({
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  gap: 30px;
+  gap: var(--base3);
+  white-space: nowrap;
   font-size: 36px;
   font-weight: 300;
   transition: 0.4s;
