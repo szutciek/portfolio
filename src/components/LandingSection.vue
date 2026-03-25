@@ -190,6 +190,7 @@ watch(() => props.nextPageScroll, scrollingToNext)
   color: #fff;
   background-color: var(--bg-color-l);
   border-left: 1px solid #1f1f1f;
+  border-bottom-left-radius: var(--base4);
 }
 
 .header .box {
