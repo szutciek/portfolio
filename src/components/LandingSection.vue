@@ -1,7 +1,19 @@
 <template>
   <section vertical>
     <div class="header">
-      <div class="renderAnchor">
+      <div class="leftAnchor">
+        <TileImageGrid
+          class="projectTiles"
+          :images="[
+            '/images/checkout/touchscreen.avif',
+            '/images/zolwie/game.avif',
+            '/images/myaura/home.avif',
+            '/images/myaura/checkout.avif',
+            '/images/roomganizer/scheduler.avif',
+            '/images/sso/trust.avif',
+            '/images/wcgame/amongus.avif',
+          ]"
+        />
         <div class="renderRail" ref="monitor">
           <SimpleModelRender
             class="render"
@@ -128,7 +140,7 @@ watch(() => props.nextPageScroll, scrollingToNext)
   grid-template-columns: 1fr 1fr;
   height: 100dvh;
 }
-.renderAnchor {
+.leftAnchor {
   position: relative;
   width: 100%;
   height: 100%;
@@ -144,6 +156,12 @@ watch(() => props.nextPageScroll, scrollingToNext)
   top: 0;
   width: 100%;
   height: 100vh;
+}
+.leftAnchor .projectTiles {
+  position: absolute;
+  width: calc(100% + var(--base4));
+  height: 100vh;
+  z-index: -1;
 }
 
 .header .description {
