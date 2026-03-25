@@ -2,7 +2,11 @@
   <div ref="container" class="screenshot-background">
     <div class="perspective" :style="perspectiveStyle">
       <div class="grid" :style="gridStyle">
-        <div v-for="(column, i) in arrangedItems" :key="i" :style="`width: ${60 / nColumns}vw`">
+        <div
+          v-for="(column, i) in arrangedItems"
+          :key="i"
+          :style="`width: ${60 / nColumns}vw; transform: translateY(${((i % 2) + 1) * offset}px)`"
+        >
           <img v-for="(row, j) in column" :key="j" :src="images[row]" draggable="false" />
         </div>
       </div>
@@ -13,11 +17,12 @@
 <script setup>
 const props = defineProps({
   images: { type: Array, default: [] },
+  offset: { type: Number, default: 0 },
 })
 
-const nColumns = 7
-const nRows = 10
-const opacity = 0.067
+const nColumns = 6
+const nRows = 7
+const opacity = 0.1
 
 const perspective = 500
 const rX = 10
@@ -54,10 +59,12 @@ const sampleOrder = () => {
       const imageIndex = Math.floor(Math.random() * props.images.length)
       const accept = repLimit[imageIndex] !== 0 && imageIndex !== prevIndex
       if (!accept) {
-        j--
+        // Leading to infinite loop
+        // j--
         continue
       }
       repLimit[imageIndex]--
+      prevIndex = imageIndex
       arrangedItems.value[i][j] = imageIndex
     }
   }
