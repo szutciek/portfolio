@@ -2,7 +2,12 @@
   <section vertical>
     <div class="header">
       <div class="leftAnchor">
-        <TileImageGrid class="projectTiles" :images="bgImages" :offset="-props.scroll * 500" />
+        <TileImageGrid
+          class="projectTiles"
+          :images="bgImages"
+          :offset="-props.scroll * 500"
+          :arrangement="bgArrangemenet"
+        />
         <div class="renderRail" ref="monitor">
           <SimpleModelRender
             class="render"
@@ -131,6 +136,13 @@ const bgImages = [
   '/images/sso/trust.avif',
   '/images/wcgame/amongus.avif',
 ]
+const bgArrangemenet = ref([])
+bgArrangemenet.value.push([2, 3, 11, 9, 5, 6])
+bgArrangemenet.value.push([4, 0, 7])
+bgArrangemenet.value.push([11, 7, 1, 6, 3, 11])
+bgArrangemenet.value.push([4, 5, 4, 2])
+bgArrangemenet.value.push([6, 0, 1, 8])
+bgArrangemenet.value.push([9, 3, 2, 7])
 
 watch(() => props.scroll, selectTexture)
 watch(isSnapped, selectTexture)
