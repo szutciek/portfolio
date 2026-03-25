@@ -1,7 +1,8 @@
 <template>
   <section vertical>
     <div class="header">
-      <div class="renderAnchor">
+      <div class="leftAnchor">
+        <TileImageGrid class="projectTiles" :images="bgImages" :offset="-props.scroll * 500" />
         <div class="renderRail" ref="monitor">
           <SimpleModelRender
             class="render"
@@ -28,8 +29,8 @@
             <h1>MACIEJ SZUTER</h1>
             <AdjacentIcon>
               <!-- prettier-ignore -->
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 48c-79.5 0-144 61.39-144 137 0 87 96 224.87 131.25 272.49a15.77 15.77 0 0025.5 0C304 409.89 400 272.07 400 185c0-75.61-64.5-137-144-137z" fill="none" stroke="#aaa" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><circle cx="256" cy="192" r="48" fill="none" stroke="#aaa" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/></svg>
-              <p>Eindhoven, The Netherlands</p>
+              <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M160 368L32 256l128-112M352 368l128-112-128-112M304 96l-96 320"/></svg>
+              <p>Software Engineer</p>
             </AdjacentIcon>
           </div>
           <div class="infoGrid">
@@ -116,6 +117,21 @@ const scrollingToNext = (scroll) => {
   monitor.value.style.transform = `translateX(-${scroll * 100}vw)`
 }
 
+const bgImages = [
+  '/images/checkout/touchscreen.avif',
+  '/images/myaura/home.avif',
+  '/images/myaura/checkout.avif',
+  '/images/myaura/payment.avif',
+  '/images/zolwie/menu.avif',
+  '/images/zolwie/game.avif',
+  '/images/roomganizer/scheduler.avif',
+  '/images/roomganizer/map.avif',
+  '/images/roomganizer/timeline.avif',
+  '/images/sso/accounts.avif',
+  '/images/sso/trust.avif',
+  '/images/wcgame/amongus.avif',
+]
+
 watch(() => props.scroll, selectTexture)
 watch(isSnapped, selectTexture)
 
@@ -128,7 +144,7 @@ watch(() => props.nextPageScroll, scrollingToNext)
   grid-template-columns: 1fr 1fr;
   height: 100dvh;
 }
-.renderAnchor {
+.leftAnchor {
   position: relative;
   width: 100%;
   height: 100%;
@@ -145,6 +161,12 @@ watch(() => props.nextPageScroll, scrollingToNext)
   width: 100%;
   height: 100vh;
 }
+.leftAnchor .projectTiles {
+  position: absolute;
+  width: calc(100% + var(--base4));
+  height: 100vh;
+  z-index: -1;
+}
 
 .header .description {
   display: flex;
@@ -155,7 +177,7 @@ watch(() => props.nextPageScroll, scrollingToNext)
   padding: var(--base8) var(--base4);
   color: #fff;
   background-color: var(--bg-color-l);
-  border-bottom-left-radius: var(--base4);
+  border-left: 1px solid #1f1f1f;
 }
 
 .header .box {
