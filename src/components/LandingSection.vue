@@ -65,8 +65,8 @@
                 <img src="/images/logo/totem.avif" alt="Totem Game Dev Logo" />
               </div>
               <div>
-                <p>5+ Years of Experience</p>
-                <h3>Full Stack Web & Game Developer</h3>
+                <p>2 Years of Freelancing Experience</p>
+                <h3>Full Stack Web Developer</h3>
               </div>
               <AdjacentIcon class="onSnap" style="position: absolute; top: 5px; right: 5px">
                 <p>Browse Projects</p>
