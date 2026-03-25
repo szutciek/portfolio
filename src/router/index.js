@@ -14,7 +14,13 @@ const router = createRouter({
       component: () => import('@/views/ResumePrint.vue'),
     },
     {
-      path: '/utm_source/*',
+      path: '/src/:pathMatch(.*)*',
+      name: 'Source Redirect',
+      redirect: '/',
+    },
+    {
+      path: '/utm_source/:pathMatch(.*)*',
+      name: 'Source Redirect UTM',
       redirect: '/',
     },
   ],
