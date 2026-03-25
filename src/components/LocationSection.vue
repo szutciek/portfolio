@@ -67,6 +67,7 @@ const props = defineProps({
   height: 100%;
   width: 100%;
   overflow: hidden;
+  border-top-left-radius: var(--base4);
 }
 .location .content {
   z-index: 1;

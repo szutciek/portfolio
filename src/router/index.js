@@ -13,6 +13,10 @@ const router = createRouter({
       name: 'ResumePrint',
       component: () => import('@/views/ResumePrint.vue'),
     },
+    {
+      path: '/utm_source/*',
+      redirect: '/',
+    },
   ],
   scrollBehavior(to, from, savedPosition) {
     return { top: 0 }
