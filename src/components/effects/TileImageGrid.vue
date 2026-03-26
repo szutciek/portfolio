@@ -7,7 +7,13 @@
           :key="i"
           :style="`width: ${67 / arrangement.length}vw; transform: translateY(${((i % 2) + 1) * offset}px)`"
         >
-          <img v-for="(row, j) in column" :key="j" :src="images[row]" draggable="false" />
+          <img
+            v-for="(row, j) in column"
+            :key="j"
+            :src="images[row]"
+            :alt="alt(images[row])"
+            draggable="false"
+          />
         </div>
       </div>
     </div>
@@ -42,6 +48,8 @@ const gridStyle = ref({
     `rotateZ(${rZ}deg)`,
   ].join(' '),
 })
+
+const alt = (url) => url.split('/').at(-1)
 </script>
 
 <style scoped>

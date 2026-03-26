@@ -4,7 +4,12 @@
       <p>KS</p>
     </Link>
     <div>
-      <button @click="$emit('open')" data-cursor-target data-cursor-offset="5">
+      <button
+        @click="$emit('open')"
+        data-cursor-target
+        data-cursor-offset="5"
+        aria-label="Open navigation menu"
+      >
         <svg
           width="20"
           height="13"
