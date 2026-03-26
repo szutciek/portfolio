@@ -1,11 +1,9 @@
 <template>
-  <LenisScroll v-slot="{ global, sections }" sections>
-    <div class="container">
-      <h2>Mobile Version Still Cooking</h2>
-      <p>Visit this page on a bigger screen</p>
-      <!-- ADD OPTION TO EMAIL PAGE LINK -->
-    </div>
-  </LenisScroll>
+  <div class="container">
+    <h2>Mobile Version Still Cooking</h2>
+    <p>Visit this page on a bigger screen</p>
+    <!-- ADD OPTION TO EMAIL PAGE LINK -->
+  </div>
 </template>
 
 <style scoped>
@@ -15,6 +13,10 @@
   align-items: center;
   justify-content: center;
   height: 100dvh;
+}
+h2,
+p {
+  text-align: center;
 }
 </style>
 
