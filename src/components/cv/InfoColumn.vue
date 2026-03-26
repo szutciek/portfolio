@@ -1,6 +1,6 @@
 <template>
   <div class="side">
-    <img src="/images/profileCV-full.avif" alt="" />
+    <img src="/images/profileCV-full.avif" alt="Profile Picture" />
 
     <div class="personal">
       <p>szutermaciek@gmail.com</p>

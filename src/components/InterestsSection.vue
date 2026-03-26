@@ -127,6 +127,7 @@ function onHover(imageSrc) {
   const { active, next } = getEls()
 
   next.src = imageSrc
+  next.alt = imageSrc.split('/').at(-1)
   next.onload = () => {
     gsap.killTweensOf([active, next], 'opacity,scale')
 

@@ -1,25 +1,35 @@
 <template>
   <div :class="[`slideNav`, props.isOpen ? `visible` : `hidden`]">
-    <!-- prettier-ignore -->
-    <div class="close" data-cursor-target data-cursor-offset="4" @click="$emit('close')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><polygon points="400 145.49 366.51 112 256 222.51 145.49 112 112 145.49 222.51 256 112 366.51 145.49 400 256 289.49 366.51 400 400 366.51 289.49 256 400 145.49"/></svg></div>
+    <div
+      class="close"
+      data-cursor-target
+      data-cursor-offset="4"
+      @click="$emit('close')"
+      aria-label="Close navigation menu"
+    >
+      <!-- prettier-ignore -->
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><polygon points="400 145.49 366.51 112 256 222.51 145.49 112 112 145.49 222.51 256 112 366.51 145.49 400 256 289.49 366.51 400 400 366.51 289.49 256 400 145.49"/></svg>
+    </div>
     <div class="navArea">
       <ul class="navAreaGrid">
         <li class="marker">Navigation</li>
-        <SpinTextInternal @click="$emit('close')" text="Introduction" target="/#introduction" />
-        <SpinTextInternal @click="$emit('close')" text="About" target="/#about" />
-        <SpinTextInternal @click="$emit('close')" text="Projects" target="/#projects" />
+        <li>
+          <SpinTextInternal @click="$emit('close')" text="Introduction" target="/#introduction" />
+        </li>
+        <li><SpinTextInternal @click="$emit('close')" text="About" target="/#about" /></li>
+        <li><SpinTextInternal @click="$emit('close')" text="Projects" target="/#projects" /></li>
       </ul>
       <ul class="docAreaGrid">
         <li class="marker">Documents</li>
-        <SpinTextInternal @click="$emit('close')" text="Resume" target="/resume" />
+        <li><SpinTextInternal @click="$emit('close')" text="Resume" target="/resume" /></li>
       </ul>
       <ul class="liveAreaGrid">
         <li class="marker">Live Projects</li>
-        <SpinTextExternal text="Turtle Game" target="https://zolwie.kanapka.eu" />
-        <SpinTextExternal text="Webcam Game" target="https://webcamgame.kanapka.eu" />
-        <SpinTextExternal text="IBpedia" target="https://ibpedia.kanapka.eu" />
-        <SpinTextExternal text="Sztorify" target="https://sztorify.kanapka.eu" />
-        <SpinTextExternal text="Gaming" target="https://gaming.kanapka.eu" />
+        <li><SpinTextExternal text="Turtle Game" target="https://zolwie.kanapka.eu" /></li>
+        <li><SpinTextExternal text="Webcam Game" target="https://webcamgame.kanapka.eu" /></li>
+        <li><SpinTextExternal text="IBpedia" target="https://ibpedia.kanapka.eu" /></li>
+        <li><SpinTextExternal text="Sztorify" target="https://sztorify.kanapka.eu" /></li>
+        <li><SpinTextExternal text="Gaming" target="https://gaming.kanapka.eu" /></li>
       </ul>
       <!-- <NavigationContact /> -->
       <h4 class="authAreaGrid">&copy; Maciej Szuter 2026</h4>
