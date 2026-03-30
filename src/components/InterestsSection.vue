@@ -61,11 +61,7 @@
       <div class="section">
         <h3>Computer Science</h3>
         <div class="list _interest-list">
-          <OpaqueButton
-            color="var(--bg-color-d)"
-            data-url="/images/interests/fullstack.avif"
-            :highlightOnly="true"
-          >
+          <OpaqueButton color="var(--bg-color-d)" :highlightOnly="true">
             <p>Full-Stack Web Development</p>
           </OpaqueButton>
           <OpaqueButton color="var(--bg-color-d)" :highlightOnly="true">
