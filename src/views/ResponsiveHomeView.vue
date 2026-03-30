@@ -3,9 +3,10 @@ import { useBreakpoint } from '@/composables/useBreakpoint'
 import DesktopHome from '@/views/DesktopHomeView.vue'
 import MobileHome from '@/views/MobileHomeView.vue'
 
-const { isMobile } = useBreakpoint()
+const { deviceType } = useBreakpoint()
 </script>
 
 <template>
-  <component :is="isMobile ? MobileHome : DesktopHome" />
+  <DesktopHome v-if="deviceType === 'desktop'" />
+  <MobileHome v-if="deviceType === 'mobile'" />
 </template>

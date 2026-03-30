@@ -1,7 +1,10 @@
 <template>
-  <component :is="isMobile ? MobileLayout : DesktopLayout">
+  <DesktopLayout v-if="deviceType === 'desktop'">
     <router-view />
-  </component>
+  </DesktopLayout>
+  <MobileLayout v-if="deviceType === 'mobile'">
+    <router-view />
+  </MobileLayout>
 </template>
 
 <style>
@@ -78,5 +81,5 @@ Object.defineProperty(Array.prototype, 'subset', {
   enumerable: false,
 })
 
-const { isMobile } = useBreakpoint()
+const { deviceType } = useBreakpoint()
 </script>

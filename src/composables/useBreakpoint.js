@@ -1,10 +1,14 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 
 export function useBreakpoint() {
-  const isMobile = ref(false)
+  const deviceType = ref(null)
 
   const update = () => {
-    isMobile.value = window.innerWidth < 1000
+    if (window.innerWidth < 1000) {
+      deviceType.value = 'mobile'
+    } else {
+      deviceType.value = 'desktop'
+    }
   }
 
   onMounted(() => {
@@ -16,5 +20,5 @@ export function useBreakpoint() {
     window.removeEventListener('resize', update)
   })
 
-  return { isMobile }
+  return { deviceType }
 }

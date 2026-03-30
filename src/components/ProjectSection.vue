@@ -19,6 +19,74 @@
     <section vertical>
       <ProjectDemonstration>
         <template #head>
+          <h2>MyAura Online Store</h2>
+          <p>E-COMMERCE WEBSITE WITH PAYMENT INTEGRATION AND INVENTORY SYSTEM</p>
+        </template>
+        <template #buttons>
+          <OpaqueButton @click="openUrl(`https://myaura.kanapka.eu`)">
+            <AdjacentIcon>
+              <p>Browse demo version</p>
+              <p>&nearr;</p>
+            </AdjacentIcon>
+          </OpaqueButton>
+          <TransparentButton @click="openUrl(`https://github.com/szutciek/myaura`)">
+            <AdjacentIcon>
+              <p>See source code</p>
+              <p>&nearr;</p>
+            </AdjacentIcon>
+          </TransparentButton>
+        </template>
+        <template #client>
+          <AdjacentIcon>
+            <img src="/images/logo/myaura.avif" alt="MyAura Logo" />
+            <p>MyAura</p>
+          </AdjacentIcon>
+        </template>
+        <template #screenshots>
+          <section marker>
+            <ParallaxContent :progress="sections[1]?.markers[0]?.visibleProgress" velocity="1">
+              <img src="/images/myaura/home.avif" alt="MyAura Home Page Slideshow" />
+              <p>Aesthetic home page with adjustable slideshow</p>
+            </ParallaxContent>
+          </section>
+          <section marker>
+            <ParallaxContent :progress="sections[1]?.markers[1]?.visibleProgress" velocity="2">
+              <FullScreenableMedia
+                text="Modern checkout form offering clients flexibility & robust feedback"
+              >
+                <img src="/images/myaura/checkout.avif" alt="MyAura Checkout Form" />
+              </FullScreenableMedia>
+              <p>Modern checkout form offering clients flexibility<br />& robust feedback</p>
+            </ParallaxContent>
+          </section>
+          <section marker>
+            <ParallaxContent :progress="sections[1]?.markers[2]?.visibleProgress" velocity="1">
+              <img src="/images/myaura/inpost.avif" alt="MyAura InPost Parcel Locker Selector" />
+              <p>Built in InPost parcel locker selector for convenience</p>
+            </ParallaxContent>
+          </section>
+          <section marker>
+            <ParallaxContent :progress="sections[1]?.markers[3]?.visibleProgress" velocity="2">
+              <img src="/images/myaura/payment.avif" alt="MyAura Secure Payments Integration" />
+              <p>Secure payment provider integration</p>
+            </ParallaxContent>
+          </section>
+          <section marker>
+            <ParallaxContent :progress="sections[1]?.markers[4]?.visibleProgress" velocity="1">
+              <FullScreenableMedia
+                text="Order confirmation & update notifications via elegant HTML emails"
+              >
+                <img src="/images/myaura/email.avif" alt="MyAura HTML Notification Emails" />
+              </FullScreenableMedia>
+              <p>Order confirmation & update notifications<br />via elegant HTML emails</p>
+            </ParallaxContent>
+          </section>
+        </template>
+      </ProjectDemonstration>
+    </section>
+    <section vertical>
+      <ProjectDemonstration>
+        <template #head>
           <h2>Webcam Game</h2>
           <p>SEEING YOUR ENEMY, REDEFINED</p>
         </template>
@@ -38,7 +106,7 @@
         </template>
         <template #screenshots>
           <section marker>
-            <ParallaxContent :progress="sections[1]?.markers[0]?.visibleProgress" velocity="1">
+            <ParallaxContent :progress="sections[2]?.markers[0]?.visibleProgress" velocity="1">
               <FullScreenableMedia text="A game of football">
                 <img src="/images/wcgame/soccer.avif" alt="Webcam Game Soccer Game Mode" />
               </FullScreenableMedia>
@@ -46,13 +114,13 @@
             </ParallaxContent>
           </section>
           <section marker>
-            <ParallaxContent :progress="sections[1]?.markers[1]?.visibleProgress" velocity="2">
+            <ParallaxContent :progress="sections[2]?.markers[1]?.visibleProgress" velocity="2">
               <img src="/images/wcgame/amongus.avif" alt="Webcam Game Among Us Game Mode" />
               <p>A game of Among Us</p>
             </ParallaxContent>
           </section>
           <section marker>
-            <ParallaxContent :progress="sections[1]?.markers[2]?.visibleProgress" velocity="1">
+            <ParallaxContent :progress="sections[2]?.markers[2]?.visibleProgress" velocity="1">
               <img src="/images/wcgame/sso.avif" alt="Webcam Game Integration with Kanapka SSO" />
               <p>Kanapka SSO Integration</p>
             </ParallaxContent>
@@ -82,25 +150,25 @@
         </template>
         <template #screenshots>
           <section marker>
-            <ParallaxContent :progress="sections[2]?.markers[0]?.visibleProgress" velocity="1">
+            <ParallaxContent :progress="sections[3]?.markers[0]?.visibleProgress" velocity="1">
               <img src="/images/sso/trust.avif" alt="Kanapka SSO Trust App Prompt" />
               <p>First use of app</p>
             </ParallaxContent>
           </section>
           <section marker>
-            <ParallaxContent :progress="sections[2]?.markers[1]?.visibleProgress" velocity="2">
+            <ParallaxContent :progress="sections[3]?.markers[1]?.visibleProgress" velocity="2">
               <img src="/images/sso/2FA.avif" alt="Kanapka SSO 2FA & Email Provider Detection" />
               <p>2FA via email w/ inbox detection</p>
             </ParallaxContent>
           </section>
           <section marker>
-            <ParallaxContent :progress="sections[2]?.markers[2]?.visibleProgress" velocity="1">
+            <ParallaxContent :progress="sections[3]?.markers[2]?.visibleProgress" velocity="1">
               <img src="/images/sso/email.avif" alt="Kanapka SSO 2FA Email" />
               <p>Custom email service</p>
             </ParallaxContent>
           </section>
           <section marker>
-            <ParallaxContent :progress="sections[2]?.markers[3]?.visibleProgress" velocity="2">
+            <ParallaxContent :progress="sections[3]?.markers[3]?.visibleProgress" velocity="2">
               <FullScreenableMedia text="Add and switch between multiple accounts">
                 <img src="/images/sso/accounts.avif" alt="Kanapka SSO Multiple Account Support" />
               </FullScreenableMedia>
@@ -108,77 +176,9 @@
             </ParallaxContent>
           </section>
           <section marker>
-            <ParallaxContent :progress="sections[2]?.markers[4]?.visibleProgress" velocity="1">
+            <ParallaxContent :progress="sections[3]?.markers[4]?.visibleProgress" velocity="1">
               <img src="/images/sso/manage.avif" alt="Kanapka SSO Account Management Panel" />
               <p>Manage account details</p>
-            </ParallaxContent>
-          </section>
-        </template>
-      </ProjectDemonstration>
-    </section>
-    <section vertical>
-      <ProjectDemonstration>
-        <template #head>
-          <h2>MyAura Online Store</h2>
-          <p>E-COMMERCE WEBSITE WITH PAYMENT INTEGRATION AND INVENTORY SYSTEM</p>
-        </template>
-        <template #buttons>
-          <OpaqueButton @click="openUrl(`https://myaura.kanapka.eu`)">
-            <AdjacentIcon>
-              <p>Browse demo version</p>
-              <p>&nearr;</p>
-            </AdjacentIcon>
-          </OpaqueButton>
-          <TransparentButton @click="openUrl(`https://github.com/szutciek/myaura`)">
-            <AdjacentIcon>
-              <p>See source code</p>
-              <p>&nearr;</p>
-            </AdjacentIcon>
-          </TransparentButton>
-        </template>
-        <template #client>
-          <AdjacentIcon>
-            <img src="/images/logo/myaura.avif" alt="MyAura Logo" />
-            <p>MyAura</p>
-          </AdjacentIcon>
-        </template>
-        <template #screenshots>
-          <section marker>
-            <ParallaxContent :progress="sections[3]?.markers[0]?.visibleProgress" velocity="1">
-              <img src="/images/myaura/home.avif" alt="MyAura Home Page Slideshow" />
-              <p>Aesthetic home page with adjustable slideshow</p>
-            </ParallaxContent>
-          </section>
-          <section marker>
-            <ParallaxContent :progress="sections[3]?.markers[1]?.visibleProgress" velocity="2">
-              <FullScreenableMedia
-                text="Modern checkout form offering clients flexibility & robust feedback"
-              >
-                <img src="/images/myaura/checkout.avif" alt="MyAura Checkout Form" />
-              </FullScreenableMedia>
-              <p>Modern checkout form offering clients flexibility<br />& robust feedback</p>
-            </ParallaxContent>
-          </section>
-          <section marker>
-            <ParallaxContent :progress="sections[3]?.markers[2]?.visibleProgress" velocity="1">
-              <img src="/images/myaura/inpost.avif" alt="MyAura InPost Parcel Locker Selector" />
-              <p>Built in InPost parcel locker selector for convenience</p>
-            </ParallaxContent>
-          </section>
-          <section marker>
-            <ParallaxContent :progress="sections[3]?.markers[3]?.visibleProgress" velocity="2">
-              <img src="/images/myaura/payment.avif" alt="MyAura Secure Payments Integration" />
-              <p>Secure payment provider integration</p>
-            </ParallaxContent>
-          </section>
-          <section marker>
-            <ParallaxContent :progress="sections[3]?.markers[4]?.visibleProgress" velocity="1">
-              <FullScreenableMedia
-                text="Order confirmation & update notifications via elegant HTML emails"
-              >
-                <img src="/images/myaura/email.avif" alt="MyAura HTML Notification Emails" />
-              </FullScreenableMedia>
-              <p>Order confirmation & update notifications<br />via elegant HTML emails</p>
             </ParallaxContent>
           </section>
         </template>
@@ -347,6 +347,62 @@
                 Customize turtles,<br />
                 level and cards
               </p>
+            </ParallaxContent>
+          </section>
+        </template>
+      </ProjectDemonstration>
+    </section>
+    <section vertical>
+      <ProjectDemonstration>
+        <template #head>
+          <h2>SM Lokata Website</h2>
+          <p>WEBSITE FOR LOCAL COOPERATIVE</p>
+        </template>
+        <template #buttons>
+          <OpaqueButton @click="openUrl(`https://lokata.kanapka.eu`)">
+            <AdjacentIcon>
+              <p>Browse demo version</p>
+              <p>&nearr;</p>
+            </AdjacentIcon>
+          </OpaqueButton>
+          <TransparentButton @click="openUrl(`https://github.com/szutciek/lokata`)">
+            <AdjacentIcon>
+              <p>See source code</p>
+              <p>&nearr;</p>
+            </AdjacentIcon>
+          </TransparentButton>
+        </template>
+        <template #client>
+          <AdjacentIcon>
+            <img src="/images/logo/smlokata.avif" alt="SM Lokata Logo" />
+            <p>SM Lokata</p>
+          </AdjacentIcon>
+        </template>
+        <template #screenshots>
+          <section marker>
+            <ParallaxContent :progress="sections[7]?.markers[0]?.visibleProgress" velocity="1">
+              <img src="/images/lokata/announcement.avif" alt="SM Lokata Announcement" />
+              <p>Aesthetic announcements section</p>
+            </ParallaxContent>
+          </section>
+          <section marker>
+            <ParallaxContent :progress="sections[7]?.markers[1]?.visibleProgress" velocity="2">
+              <FullScreenableMedia text="Accessible drag&drop announcement editor">
+                <img src="/images/lokata/editor.avif" alt="SM Lokata Editor" />
+              </FullScreenableMedia>
+              <p>Accessible drag&drop announcement editor</p>
+            </ParallaxContent>
+          </section>
+          <section marker>
+            <ParallaxContent :progress="sections[7]?.markers[2]?.visibleProgress" velocity="1">
+              <img src="/images/lokata/files.avif" alt="SM Lokata Document Handler" />
+              <p>Simple and secure document handling by admins</p>
+            </ParallaxContent>
+          </section>
+          <section marker>
+            <ParallaxContent :progress="sections[7]?.markers[3]?.visibleProgress" velocity="2">
+              <img src="/images/lokata/cms.avif" alt="SM Lokata CMS" />
+              <p>Content Management System</p>
             </ParallaxContent>
           </section>
         </template>
