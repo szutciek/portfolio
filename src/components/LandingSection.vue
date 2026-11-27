@@ -29,52 +29,7 @@
         </div>
       </div>
       <div class="description _half">
-        <div class="box">
-          <div class="main">
-            <h1>MACIEJ SZUTER</h1>
-            <AdjacentIcon>
-              <!-- prettier-ignore -->
-              <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M160 368L32 256l128-112M352 368l128-112-128-112M304 96l-96 320"/></svg>
-              <p>Software Engineer</p>
-            </AdjacentIcon>
-          </div>
-          <div class="infoGrid">
-            <Link class="infoItem" data-cursor-target data-cursor-offset="10" :href="tue">
-              <div class="logos">
-                <img src="/images/logo/tue.avif" alt="TU/e Logo" />
-              </div>
-              <div>
-                <p>Second Year Bachelor</p>
-                <h3>Computer Science & Engineering</h3>
-              </div>
-              <AdjacentIcon class="onSnap" style="position: absolute; top: 5px; right: 5px">
-                <p>Explore Program</p>
-                <p>&nearr;</p>
-              </AdjacentIcon>
-            </Link>
-            <div class="border"></div>
-            <Link
-              class="infoItem"
-              data-cursor-target
-              data-cursor-offset="10"
-              href="/#projects"
-              :smooth="true"
-            >
-              <div class="logos">
-                <img src="/images/logo/kanapka.avif" alt="Kanapka Logo" />
-                <img src="/images/logo/totem.avif" alt="Totem Game Dev Logo" />
-              </div>
-              <div>
-                <p>2 Years of Freelancing Experience</p>
-                <h3>Full Stack Web Developer</h3>
-              </div>
-              <AdjacentIcon class="onSnap" style="position: absolute; top: 5px; right: 5px">
-                <p>Browse Projects</p>
-                <p>&nearr;</p>
-              </AdjacentIcon>
-            </Link>
-          </div>
-        </div>
+        <LandingDescription class="box" />
       </div>
     </div>
   </section>
@@ -89,8 +44,6 @@ const props = defineProps({
   scroll: Number,
   nextPageScroll: Number,
 })
-
-const tue = `https://www.tue.nl/en/education/bachelor-college/bachelor-computer-science-and-engineering`
 
 const monitor = ref(null)
 
@@ -135,12 +88,13 @@ const bgImages = [
   '/images/sso/accounts.avif',
   '/images/sso/trust.avif',
   '/images/wcgame/amongus.avif',
+  '/images/jarvissa/gym-chat.avif',
 ]
 const bgArrangemenet = ref([])
 bgArrangemenet.value.push([2, 3, 11, 9, 5, 6])
 bgArrangemenet.value.push([4, 0, 7])
-bgArrangemenet.value.push([11, 7, 1, 6, 3, 11])
-bgArrangemenet.value.push([4, 5, 4, 2])
+bgArrangemenet.value.push([11, 7, 6, 12, 3, 11])
+bgArrangemenet.value.push([12, 5, 4, 2])
 bgArrangemenet.value.push([6, 0, 1, 8])
 bgArrangemenet.value.push([9, 3, 2, 7])
 
@@ -197,62 +151,9 @@ watch(() => props.nextPageScroll, scrollingToNext)
   border-left: 1px solid var(--bg-color-l);
 }
 
-.main {
-  margin-bottom: var(--base8);
-}
-
-.infoGrid {
-  display: grid;
-  grid-template-columns: 1fr 1px 1fr;
-  gap: var(--base4);
-}
-.infoGrid .border {
-  width: 100%;
-  height: 100%;
-  background-color: var(--bg-color-ll);
-}
-.infoItem {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  position: relative;
-  gap: var(--base2);
-}
-.infoItem .logos {
-  display: flex;
-  gap: var(--base);
-}
-.infoItem .logos img:first-of-type {
-  margin-top: 0;
-  height: var(--base4);
-  min-width: var(--base4);
-  max-width: var(--base8);
-  width: min-content;
-}
-.infoItem .logos img {
-  height: var(--base4);
-  min-width: var(--base4);
-  max-width: var(--base8);
-  object-fit: contain;
-}
-.infoItem .onSnap {
-  opacity: 0.2;
-}
-.infoItem.cursor-snapped .onSnap {
-  opacity: 1;
-}
 @media (max-width: 1800px) {
   .header .description {
     padding: var(--base4);
-  }
-}
-@media (max-width: 1200px) {
-  .infoGrid {
-    grid-template-columns: 1fr;
-    gap: var(--base4);
-  }
-  .infoItem {
-    border-left: none;
   }
 }
 </style>

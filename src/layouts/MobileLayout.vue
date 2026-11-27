@@ -1,5 +1,6 @@
 <template>
   <main class="mobile">
+    <MobileNavigation />
     <slot />
   </main>
 </template>

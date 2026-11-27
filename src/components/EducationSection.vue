@@ -76,6 +76,11 @@ const events = {
       title: 'Joined Totem Game Dev',
       period: 'September 2025',
     },
+    {
+      position: 82.5,
+      title: 'Start of Internship @ ASML',
+      period: 'August 2026',
+    },
   ],
 }
 
