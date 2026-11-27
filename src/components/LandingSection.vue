@@ -88,12 +88,13 @@ const bgImages = [
   '/images/sso/accounts.avif',
   '/images/sso/trust.avif',
   '/images/wcgame/amongus.avif',
+  '/images/jarvissa/gym-chat.avif',
 ]
 const bgArrangemenet = ref([])
 bgArrangemenet.value.push([2, 3, 11, 9, 5, 6])
 bgArrangemenet.value.push([4, 0, 7])
-bgArrangemenet.value.push([11, 7, 1, 6, 3, 11])
-bgArrangemenet.value.push([4, 5, 4, 2])
+bgArrangemenet.value.push([11, 7, 6, 12, 3, 11])
+bgArrangemenet.value.push([12, 5, 4, 2])
 bgArrangemenet.value.push([6, 0, 1, 8])
 bgArrangemenet.value.push([9, 3, 2, 7])
 
