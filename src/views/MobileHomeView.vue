@@ -1,24 +1,6 @@
 <template>
-  <div class="container">
-    <h2>Mobile Version Still Cooking</h2>
-    <p>Visit this page on a bigger screen</p>
-    <!-- ADD OPTION TO EMAIL PAGE LINK -->
-  </div>
+  <MobileLandingSection />
 </template>
-
-<style scoped>
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100dvh;
-}
-h2,
-p {
-  text-align: center;
-}
-</style>
 
 <style>
 h1 {

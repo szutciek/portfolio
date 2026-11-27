@@ -67,51 +67,65 @@ p {
   font-size: 16px;
   color: #aaa;
 }
+@media (max-width: 2000px) {
+  .desktop h1 {
+    font-size: 100px;
+  }
+  .desktop ._half h1 {
+    font-size: 85px;
+  }
+  .desktop h2 {
+    font-size: 52px;
+  }
+  .desktop ._half h2 {
+    font-size: 42px;
+  }
+}
 @media (max-width: 1800px) {
-  h1 {
+  .desktop h1 {
     font-size: 90px;
   }
-  ._half h1 {
+  .desktop ._half h1 {
     font-size: 70px;
   }
-  h2 {
+  .desktop h2 {
     font-size: 45px;
   }
-  ._half h2 {
+  .desktop ._half h2 {
     font-size: 35px;
   }
 }
 @media (max-width: 1600px) {
-  h1 {
+  .desktop h1 {
     font-size: 80px;
   }
-  ._half h1 {
+  .desktop ._half h1 {
     font-size: 60px;
   }
-  h2 {
+  .desktop h2 {
     font-size: 40px;
   }
-  ._half h2 {
+  .desktop ._half h2 {
     font-size: 30px;
   }
 }
 @media (max-width: 1400px) {
-  h1 {
+  .desktop h1 {
     font-size: 60px;
   }
-  ._half h1 {
+  .desktop ._half h1 {
     font-size: 40px;
   }
-  h2 {
+  .desktop h2 {
     font-size: 30px;
   }
-  ._half h2 {
+  .desktop ._half h2 {
     font-size: 20px;
   }
-  h3 {
+  .desktop h3 {
     font-size: 20px;
   }
-  p {
+  .desktop p {
     font-size: 14px;
   }
 }
